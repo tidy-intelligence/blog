@@ -9,6 +9,7 @@ website:
   search: false
   page-navigation: false
   navbar:
+    logo-href: https://www.tidy-intelligence.com
     pinned: true
     left:
       - text: "Blog"
