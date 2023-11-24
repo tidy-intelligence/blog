@@ -1,0 +1,17 @@
+project:
+  type: website
+
+website:
+  title: "Tidy Intelligence Blog"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/tidy-intelligence/blog
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+
+
+
