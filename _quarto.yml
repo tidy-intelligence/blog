@@ -1,17 +1,27 @@
 project:
   type: website
+  output-dir: docs
 
 website:
-  title: "Tidy Intelligence Blog"
+  title: "Tidy Intelligence"
+  description: "Let your data spark joy!"
+  site-url: https://www.tidy-intelligence.com
+  search: false
+  page-navigation: false
   navbar:
-    right:
-      - about.qmd
-      - icon: github
-        href: https://github.com/tidy-intelligence/blog
+    pinned: true
+    left:
+      - text: "Blog"
+        file: index.qmd
+      - text: "About"
+        url: https://www.tidy-intelligence.com/about.html
+
 format:
   html:
-    theme: cosmo
-    css: styles.css
-
-
-
+    theme:
+      - cosmo, 
+      - assets/theme.scss
+    css: assets/styles-global.css
+    toc: false
+    smooth-scroll: true
+    from: markdown+emoji

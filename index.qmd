@@ -1,5 +1,8 @@
 ---
-title: "Collection of Posts on Tidy Data Sciene"
+title: "Posts about Tidy Data Sciene"
+metadata:
+  pagetitle: "Tidy Intelligence Blog"
+  description-meta: "Posts about Tidy Data Sciene"
 listing:
   contents: posts
   sort: "date desc"

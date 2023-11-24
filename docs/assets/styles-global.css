@@ -1,0 +1,23 @@
+.navbar a {
+  float: left; 
+  display: block;
+  color: white; 
+  text-align: center;
+  padding: 14px 16px; 
+  text-decoration: none; 
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.emphasize {
+  font-size: 1.5rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+a {
+  text-decoration: none; 
+  color: #3b9ab2;
+}
