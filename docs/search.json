@@ -4,13 +4,55 @@
     "href": "index.html",
     "title": "Tidy Intelligence",
     "section": "",
-    "text": "Welcome To My Blog\n\n\n\n\n\n\n\n\n\n\n\nNov 21, 2023\n\n\nChristoph Scheuch\n\n\n\n\n\n\nNo matching items"
+    "text": "Tidy Data: A Recipe for Efficient Data Analysis\n\n\nOn the importance of tidy data for efficient analysis using the analogy of a well-organized kitchen\n\n\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "posts/welcome/index.html",
-    "href": "posts/welcome/index.html",
-    "title": "Welcome To My Blog",
+    "objectID": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html",
+    "href": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html",
+    "title": "Tidy Data: A Recipe for Efficient Data Analysis",
     "section": "",
-    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+    "text": "Imagine trying to cook a meal in a disorganized kitchen where ingredients are mixed up and nothing is labeled. It would be chaotic and time-consuming to look for the right ingredients and there might be some trial error involved, possibly ruining your planned meal.\nTidy data are like a well-organized shelves in your kitchen. Each shelf provides a collection of containers that semantically belong together. Each container on the shelf holds one type of ingredient, and the labels on the containers clearly describe what is inside. In the same way, tidy data organizes information into a clear and consistent format, where each type of observational unit forms a table, each variable is in a column, and each observation is in a row (Wickham 2014).\nTidying data is about structuring datasets to facilitate analysis or report generation. By following the principle that each variable forms a column, each observation forms a row, and each type of observational unit forms a table, data analysis becomes more intuitive, akin to cooking in a well-organized kitchen where everything has its place and you spend less time on searching for ingredients."
+  },
+  {
+    "objectID": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html#example-for-tidy-data",
+    "href": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html#example-for-tidy-data",
+    "title": "Tidy Data: A Recipe for Efficient Data Analysis",
+    "section": "Example for tidy data",
+    "text": "Example for tidy data\n\nlibrary(tidyverse)\n\ningredients &lt;- tibble(\n  type = c(\"Flour\", \"Sugar\", \"Butter\", \"Eggs\", \"Milk\", \"Salt\", \"Olive Oil\", \"Tomatoes\", \"Chicken\", \"Rice\"),\n  quantity = c(500, 200, 100, 4, 1, 10, 0.2, 300, 400, 250),\n  unit = c(\"grams\", \"grams\", \"grams\", \"units\", \"liters\", \"grams\", \"liters\", \"grams\", \"grams\", \"grams\")\n)\n\nspices &lt;- tibble(\n  type = c(\"Paprika\", \"Turmeric\", \"Cumin\", \"Coriander\", \"Cinnamon\", \"Chili Powder\", \"Oregano\", \"Thyme\", \"Saffron\", \"Nutmeg\"),\n  quantity = c(50, 40, 30, 25, 20, 15, 10, 8, 5, 12),\n  unit = c(\"grams\", \"grams\", \"grams\", \"grams\", \"grams\", \"grams\", \"grams\", \"grams\", \"grams\", \"grams\")\n)\n\ndairies &lt;- tibble(\n  type = c(\"Milk\", \"Butter\", \"Yogurt\", \"Cheese\", \"Cream\", \"Cottage Cheese\", \"Sour Cream\", \"Ghee\", \"Whipping Cream\", \"Ice Cream\"),\n  quantity = c(1, 200, 150, 100, 0.5, 250, 150, 100, 0.3, 500),\n  unit = c(\"liters\", \"grams\", \"grams\", \"grams\", \"liters\", \"grams\", \"grams\", \"grams\", \"liters\", \"grams\")\n)"
+  },
+  {
+    "objectID": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html#when-colum-headers-are-values-not-variable-names",
+    "href": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html#when-colum-headers-are-values-not-variable-names",
+    "title": "Tidy Data: A Recipe for Efficient Data Analysis",
+    "section": "When colum headers are values, not variable names",
+    "text": "When colum headers are values, not variable names\n\ntibble(\n  type = c(\"Milk\", \"Butter\", \"Yogurt\", \"Cheese\", \"Cream\", \"Cottage Cheese\", \"Sour Cream\", \"Ghee\", \"Whipping Cream\", \"Ice Cream\"),\n  liters = c(1, NA, NA, NA, 0.5, NA, NA, NA, 0.3, NA),\n  grams = c(NA, 200, 150, 100, NA, 250, 150, 100, NA, 500)\n)\n\n# A tibble: 10 × 3\n   type           liters grams\n   &lt;chr&gt;           &lt;dbl&gt; &lt;dbl&gt;\n 1 Milk              1      NA\n 2 Butter           NA     200\n 3 Yogurt           NA     150\n 4 Cheese           NA     100\n 5 Cream             0.5    NA\n 6 Cottage Cheese   NA     250\n 7 Sour Cream       NA     150\n 8 Ghee             NA     100\n 9 Whipping Cream    0.3    NA\n10 Ice Cream        NA     500"
+  },
+  {
+    "objectID": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html#when-multiple-variables-are-stored-in-one-column",
+    "href": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html#when-multiple-variables-are-stored-in-one-column",
+    "title": "Tidy Data: A Recipe for Efficient Data Analysis",
+    "section": "When multiple variables are stored in one column",
+    "text": "When multiple variables are stored in one column\nThe quantity_and_unit column combines both the quantity and the unit of measurement into one string for each ingredient. This format makes it harder to perform numerical operations on the quantities or to filter or aggregate the data based on the unit of measurement.\n\ntibble(\n  type = c(\"Flour\", \"Sugar\", \"Butter\", \"Eggs\", \"Milk\", \"Salt\", \"Olive Oil\", \"Tomatoes\", \"Chicken\", \"Rice\"),\n  quantity_and_unit = c(\"500 grams\", \"200 grams\", \"100 grams\", \"4 units\", \"1 liter\", \"10 grams\", \"0.2 liters\", \"300 grams\", \"400 grams\", \"250 grams\")\n)\n\n# A tibble: 10 × 2\n   type      quantity_and_unit\n   &lt;chr&gt;     &lt;chr&gt;            \n 1 Flour     500 grams        \n 2 Sugar     200 grams        \n 3 Butter    100 grams        \n 4 Eggs      4 units          \n 5 Milk      1 liter          \n 6 Salt      10 grams         \n 7 Olive Oil 0.2 liters       \n 8 Tomatoes  300 grams        \n 9 Chicken   400 grams        \n10 Rice      250 grams"
+  },
+  {
+    "objectID": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html#when-variables-are-stored-in-both-rows-and-columns",
+    "href": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html#when-variables-are-stored-in-both-rows-and-columns",
+    "title": "Tidy Data: A Recipe for Efficient Data Analysis",
+    "section": "When variables are stored in both rows and columns",
+    "text": "When variables are stored in both rows and columns\nThe quantity for each ingredient for two different recipes is stored in separate columns. This structure makes it harder to perform operations like filtering or summarizing the data by recipe or ingredient.\n\ntibble(\n  ingredient = c(\"Flour\", \"Sugar\", \"Butter\", \"Eggs\", \"Milk\"),\n  recipe1_quantity = c(\"500 grams\", \"200 grams\", \"100 grams\", \"4 units\", \"1 liter\"),\n  recipe2_quantity = c(\"300 grams\", \"150 grams\", \"50 grams\", \"3\", \"0.5 liters\")\n)\n\n# A tibble: 5 × 3\n  ingredient recipe1_quantity recipe2_quantity\n  &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;           \n1 Flour      500 grams        300 grams       \n2 Sugar      200 grams        150 grams       \n3 Butter     100 grams        50 grams        \n4 Eggs       4 units          3               \n5 Milk       1 liter          0.5 liters      \n\n\nTo convert this data to a tidy format, you would typically want to gather the quantities into a single column, and include additional columns to specify the recipe and unit of measurement for each quantity."
+  },
+  {
+    "objectID": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html#when-there-are-multiple-types-of-data-in-the-same-column",
+    "href": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html#when-there-are-multiple-types-of-data-in-the-same-column",
+    "title": "Tidy Data: A Recipe for Efficient Data Analysis",
+    "section": "When there are multiple types of data in the same column",
+    "text": "When there are multiple types of data in the same column\nThe table is trying to describe a recipe but combines different types of data within the same columns. There are ingredients with their quantities, a utensil, and cooking time, all mixed together.\n\ntibble(\n  type = c(\"Flour\", \"Butter\", \"Whisk\", \"Sugar\", \"Baking Time\"),\n  quantity = c(\"500 grams\", \"100 grams\", \"1\", \"200 grams\", \"30 minutes\"),\n  category = c(\"Ingredient\", \"Ingredient\", \"Utensil\", \"Ingredient\", \"Time\")\n)\n\n# A tibble: 5 × 3\n  type        quantity   category  \n  &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;     \n1 Flour       500 grams  Ingredient\n2 Butter      100 grams  Ingredient\n3 Whisk       1          Utensil   \n4 Sugar       200 grams  Ingredient\n5 Baking Time 30 minutes Time      \n\n\nA tidy approach would typically separate these different types of data into separate tables or at least into distinct sets of columns, making it clear what each part of the data represents and facilitating further analysis and visualization."
+  },
+  {
+    "objectID": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html#when-some-data-is-missing",
+    "href": "posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html#when-some-data-is-missing",
+    "title": "Tidy Data: A Recipe for Efficient Data Analysis",
+    "section": "When some data is missing",
+    "text": "When some data is missing\nKey points:\n\nHuge difference between NA and 0 (or any other value)\nAre you sure that you don’t have the ingredient or do you just don’t know?\nMissing are dropped in filters\n\n\ntibble(\n  type = c(\"Flour\", \"Sugar\", \"Butter\", \"Eggs\", \"Milk\", \"Salt\", \"Olive Oil\", \"Tomatoes\", \"Chicken\", NA),\n  quantity = c(NA, 200, 100, 4, 1, 10, 0.2, 300, 400, 250),\n  unit = c(\"grams\", \"grams\", \"grams\", \"units\", NA, \"grams\", \"liters\", \"grams\", \"grams\", \"grams\")\n)\n\n# A tibble: 10 × 3\n   type      quantity unit  \n   &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt; \n 1 Flour         NA   grams \n 2 Sugar        200   grams \n 3 Butter       100   grams \n 4 Eggs           4   units \n 5 Milk           1   &lt;NA&gt;  \n 6 Salt          10   grams \n 7 Olive Oil      0.2 liters\n 8 Tomatoes     300   grams \n 9 Chicken      400   grams \n10 &lt;NA&gt;         250   grams"
   }
 ]

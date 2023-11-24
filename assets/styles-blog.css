@@ -1,0 +1,50 @@
+h1 {
+    padding-top: 8px;
+    padding-bottom: 16px;
+  }
+  
+  h2 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    border-bottom: 0px;
+    padding-bottom: 0px;
+  }
+  
+  .quarto-grid-item {
+    border: none;
+  }
+  
+  .listing-author {
+    display: none; 
+  }
+  
+  .listing-date {
+    display: none; 
+  }
+  
+  .card-body {
+    padding: 8px 8px 8px 8px;
+  }
+  
+  .card-img {
+    padding-bottom: 8px;
+  }
+  
+  .listing-tile {
+    margin-top: 8px;
+  }
+  
+  .listing-description {
+    padding-top: 8px;
+  }
+  
+  .description {
+    display: none;
+  }
+  
+  #title-block-header.quarto-title-block.default .quarto-title-meta-heading {
+    text-transform: none;
+    margin: 0px;
+    padding: 0px;
+  }

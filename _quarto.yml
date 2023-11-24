@@ -2,6 +2,11 @@ project:
   type: website
   output-dir: docs
 
+bibliography: bib/references.bib
+biblio-style: apalike
+link-citations: true
+links-as-notes: true
+
 website:
   title: "Tidy Intelligence"
   description: "Let your data spark joy!"
@@ -22,7 +27,9 @@ format:
     theme:
       - cosmo, 
       - assets/theme.scss
-    css: assets/styles-global.css
+    css: 
+      - assets/styles-global.css
+      - assets/styles-blog.css
     toc: false
     smooth-scroll: true
     from: markdown+emoji

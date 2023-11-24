@@ -1,0 +1,103 @@
+---
+title: "Tidy Data: A Recipe for Efficient Data Analysis"
+description: "On the importance of tidy data for efficient analysis using the analogy of a well-organized kitchen"
+author: "Christoph Scheuch"
+date: "2023-11-24" 
+image: thumbnail.png
+---
+
+Imagine trying to cook a meal in a disorganized kitchen where ingredients are mixed up and nothing is labeled. It would be chaotic and time-consuming to look for the right ingredients and there might be some trial error involved, possibly ruining your planned meal. 
+
+Tidy data are like a well-organized shelves in your kitchen. Each shelf provides a collection of containers that semantically belong together. Each container on the shelf holds one type of ingredient, and the labels on the containers clearly describe what is inside. In the same way, tidy data organizes information into a clear and consistent format, where each **type of observational unit forms a table**, **each variable is in a column**, and **each observation is in a row**  [@Wickham2014].
+
+Tidying data is about structuring datasets to facilitate analysis or report generation. By following the principle that each variable forms a column, each observation forms a row, and each type of observational unit forms a table, data analysis becomes more intuitive, akin to cooking in a well-organized kitchen where everything has its place and you spend less time on searching for ingredients.
+
+## Example for tidy data
+
+```{r}
+#| message: false
+library(tidyverse)
+
+ingredients <- tibble(
+  type = c("Flour", "Sugar", "Butter", "Eggs", "Milk", "Salt", "Olive Oil", "Tomatoes", "Chicken", "Rice"),
+  quantity = c(500, 200, 100, 4, 1, 10, 0.2, 300, 400, 250),
+  unit = c("grams", "grams", "grams", "units", "liters", "grams", "liters", "grams", "grams", "grams")
+)
+
+spices <- tibble(
+  type = c("Paprika", "Turmeric", "Cumin", "Coriander", "Cinnamon", "Chili Powder", "Oregano", "Thyme", "Saffron", "Nutmeg"),
+  quantity = c(50, 40, 30, 25, 20, 15, 10, 8, 5, 12),
+  unit = c("grams", "grams", "grams", "grams", "grams", "grams", "grams", "grams", "grams", "grams")
+)
+
+dairies <- tibble(
+  type = c("Milk", "Butter", "Yogurt", "Cheese", "Cream", "Cottage Cheese", "Sour Cream", "Ghee", "Whipping Cream", "Ice Cream"),
+  quantity = c(1, 200, 150, 100, 0.5, 250, 150, 100, 0.3, 500),
+  unit = c("liters", "grams", "grams", "grams", "liters", "grams", "grams", "grams", "liters", "grams")
+)
+```
+
+## When colum headers are values, not variable names
+
+```{r}
+tibble(
+  type = c("Milk", "Butter", "Yogurt", "Cheese", "Cream", "Cottage Cheese", "Sour Cream", "Ghee", "Whipping Cream", "Ice Cream"),
+  liters = c(1, NA, NA, NA, 0.5, NA, NA, NA, 0.3, NA),
+  grams = c(NA, 200, 150, 100, NA, 250, 150, 100, NA, 500)
+)
+```
+
+## When multiple variables are stored in one column
+
+The `quantity_and_unit` column combines both the quantity and the unit of measurement into one string for each ingredient. This format makes it harder to perform numerical operations on the quantities or to filter or aggregate the data based on the unit of measurement.
+
+```{r}
+tibble(
+  type = c("Flour", "Sugar", "Butter", "Eggs", "Milk", "Salt", "Olive Oil", "Tomatoes", "Chicken", "Rice"),
+  quantity_and_unit = c("500 grams", "200 grams", "100 grams", "4 units", "1 liter", "10 grams", "0.2 liters", "300 grams", "400 grams", "250 grams")
+)
+```
+
+## When variables are stored in both rows and columns
+
+The quantity for each ingredient for two different recipes is stored in separate columns. This structure makes it harder to perform operations like filtering or summarizing the data by recipe or ingredient.
+
+```{r}
+tibble(
+  ingredient = c("Flour", "Sugar", "Butter", "Eggs", "Milk"),
+  recipe1_quantity = c("500 grams", "200 grams", "100 grams", "4 units", "1 liter"),
+  recipe2_quantity = c("300 grams", "150 grams", "50 grams", "3", "0.5 liters")
+)
+```
+
+To convert this data to a tidy format, you would typically want to gather the quantities into a single column, and include additional columns to specify the recipe and unit of measurement for each quantity.
+
+## When there are multiple types of data in the same column
+
+The table is trying to describe a recipe but combines different types of data within the same columns. There are ingredients with their quantities, a utensil, and cooking time, all mixed together.
+
+```{r}
+tibble(
+  type = c("Flour", "Butter", "Whisk", "Sugar", "Baking Time"),
+  quantity = c("500 grams", "100 grams", "1", "200 grams", "30 minutes"),
+  category = c("Ingredient", "Ingredient", "Utensil", "Ingredient", "Time")
+)
+```
+
+A tidy approach would typically separate these different types of data into separate tables or at least into distinct sets of columns, making it clear what each part of the data represents and facilitating further analysis and visualization.
+
+## When some data is missing
+
+Key points:
+
+- Huge difference between NA and 0 (or any other value)
+- Are you sure that you don't have the ingredient or do you just don't know?
+- Missing are dropped in filters 
+
+```{r}
+tibble(
+  type = c("Flour", "Sugar", "Butter", "Eggs", "Milk", "Salt", "Olive Oil", "Tomatoes", "Chicken", NA),
+  quantity = c(NA, 200, 100, 4, 1, 10, 0.2, 300, 400, 250),
+  unit = c("grams", "grams", "grams", "units", NA, "grams", "liters", "grams", "grams", "grams")
+)
+```

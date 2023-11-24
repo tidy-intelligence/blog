@@ -5,7 +5,8 @@ metadata:
 listing:
   contents: posts
   sort: "date desc"
-  type: default
+  type: grid
+  fields: [image, description, title]
   categories: false
   sort-ui: false
   filter-ui: false
