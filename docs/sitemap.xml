@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.tidy-intelligence.com/about.html</loc>
-    <lastmod>2023-11-24T09:45:09.595Z</lastmod>
+    <loc>https://www.tidy-intelligence.com/index.html</loc>
+    <lastmod>2023-11-24T15:14:33.335Z</lastmod>
   </url>
   <url>
     <loc>https://www.tidy-intelligence.com/posts/welcome/index.html</loc>
-    <lastmod>2023-11-24T09:45:09.594Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.tidy-intelligence.com/posts/post-with-code/index.html</loc>
-    <lastmod>2023-11-24T09:45:09.595Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.tidy-intelligence.com/index.html</loc>
-    <lastmod>2023-11-24T12:40:44.490Z</lastmod>
+    <lastmod>2023-11-24T15:19:15.865Z</lastmod>
   </url>
 </urlset>

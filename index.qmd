@@ -1,5 +1,4 @@
 ---
-title: "Posts about Tidy Data Sciene"
 metadata:
   pagetitle: "Tidy Intelligence Blog"
   description-meta: "Posts about Tidy Data Sciene"
@@ -7,11 +6,11 @@ listing:
   contents: posts
   sort: "date desc"
   type: default
-  categories: true
+  categories: false
   sort-ui: false
   filter-ui: false
-page-layout: full
-title-block-banner: true
+page-layout: article
+title-block-banner: false
 ---
 
 

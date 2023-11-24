@@ -1,8 +1,7 @@
 ---
 title: "Welcome To My Blog"
-author: "Tristan O'Malley"
+author: "Christoph Scheuch"
 date: "2023-11-21"
-categories: [news]
 ---
 
 This is the first post in a Quarto blog. Welcome!
