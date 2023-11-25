@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://www.tidy-intelligence.com/posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html</loc>
+    <lastmod>2023-11-25T20:10:01.764Z</lastmod>
+  </url>
+  <url>
     <loc>https://www.tidy-intelligence.com/index.html</loc>
-    <lastmod>2023-11-24T16:51:43.207Z</lastmod>
+    <lastmod>2023-11-25T20:10:01.749Z</lastmod>
   </url>
   <url>
     <loc>https://www.tidy-intelligence.com/posts/clustering-binary-data/index.html</loc>
-    <lastmod>2023-11-25T18:05:49.083Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.tidy-intelligence.com/posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html</loc>
-    <lastmod>2023-11-25T14:54:42.986Z</lastmod>
+    <lastmod>2023-11-25T20:10:01.754Z</lastmod>
   </url>
 </urlset>
