@@ -12,11 +12,18 @@ Technically speaking, I have a set of $N$ observations $(x_1, x_2, ... , x_N)$ o
 
 Intuitively, I want to find clusters of the survey responses such that respondents within each cluster are more closely related to one another than respondents assigned to different clusters. There are many possible ways to achieve that, but I focus on the most popular and most approachable ones: $K$-means, $K$-modes, as well as agglomerative and divisive hierarchical clustering. AS we see below, the 4 models yield quite different results for clustering binary data.
 
-I mainly use the tidyverse family of packages throughout this post. 
+I use the following packages throughout this post. In particular, I use `klaR` and `cluster` for clustering algorithms that go beyond the `stats` package that is included with your R installation.[^1] I explicitely refer to the corresponding packages when I call them below. 
+
 ```{r}
 #| message: false
 #| warning: false
-library(tidyverse)
+library(klaR)
+library(cluster)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(ggplot2)
+library(scales)
 ```
 
 ## Creating sample data
@@ -36,10 +43,10 @@ centers <- tibble(
 
 Alternatively, we could think of the yes/no questions as medical records that indicate whether the subject has a certain pre-condition or not.
 
-Since it should be a bit tricky for the clustering models to find the actual response profiles, let us add some noise in the form of respondents that deviate from their assigned cluster profile. We find out below how the cluster algorithms are able to deal with this noise.
+Since it should be a bit tricky for the clustering models to find the actual response profiles, let us add some noise in the form of respondents that deviate from their assigned cluster profile and shuffle all rows. We find out below how the cluster algorithms are able to deal with this noise.
 
 ```{r}
-set.seed(123)
+set.seed(42)
 labelled_respondents <- centers |> 
   mutate(
     across(
@@ -51,12 +58,16 @@ labelled_respondents <- centers |>
     )
   ) |> 
   select(-respondents) |> 
-  unnest(cols = c(q1, q2, q3, q4))
+  unnest(cols = c(q1, q2, q3, q4)) |> 
+  sample_n(n())
 ```
+
 The figure below visualizes the distribution of simulated question responses by cluster.
+
 ```{r}
 labelled_respondents |>
-  pivot_longer(cols = -cluster, names_to = "question", values_to = "response") |>
+  pivot_longer(cols = -cluster, 
+               names_to = "question", values_to = "response") |>
   mutate(response = response == 1) |>
   ggplot(aes(x = response, y = question, color = cluster)) +
   geom_jitter() +
@@ -78,10 +89,10 @@ respondents <- labelled_respondents |>
   select(-cluster)
 ```
 
-It is very straight-forward to run the built-in stats::kmeans clustering algorithm. I choose the parameter of maximum iterations to be 100 to increase the likeliness of getting the best fitting clusters. Since the data is fairly small and the algorithm is also quite fast, I see no harm in using a high number of iterations.
+It is very straight-forward to run the built-in `stats::kmeans` clustering algorithm. I choose the parameter of maximum iterations to be 1000 to increase the likeliness of getting the best fitting clusters. Since the data is fairly small and the algorithm is also quite fast, I see no harm in using a high number of iterations.
 
 ```{r}
-iter_max <- 100
+iter_max <- 1000
 kmeans_example <- stats::kmeans(respondents, centers = 3, iter.max = iter_max)
 ```
 
@@ -112,16 +123,14 @@ In addition, I introduce a helper function that summarizes information by cluste
 
 ```{r}
 summarize_clusters <- function(model, k = NULL) {
-  # Assign respondents to clusters
+
   clusters <- assign_clusters(model = model, k = k)
   
-  # Compute summary statistics by cluster
   summary_statistics <- clusters |>
     group_by(cluster) |>
     summarize(across(matches("q"), \(x) mean(x, na.rm = TRUE)),
               assigned_respondents = n()) |>
     select(-cluster) |>
-    # Rank clusters by total share of positive answers
     mutate(total = rowSums(across(matches("q")))) |>
     arrange(-total) |>
     mutate(k = row_number(),
@@ -155,16 +164,14 @@ The function below computes the within-cluster sum of squares for any cluster as
 
 ```{r}
 compute_withinss <- function(model, k = NULL) {
-  # Assign respondents to clusters
+  
   clusters <- assign_clusters(model = model, k = k)
   
-  # Compute averages per cluster center
   centers <- clusters |>
     group_by(cluster) |>
     summarize_all(mean) |>
     pivot_longer(cols = -cluster, names_to = "question", values_to = "cluster_mean")
   
-  # Compute sum of squared differences from cluster centers
   withinss <- clusters |>
     pivot_longer(cols = -cluster, names_to = "question", values_to = "response") |>
     left_join(centers, by = c("cluster", "question")) |>
@@ -177,6 +184,7 @@ compute_withinss <- function(model, k = NULL) {
 ```
 
 We can simply map the function across our list of $K$-means models. For better comparability, we normalize the within-cluster sum of squares for any number of cluster by the benchmark case of only having a single cluster. Moreover, we consider log-differences to because we care more about the percentage decrease in sum of squares rather than the absolute number. 
+
 ```{r}
 kmeans_logwithindiss <- kmeans_results$kclust |>
   map(compute_withinss) |>
@@ -188,7 +196,7 @@ kmeans_logwithindiss <- kmeans_results$kclust |>
 
 Since $K$-means is actually not ideal for binary (or hierarchical data in general), Huang (1997) came up with the $K$-modes algorithm. This clustering approach aims to partition respondents into $K$ groups such that the distance from respondents to the assigned cluster modes is minimized. A mode is a vector of elements that minimize the dissimilarities between the vector and each object of the data. Rather than using the Euclidean distance, $K$-modes uses simple matching distance between respondents to quantify dissimilarity which translates into counting the number of mismatches in all question responses in the current setting.
 
-Fortunately, the klaR package provides an implementation of the $K$-modes algorithm that we can apply just like the $K$-means above.
+Fortunately, the `klaR` package provides an implementation of the $K$-modes algorithm that we can apply just like the $K$-means above.
 
 ```{r}
 kmodes_example <- klaR::kmodes(respondents, iter.max = iter_max, modes = 3) |>
@@ -213,7 +221,7 @@ Note that I computed the within-cluster sum of squared errors rather than using 
 
 ## Hierarchical clustering
 
-As an alternative to computing optimal assignments for a given number of clusters, we might sometimes prefer to arrange the clusters into a natural hierarchy. This involves successively grouping the clusters themselves such that at each level of the hierarchy, clusters within the same group are more similar to each other than those in different groups. There are two fundamentally different approaches to hierarchical clustering that are fortunately implemented in the great cluster package.
+As an alternative to computing optimal assignments for a given number of clusters, we might sometimes prefer to arrange the clusters into a natural hierarchy. This involves successively grouping the clusters themselves such that at each level of the hierarchy, clusters within the same group are more similar to each other than those in different groups. There are two fundamentally different approaches to hierarchical clustering that are fortunately implemented in the great `cluster` package.
 
 Both hierarchical clustering approaches require a dissimilarity or distance matrix. Since we have binary data, we choose the asymmetric binary distance matrix based on the Jaccard distance. Intuitively, the Jaccard distance measures how far the overlap of responses between two groups is from perfect overlap.
 
@@ -223,10 +231,12 @@ dissimilarity_matrix <- stats::dist(respondents, method = "binary")
 
 Agglomerative clustering start at the bottom and at each level recursively merge a selected pair of clusters into a single cluster. This produces a clustering at the next higher level with one less cluster. The pair chosen for merging consist of the two clusters with the smallest within-cluster dissimilarity. On an intuitive level, agglomerative clustering is hence better in discovering small clusters.
 
-The cluster package provides the agnes algorithm (AGglomerative NESting) that can easily applied to the dissimilarity matrix.
+The `cluster` package provides the agnes algorithm (AGglomerative NESting) that can easily applied to the dissimilarity matrix.
 
 ```{r}
-agnes_results <- cluster::agnes(dissimilarity_matrix, diss = TRUE, keep.diss = TRUE, method = "complete")
+agnes_results <- cluster::agnes(
+  dissimilarity_matrix, diss = TRUE, keep.diss = TRUE, method = "complete"
+)
 ```
 
 The function returns a clustering tree that we could plot (which I actually rarely found really helpful) or cut into different partitions using the stats::cutree function. This is why the helper functions from above need a number of target clusters as an input for hierarchical clustering models. However, the logic of the summary statistics are just as above.
@@ -242,12 +252,16 @@ agnes_logwithindiss <- k_min:k_max |>
 
 Divisive methods start at the top and at each level recursively split one of the existing clusters at that level into two new clusters. The split is chosen such that two new groups with the largest between-group dissimilarity emerge. Intuitively speaking, divisive clustering is thus better in discovering large clusters.
 
-The cluster package provides the diana algorithm (DIvise ANAlysis) for this clustering approach where the logic is basically the same as for the agnes model.
+The `cluster` package provides the diana algorithm (DIvise ANAlysis) for this clustering approach where the logic is basically the same as for the agnes model.
 
 ```{r}
-diana_results <- cluster::diana(dissimilarity_matrix, diss = TRUE, keep.diss = TRUE) 
+diana_results <- cluster::diana(
+  dissimilarity_matrix, diss = TRUE, keep.diss = TRUE
+) 
+
 diana_example <- diana_results |>
-summarize_clusters(k = 3)
+  summarize_clusters(k = 3)
+
 diana_logwithindiss <-  k_min:k_max |>
   map(~compute_withinss(diana_results, .)) |>
   reduce(bind_rows) |>
@@ -267,7 +281,8 @@ bind_rows(kmeans_logwithindiss, kmodes_logwithindiss,
   geom_line() +
   scale_x_continuous(breaks = k_min:k_max) + 
   theme_minimal() +
-  labs(x = "Number of Clusters", y = bquote(log(W[k])-log(W[1])), color = "Model", linetype = "Model",
+  labs(x = "Number of Clusters", y = bquote(log(W[k])-log(W[1])), 
+       color = "Model", linetype = "Model",
        title = "Within cluster sum of squares relative to benchmark case of one cluster")
 ```
 
@@ -281,14 +296,15 @@ bind_rows(
   agnes_example,
   diana_example) |>
   select(-c(total, assigned_respondents)) |>
-  pivot_longer(cols = -c(k, model), names_to = "question", values_to = "response") |>
-  mutate(cluster = str_c("Cluster ", k)) |>
+  pivot_longer(cols = -c(k, model), 
+               names_to = "question", values_to = "response") |>
+  mutate(cluster = paste0("Cluster ", k)) |>
   ggplot(aes(x = response, y = question, fill = model)) +
   geom_col(position = "dodge") +
   facet_wrap(~cluster) +
   theme_bw() +
   scale_x_continuous(labels = scales::percent) + 
-  geom_hline(yintercept = seq(1.5, length(unique(colnames(respondents)))-0.5, 1),
+  geom_hline(yintercept = seq(1.5, length(unique(colnames(respondents))) - 0.5, 1),
              colour = 'black') +
   labs(x = "Proportion of responses", y = "Question", fill = "Model",
        title = "Proportion of positive responses within assigned clusters")
@@ -302,14 +318,17 @@ bind_rows(
   kmodes_example,
   agnes_example,
   diana_example) |>
-  mutate(cluster = str_c("Cluster ", k)) |>
+  mutate(cluster = paste0("Cluster ", k)) |>
   select(model, cluster, assigned_respondents) |>
   ggplot() +
-  geom_col(position = "dodge", aes(y = assigned_respondents, x = cluster, fill = model)) +
+  geom_col(position = "dodge", 
+           aes(y = assigned_respondents, x = cluster, fill = model)) +
   geom_col(data = labelled_respondents |>
-             group_by(cluster = str_c("Cluster ", cluster)) |>
+             group_by(cluster = paste0("Cluster ", cluster)) |>
              summarize(assigned_respondents = n(),
-                       model = "actual"), aes(y = assigned_respondents, x = cluster), fill = "white", color = "black", alpha = 0, linetype = "dashed") +
+                       model = "actual"),
+           aes(y = assigned_respondents, x = cluster), 
+           fill = "white", color = "black", alpha = 0, linetype = "dashed") +
   theme_bw() +
   labs(x = NULL, y = "Number of assigned respondents", fill = "Model",
        title = "Number of assigned respondents by cluster",
@@ -317,3 +336,5 @@ bind_rows(
 ```
 
 Let me end this post with a few words of caution: first, the ultimate outcome heavily depends on the seed chosen at the beginning of the post. The results might be quite different for other draws of respondents or initial conditions for clustering algorithms. Second, there are many more models out there that can be applied to the current setting. However, with this post I want to emphasize that it is important to consider different models at the same time and to compare them through a consistent set of measures. Ultimately, choosing the optimal number of clusters in practice requires a judgment call, but at least it can be informed as much as possible.
+
+[^1]: As of writing, the `tidyclust` package only has limited support for hierarchical clustering, so I decided to abstain from using it for this post. 

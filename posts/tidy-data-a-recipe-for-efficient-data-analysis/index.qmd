@@ -1,6 +1,8 @@
 ---
 title: "Tidy Data: A Recipe for Efficient Data Analysis"
 description: "On the importance of tidy data for efficient analysis using the analogy of a well-organized kitchen"
+metadata:
+  pagetitle: "Tidy Data: A Recipe for Efficient Data Analysis"
 author: "Christoph Scheuch"
 date: "2023-11-24" 
 image: thumbnail.png

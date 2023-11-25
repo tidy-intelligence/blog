@@ -11,6 +11,7 @@ website:
   title: "Tidy Intelligence"
   description: "Let your data spark joy!"
   site-url: https://www.tidy-intelligence.com
+  favicon: images/favicon.png
   search: false
   page-navigation: false
   navbar:
@@ -33,3 +34,4 @@ format:
     toc: false
     smooth-scroll: true
     from: markdown+emoji
+    fig-align: "center"
