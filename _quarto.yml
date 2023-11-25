@@ -26,7 +26,7 @@ website:
 format:
   html:
     theme:
-      - cosmo, 
+      - cosmo
       - assets/theme.scss
     css: 
       - assets/styles-global.css
