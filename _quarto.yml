@@ -33,5 +33,10 @@ format:
       - assets/styles-blog.css
     toc: false
     smooth-scroll: true
-    from: markdown+emoji
     fig-align: "center"
+    fig-width: 7
+    fig-height: 5
+    fig-dpi: 300
+    lightbox: auto
+    from: markdown+emoji
+

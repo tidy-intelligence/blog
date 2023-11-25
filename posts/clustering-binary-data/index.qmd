@@ -1,6 +1,6 @@
 ---
 title: "Clustering Binary Data"
-description: "An application of different clustering approaches to simulated survey responses"
+description: "An application of different clustering approaches to cluster simulated survey responses"
 author: "Christoph Scheuch"
 date: "2023-11-25" 
 image: thumbnail.png
@@ -270,9 +270,7 @@ diana_logwithindiss <-  k_min:k_max |>
 
 ## Model comparison
 
-Let us start the model comparison by looking at the within cluster sum of squares for different numbers of clusters. The figure shows that the \(K\)-modes algorithm improves the fastest towards the true number of 3 clusters. The elbow method would suggest in this case to stick with 3 clusters for this algorithm.
-
-For the other models, the picture is less clear: the curve of \(K\)-means would rather suggest having 2 or 4 clusters. But then again this might be the result of initial conditions as the \(K\)-means algorithm assigns respondents to clusters in a rather arbitrary way at cluster initialization. The divise model would also suggest 3 clusters as there is no improvement to using 4 clusters, but the overall sum of squares does not improve much suggesting a lot of mis-classification in the first 2 clusters. The agglomerative model exhibits the worst performance since it shows no clear suggestion for an optimal cluster and the first 2 clusters seem to be only marginally better than having a single cluster.
+Let us start the model comparison by looking at the within cluster sum of squares for different numbers of clusters. The figure shows that the $K$-modes algorithm improves the fastest towards the true number of 3 clusters. The elbow method would suggest in this case to stick with 3 clusters for this algorithm. Similarly, for the $K$-means model. The hierarchical clustering models do not seem to support 3 clusters.
 
 ```{r}
 bind_rows(kmeans_logwithindiss, kmodes_logwithindiss,
@@ -286,8 +284,7 @@ bind_rows(kmeans_logwithindiss, kmodes_logwithindiss,
        title = "Within cluster sum of squares relative to benchmark case of one cluster")
 ```
 
-Now, let us compare the proportion of positive responses within assigned clusters across models. Recall that I ranked clusters according to the total share of positive answers to ensure comparability. This approach is only possible in this type of setting where we can easily introduce such a ranking. The figure shows that all models are doing well in discovering the cluster with a single response. The cluster with 2 positive responses seems to be discovered by diana, \(K\)-means and \(K\)-modes, while agnes is clearly off. The cluster with only positive responses is again discovered by \(K\)-means and \(K\)-modes whereas the hierarchical models perform rather poorly. Overall, this picture again suggests that \(K\)-modes performs best for the current setting.
-
+Now, let us compare the proportion of positive responses within assigned clusters across models. Recall that I ranked clusters according to the total share of positive answers to ensure comparability. This approach is only possible in this type of setting where we can easily introduce such a ranking. The figure suggests that $K$-modes performs best for the current setting as it identifies the correct responses for each cluster.
 
 ```{r}
 bind_rows(
@@ -310,7 +307,7 @@ bind_rows(
        title = "Proportion of positive responses within assigned clusters")
 ```
 
-Finally, let us check how well each model assigns respondents to the true cluster which is obviously not possible in real unsupervised applications. The figure below shows the true number of respondents by cluster as a dashed box and the assigned respondents as bars. Again, agnes and diana do a pretty bad job for the current setting, while \(K\)-means and \(K\)-modes show quite simiar assignments that are not too far off from the true ones.
+Finally, let us check how well each model assigns respondents to the true cluster which is obviously not possible in real unsupervised applications. The figure below shows the true number of respondents by cluster as a dashed box and the assigned respondents as bars. The figure shows that $K$-modes is the only model that is able to consistently assign respondents to their correct cluster.
 
 ```{r}
 bind_rows(
