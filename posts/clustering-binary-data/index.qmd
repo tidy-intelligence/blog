@@ -65,6 +65,7 @@ labelled_respondents <- centers |>
 The figure below visualizes the distribution of simulated question responses by cluster.
 
 ```{r}
+#| fig-alt: Visualization of simulated question responses by cluster
 labelled_respondents |>
   pivot_longer(cols = -cluster, 
                names_to = "question", values_to = "response") |>
@@ -273,6 +274,7 @@ diana_logwithindiss <-  k_min:k_max |>
 Let us start the model comparison by looking at the within cluster sum of squares for different numbers of clusters. The figure shows that the $K$-modes algorithm improves the fastest towards the true number of 3 clusters. The elbow method would suggest in this case to stick with 3 clusters for this algorithm. Similarly, for the $K$-means model. The hierarchical clustering models do not seem to support 3 clusters.
 
 ```{r}
+#| fig-alt: Within cluster sum of squares relative to benchmark case of one cluster
 bind_rows(kmeans_logwithindiss, kmodes_logwithindiss,
           agnes_logwithindiss, diana_logwithindiss) |>
   ggplot(aes(x = k, y = logwithindiss, color = model, linetype = model)) +
@@ -287,11 +289,10 @@ bind_rows(kmeans_logwithindiss, kmodes_logwithindiss,
 Now, let us compare the proportion of positive responses within assigned clusters across models. Recall that I ranked clusters according to the total share of positive answers to ensure comparability. This approach is only possible in this type of setting where we can easily introduce such a ranking. The figure suggests that $K$-modes performs best for the current setting as it identifies the correct responses for each cluster.
 
 ```{r}
+#| fig-alt: Proportion of positive responses within assigned clusters
 bind_rows(
-  kmeans_example,
-  kmodes_example,
-  agnes_example,
-  diana_example) |>
+  kmeans_example, kmodes_example,
+  agnes_example, diana_example) |>
   select(-c(total, assigned_respondents)) |>
   pivot_longer(cols = -c(k, model), 
                names_to = "question", values_to = "response") |>
@@ -310,11 +311,10 @@ bind_rows(
 Finally, let us check how well each model assigns respondents to the true cluster which is obviously not possible in real unsupervised applications. The figure below shows the true number of respondents by cluster as a dashed box and the assigned respondents as bars. The figure shows that $K$-modes is the only model that is able to consistently assign respondents to their correct cluster.
 
 ```{r}
+#| fig-alt: Number of assigned respondents by cluster
 bind_rows(
-  kmeans_example,
-  kmodes_example,
-  agnes_example,
-  diana_example) |>
+  kmeans_example, kmodes_example,
+  agnes_example, diana_example) |>
   mutate(cluster = paste0("Cluster ", k)) |>
   select(model, cluster, assigned_respondents) |>
   ggplot() +
