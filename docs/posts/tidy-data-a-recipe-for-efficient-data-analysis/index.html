@@ -23,40 +23,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -188,156 +154,431 @@ div.csl-indent {
 
 
 <p>Imagine trying to cook a meal in a disorganized kitchen where ingredients are mixed up and nothing is labeled. It would be chaotic and time-consuming to look for the right ingredients and there might be some trial error involved, possibly ruining your planned meal.</p>
-<p>Tidy data are like a well-organized shelves in your kitchen. Each shelf provides a collection of containers that semantically belong together. Each container on the shelf holds one type of ingredient, and the labels on the containers clearly describe what is inside. In the same way, tidy data organizes information into a clear and consistent format, where each <strong>type of observational unit forms a table</strong>, <strong>each variable is in a column</strong>, and <strong>each observation is in a row</strong> <span class="citation" data-cites="Wickham2014">(<a href="#ref-Wickham2014" role="doc-biblioref">Wickham 2014</a>)</span>.</p>
-<p>Tidying data is about structuring datasets to facilitate analysis or report generation. By following the principle that each variable forms a column, each observation forms a row, and each type of observational unit forms a table, data analysis becomes more intuitive, akin to cooking in a well-organized kitchen where everything has its place and you spend less time on searching for ingredients.</p>
+<p>Tidy data are like well-organized shelves in your kitchen. Each shelf provides a collection of containers that semantically belong together, e.g., spices or dairies. Each container on the shelf holds one type of ingredient, and the labels on the containers clearly describe what is inside, e.g., pepper or milk. In the same way, tidy data organizes information into a clear and consistent format, where each <strong>type of observational unit forms a table</strong>, <strong>each variable is in a column</strong>, and <strong>each observation is in a row</strong> <span class="citation" data-cites="Wickham2014">(<a href="#ref-Wickham2014" role="doc-biblioref">Wickham 2014</a>)</span>.</p>
+<p>Tidying data is about structuring datasets to facilitate analysis, visualization, report generation, or modelling. By following the principle that each variable forms a column, each observation forms a row, and each type of observational unit forms a table, data analysis becomes more intuitive, akin to cooking in a well-organized kitchen where everything has its place and you spend less time on searching for ingredients.</p>
 <section id="example-for-tidy-data" class="level2">
 <h2 class="anchored" data-anchor-id="example-for-tidy-data">Example for tidy data</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>ingredients <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">c</span>(<span class="st">"Flour"</span>, <span class="st">"Sugar"</span>, <span class="st">"Butter"</span>, <span class="st">"Eggs"</span>, <span class="st">"Milk"</span>, <span class="st">"Salt"</span>, <span class="st">"Olive Oil"</span>, <span class="st">"Tomatoes"</span>, <span class="st">"Chicken"</span>, <span class="st">"Rice"</span>),</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">quantity =</span> <span class="fu">c</span>(<span class="dv">500</span>, <span class="dv">200</span>, <span class="dv">100</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="fl">0.2</span>, <span class="dv">300</span>, <span class="dv">400</span>, <span class="dv">250</span>),</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">unit =</span> <span class="fu">c</span>(<span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"units"</span>, <span class="st">"liters"</span>, <span class="st">"grams"</span>, <span class="st">"liters"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>spices <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">c</span>(<span class="st">"Paprika"</span>, <span class="st">"Turmeric"</span>, <span class="st">"Cumin"</span>, <span class="st">"Coriander"</span>, <span class="st">"Cinnamon"</span>, <span class="st">"Chili Powder"</span>, <span class="st">"Oregano"</span>, <span class="st">"Thyme"</span>, <span class="st">"Saffron"</span>, <span class="st">"Nutmeg"</span>),</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">quantity =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">40</span>, <span class="dv">30</span>, <span class="dv">25</span>, <span class="dv">20</span>, <span class="dv">15</span>, <span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">5</span>, <span class="dv">12</span>),</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">unit =</span> <span class="fu">c</span>(<span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>dairies <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">c</span>(<span class="st">"Milk"</span>, <span class="st">"Butter"</span>, <span class="st">"Yogurt"</span>, <span class="st">"Cheese"</span>, <span class="st">"Cream"</span>, <span class="st">"Cottage Cheese"</span>, <span class="st">"Sour Cream"</span>, <span class="st">"Ghee"</span>, <span class="st">"Whipping Cream"</span>, <span class="st">"Ice Cream"</span>),</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">quantity =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">200</span>, <span class="dv">150</span>, <span class="dv">100</span>, <span class="fl">0.5</span>, <span class="dv">250</span>, <span class="dv">150</span>, <span class="dv">100</span>, <span class="fl">0.3</span>, <span class="dv">500</span>),</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">unit =</span> <span class="fu">c</span>(<span class="st">"liters"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"liters"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"liters"</span>, <span class="st">"grams"</span>)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<p>To illustrate the concept of tidy data in our tidy kitchen, suppose we have a table called <code>ingredient</code> that contains information about all the ingredients that we currently have in our kitchen. It might look as follows:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>name</th>
+<th>quantity</th>
+<th>unit</th>
+<th>category</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>flour</td>
+<td>500</td>
+<td>grams</td>
+<td>baking</td>
+</tr>
+<tr class="even">
+<td>sugar</td>
+<td>200</td>
+<td>grams</td>
+<td>baking</td>
+</tr>
+<tr class="odd">
+<td>butter</td>
+<td>100</td>
+<td>grams</td>
+<td>dairy</td>
+</tr>
+<tr class="even">
+<td>eggs</td>
+<td>4</td>
+<td>units</td>
+<td>dairy</td>
+</tr>
+<tr class="odd">
+<td>milk</td>
+<td>1</td>
+<td>liters</td>
+<td>dairy</td>
+</tr>
+<tr class="even">
+<td>salt</td>
+<td>10</td>
+<td>grams</td>
+<td>seasoning</td>
+</tr>
+<tr class="odd">
+<td>olive oil</td>
+<td>0.2</td>
+<td>liters</td>
+<td>oil</td>
+</tr>
+<tr class="even">
+<td>tomatoes</td>
+<td>300</td>
+<td>grams</td>
+<td>vegetable</td>
+</tr>
+<tr class="odd">
+<td>chicken</td>
+<td>400</td>
+<td>grams</td>
+<td>meat</td>
+</tr>
+<tr class="even">
+<td>rice</td>
+<td>250</td>
+<td>grams</td>
+<td>grain</td>
+</tr>
+</tbody>
+</table>
+<p>Each row refers to a specific ingredient and each column has a dedicated type and meaning. For instance, the column <code>quantity</code> contains information about how much of the ingredient called <code>name</code> we currently have and which <code>unit</code> we use to measure it.</p>
+<p>Similarly, we could have a table just for <code>dairy</code> that might look as follows:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>name</th>
+<th>quantity</th>
+<th>unit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>milk</td>
+<td>1</td>
+<td>liters</td>
+</tr>
+<tr class="even">
+<td>butter</td>
+<td>200</td>
+<td>grams</td>
+</tr>
+<tr class="odd">
+<td>yogurt</td>
+<td>150</td>
+<td>grams</td>
+</tr>
+<tr class="even">
+<td>cheese</td>
+<td>100</td>
+<td>grams</td>
+</tr>
+<tr class="odd">
+<td>cream</td>
+<td>0.5</td>
+<td>liters</td>
+</tr>
+<tr class="even">
+<td>cottage cheese</td>
+<td>250</td>
+<td>grams</td>
+</tr>
+<tr class="odd">
+<td>sour cream</td>
+<td>150</td>
+<td>grams</td>
+</tr>
+<tr class="even">
+<td>ghee</td>
+<td>100</td>
+<td>grams</td>
+</tr>
+<tr class="odd">
+<td>whipping cream</td>
+<td>0.3</td>
+<td>liters</td>
+</tr>
+<tr class="even">
+<td>ice cream</td>
+<td>500</td>
+<td>grams</td>
+</tr>
+</tbody>
+</table>
+<p>Notice that there is no <code>category</code> column in this table? It would actually be redundant to have this column because all rows in the `dairy`` table have the same category.</p>
 </section>
 <section id="when-colum-headers-are-values-not-variable-names" class="level2">
 <h2 class="anchored" data-anchor-id="when-colum-headers-are-values-not-variable-names">When colum headers are values, not variable names</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">c</span>(<span class="st">"Milk"</span>, <span class="st">"Butter"</span>, <span class="st">"Yogurt"</span>, <span class="st">"Cheese"</span>, <span class="st">"Cream"</span>, <span class="st">"Cottage Cheese"</span>, <span class="st">"Sour Cream"</span>, <span class="st">"Ghee"</span>, <span class="st">"Whipping Cream"</span>, <span class="st">"Ice Cream"</span>),</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">liters =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="fl">0.5</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="fl">0.3</span>, <span class="cn">NA</span>),</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">grams =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">200</span>, <span class="dv">150</span>, <span class="dv">100</span>, <span class="cn">NA</span>, <span class="dv">250</span>, <span class="dv">150</span>, <span class="dv">100</span>, <span class="cn">NA</span>, <span class="dv">500</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 10 × 3
-   type           liters grams
-   &lt;chr&gt;           &lt;dbl&gt; &lt;dbl&gt;
- 1 Milk              1      NA
- 2 Butter           NA     200
- 3 Yogurt           NA     150
- 4 Cheese           NA     100
- 5 Cream             0.5    NA
- 6 Cottage Cheese   NA     250
- 7 Sour Cream       NA     150
- 8 Ghee             NA     100
- 9 Whipping Cream    0.3    NA
-10 Ice Cream        NA     500</code></pre>
-</div>
-</div>
+<p>Now let us move to data structures that are untidy. Consider the following variant of our <code>dairy</code> table:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>type</th>
+<th>liters</th>
+<th>grams</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>milk</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>butter</td>
+<td></td>
+<td>200</td>
+</tr>
+<tr class="odd">
+<td>yogurt</td>
+<td></td>
+<td>150</td>
+</tr>
+<tr class="even">
+<td>cheese</td>
+<td></td>
+<td>100</td>
+</tr>
+<tr class="odd">
+<td>cream</td>
+<td>0.5</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>cottage cheese</td>
+<td></td>
+<td>250</td>
+</tr>
+<tr class="odd">
+<td>sour cream</td>
+<td></td>
+<td>150</td>
+</tr>
+<tr class="even">
+<td>ghee</td>
+<td></td>
+<td>100</td>
+</tr>
+<tr class="odd">
+<td>whipping cream</td>
+<td>0.3</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>ice cream</td>
+<td></td>
+<td>500</td>
+</tr>
+</tbody>
+</table>
+<p>What is the issue here? Each row still refers to a specific dairy product. However, instead of dedicated <code>quantity</code> and <code>unit</code> columns, we have a <code>liters</code> and <code>grams</code> column. Since the units differ across dairy products, the table even contains missing values in the form of emtpy cells. So if you want to find out how much of ice cream you still have, you need to also check out the column name. In practice, we would create dedicated <code>quantity</code> and <code>unit</code> columns. we might even decide to have the same unit for all ingredients (e.g., measure everything in grams) and just keep a <code>quantity</code> column.</p>
 </section>
 <section id="when-multiple-variables-are-stored-in-one-column" class="level2">
 <h2 class="anchored" data-anchor-id="when-multiple-variables-are-stored-in-one-column">When multiple variables are stored in one column</h2>
-<p>The <code>quantity_and_unit</code> column combines both the quantity and the unit of measurement into one string for each ingredient. This format makes it harder to perform numerical operations on the quantities or to filter or aggregate the data based on the unit of measurement.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">c</span>(<span class="st">"Flour"</span>, <span class="st">"Sugar"</span>, <span class="st">"Butter"</span>, <span class="st">"Eggs"</span>, <span class="st">"Milk"</span>, <span class="st">"Salt"</span>, <span class="st">"Olive Oil"</span>, <span class="st">"Tomatoes"</span>, <span class="st">"Chicken"</span>, <span class="st">"Rice"</span>),</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">quantity_and_unit =</span> <span class="fu">c</span>(<span class="st">"500 grams"</span>, <span class="st">"200 grams"</span>, <span class="st">"100 grams"</span>, <span class="st">"4 units"</span>, <span class="st">"1 liter"</span>, <span class="st">"10 grams"</span>, <span class="st">"0.2 liters"</span>, <span class="st">"300 grams"</span>, <span class="st">"400 grams"</span>, <span class="st">"250 grams"</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 10 × 2
-   type      quantity_and_unit
-   &lt;chr&gt;     &lt;chr&gt;            
- 1 Flour     500 grams        
- 2 Sugar     200 grams        
- 3 Butter    100 grams        
- 4 Eggs      4 units          
- 5 Milk      1 liter          
- 6 Salt      10 grams         
- 7 Olive Oil 0.2 liters       
- 8 Tomatoes  300 grams        
- 9 Chicken   400 grams        
-10 Rice      250 grams        </code></pre>
-</div>
-</div>
+<p>Let us consider the following untidy version of our <code>ingredient</code> table.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>type</th>
+<th>quantity_and_unit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>flour</td>
+<td>500 grams</td>
+</tr>
+<tr class="even">
+<td>sugar</td>
+<td>200 grams</td>
+</tr>
+<tr class="odd">
+<td>butter</td>
+<td>100 grams</td>
+</tr>
+<tr class="even">
+<td>eggs</td>
+<td>4 units</td>
+</tr>
+<tr class="odd">
+<td>milk</td>
+<td>1 liter</td>
+</tr>
+<tr class="even">
+<td>salt</td>
+<td>10 grams</td>
+</tr>
+<tr class="odd">
+<td>olive oil</td>
+<td>0.2 liters</td>
+</tr>
+<tr class="even">
+<td>tomatoes</td>
+<td>300 grams</td>
+</tr>
+<tr class="odd">
+<td>chicken</td>
+<td>400 grams</td>
+</tr>
+<tr class="even">
+<td>rice</td>
+<td>250 grams</td>
+</tr>
+</tbody>
+</table>
+<p>This one is really annoying, since the <code>quantity_and_unit</code> column combines both the quantity and the unit of measurement into one string for each ingredient. Why is this an issue? This format actually makes it harder to perform numerical operations on the quantities or to filter or aggregate the data based on the unit of measurement. So in practice, we would actually start our data analysis by splitting out the <code>quantity_and_unit</code> column into <code>quantity</code> and <code>unit</code>.</p>
 </section>
 <section id="when-variables-are-stored-in-both-rows-and-columns" class="level2">
 <h2 class="anchored" data-anchor-id="when-variables-are-stored-in-both-rows-and-columns">When variables are stored in both rows and columns</h2>
+<p>Let us extend our kitchen analogy by additionally considering recipes. For simplicity, a recipe just denotes how much of each ingredient is required. The following table contains two variants of a recipe for pancakes:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>ingredient</th>
+<th>recipe1_quantity</th>
+<th>recipe2_quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>flour</td>
+<td>500 grams</td>
+<td>300 grams</td>
+</tr>
+<tr class="even">
+<td>sugar</td>
+<td>200 grams</td>
+<td>150 grams</td>
+</tr>
+<tr class="odd">
+<td>butter</td>
+<td>100 grams</td>
+<td>50 grams</td>
+</tr>
+<tr class="even">
+<td>eggs</td>
+<td>4 units</td>
+<td>3 units</td>
+</tr>
+<tr class="odd">
+<td>milk</td>
+<td>1 liters</td>
+<td>0.5 liters</td>
+</tr>
+</tbody>
+</table>
 <p>The quantity for each ingredient for two different recipes is stored in separate columns. This structure makes it harder to perform operations like filtering or summarizing the data by recipe or ingredient.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">ingredient =</span> <span class="fu">c</span>(<span class="st">"Flour"</span>, <span class="st">"Sugar"</span>, <span class="st">"Butter"</span>, <span class="st">"Eggs"</span>, <span class="st">"Milk"</span>),</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">recipe1_quantity =</span> <span class="fu">c</span>(<span class="st">"500 grams"</span>, <span class="st">"200 grams"</span>, <span class="st">"100 grams"</span>, <span class="st">"4 units"</span>, <span class="st">"1 liter"</span>),</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">recipe2_quantity =</span> <span class="fu">c</span>(<span class="st">"300 grams"</span>, <span class="st">"150 grams"</span>, <span class="st">"50 grams"</span>, <span class="st">"3"</span>, <span class="st">"0.5 liters"</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 3
-  ingredient recipe1_quantity recipe2_quantity
-  &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;           
-1 Flour      500 grams        300 grams       
-2 Sugar      200 grams        150 grams       
-3 Butter     100 grams        50 grams        
-4 Eggs       4 units          3               
-5 Milk       1 liter          0.5 liters      </code></pre>
-</div>
-</div>
-<p>To convert this data to a tidy format, you would typically want to gather the quantities into a single column, and include additional columns to specify the recipe and unit of measurement for each quantity.</p>
+<p>To convert this data to a tidy format, you would typically want to gather the quantities into a single column, and include additional columns to specify the recipe and unit of measurement for each quantity. We can then filer</p>
 </section>
 <section id="when-there-are-multiple-types-of-data-in-the-same-column" class="level2">
 <h2 class="anchored" data-anchor-id="when-there-are-multiple-types-of-data-in-the-same-column">When there are multiple types of data in the same column</h2>
+<p>A recipe typically contains information on the required utensils and how much time a step requires. Consider the following table with different types of data:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>type</th>
+<th>quantity</th>
+<th>category</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>flour</td>
+<td>500 grams</td>
+<td>ingredient</td>
+</tr>
+<tr class="even">
+<td>butter</td>
+<td>100 grams</td>
+<td>ingredient</td>
+</tr>
+<tr class="odd">
+<td>whisk</td>
+<td>1 unit</td>
+<td>utensil</td>
+</tr>
+<tr class="even">
+<td>sugar</td>
+<td>200 grams</td>
+<td>ingredient</td>
+</tr>
+<tr class="odd">
+<td>baking time</td>
+<td>30 minutes</td>
+<td>time</td>
+</tr>
+</tbody>
+</table>
 <p>The table is trying to describe a recipe but combines different types of data within the same columns. There are ingredients with their quantities, a utensil, and cooking time, all mixed together.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">c</span>(<span class="st">"Flour"</span>, <span class="st">"Butter"</span>, <span class="st">"Whisk"</span>, <span class="st">"Sugar"</span>, <span class="st">"Baking Time"</span>),</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">quantity =</span> <span class="fu">c</span>(<span class="st">"500 grams"</span>, <span class="st">"100 grams"</span>, <span class="st">"1"</span>, <span class="st">"200 grams"</span>, <span class="st">"30 minutes"</span>),</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">category =</span> <span class="fu">c</span>(<span class="st">"Ingredient"</span>, <span class="st">"Ingredient"</span>, <span class="st">"Utensil"</span>, <span class="st">"Ingredient"</span>, <span class="st">"Time"</span>)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 3
-  type        quantity   category  
-  &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;     
-1 Flour       500 grams  Ingredient
-2 Butter      100 grams  Ingredient
-3 Whisk       1          Utensil   
-4 Sugar       200 grams  Ingredient
-5 Baking Time 30 minutes Time      </code></pre>
-</div>
-</div>
 <p>A tidy approach would typically separate these different types of data into separate tables or at least into distinct sets of columns, making it clear what each part of the data represents and facilitating further analysis and visualization.</p>
 </section>
 <section id="when-some-data-is-missing" class="level2">
 <h2 class="anchored" data-anchor-id="when-some-data-is-missing">When some data is missing</h2>
+<p>As a last example for untidy data, let us consider the original <code>ingredient</code> table again, but with a few empty cells.</p>
 <p>Key points:</p>
 <ul>
 <li>Huge difference between NA and 0 (or any other value)</li>
 <li>Are you sure that you don’t have the ingredient or do you just don’t know?</li>
 <li>Missing are dropped in filters</li>
 </ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">c</span>(<span class="st">"Flour"</span>, <span class="st">"Sugar"</span>, <span class="st">"Butter"</span>, <span class="st">"Eggs"</span>, <span class="st">"Milk"</span>, <span class="st">"Salt"</span>, <span class="st">"Olive Oil"</span>, <span class="st">"Tomatoes"</span>, <span class="st">"Chicken"</span>, <span class="cn">NA</span>),</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">quantity =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">200</span>, <span class="dv">100</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="fl">0.2</span>, <span class="dv">300</span>, <span class="dv">400</span>, <span class="dv">250</span>),</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">unit =</span> <span class="fu">c</span>(<span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"units"</span>, <span class="cn">NA</span>, <span class="st">"grams"</span>, <span class="st">"liters"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>, <span class="st">"grams"</span>)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 10 × 3
-   type      quantity unit  
-   &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt; 
- 1 Flour         NA   grams 
- 2 Sugar        200   grams 
- 3 Butter       100   grams 
- 4 Eggs           4   units 
- 5 Milk           1   &lt;NA&gt;  
- 6 Salt          10   grams 
- 7 Olive Oil      0.2 liters
- 8 Tomatoes     300   grams 
- 9 Chicken      400   grams 
-10 &lt;NA&gt;         250   grams </code></pre>
-</div>
-</div>
+<table class="table">
+<thead>
+<tr class="header">
+<th>name</th>
+<th>quantity</th>
+<th>unit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>flour</td>
+<td></td>
+<td>grams</td>
+</tr>
+<tr class="even">
+<td>sugar</td>
+<td>200</td>
+<td>grams</td>
+</tr>
+<tr class="odd">
+<td>butter</td>
+<td>100</td>
+<td>grams</td>
+</tr>
+<tr class="even">
+<td>eggs</td>
+<td>4</td>
+<td>units</td>
+</tr>
+<tr class="odd">
+<td>milk</td>
+<td>10</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>salt</td>
+<td>10</td>
+<td>grams</td>
+</tr>
+<tr class="odd">
+<td>olive oil</td>
+<td>0.2</td>
+<td>liters</td>
+</tr>
+<tr class="even">
+<td>tomatoes</td>
+<td>300</td>
+<td>grams</td>
+</tr>
+<tr class="odd">
+<td>chicken</td>
+<td>400</td>
+<td>grams</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>250</td>
+<td>grams</td>
+</tr>
+</tbody>
+</table>
+<p>What is the issue here? There are actually a couple of them:</p>
+<ul>
+<li>The <code>flour</code> row does have any information about <code>quantity</code>, so we just don’t know how much we have.</li>
+<li>The <code>milk</code> row does not contain a <code>unit</code>, so we might have 10 liters, 10 milliliters, or 10 cups of milk.</li>
+<li>The last row does not have any <code>name</code>, so we have 250 grams of something that we just can’t identify.</li>
+</ul>
+<p>Why is this important? It makes a huge difference how me treat the missing information. For instance, we might make an educated guess for milk if we always record that information in litres, then the missing unit is very likely litres. For flour, we could play it safe and just say that the available quantity is zero. For the ingredient without a name, we might have to throw it away or ask somebody else to tell us what it is.</p>
+<p>Overall, these examples highlight the most important issues that you might have to consider when preparing data for your analysis.</p>
 
 
 

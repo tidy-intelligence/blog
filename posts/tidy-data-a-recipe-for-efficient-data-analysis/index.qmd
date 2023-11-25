@@ -8,85 +8,119 @@ image: thumbnail.png
 
 Imagine trying to cook a meal in a disorganized kitchen where ingredients are mixed up and nothing is labeled. It would be chaotic and time-consuming to look for the right ingredients and there might be some trial error involved, possibly ruining your planned meal. 
 
-Tidy data are like a well-organized shelves in your kitchen. Each shelf provides a collection of containers that semantically belong together. Each container on the shelf holds one type of ingredient, and the labels on the containers clearly describe what is inside. In the same way, tidy data organizes information into a clear and consistent format, where each **type of observational unit forms a table**, **each variable is in a column**, and **each observation is in a row**  [@Wickham2014].
+Tidy data are like well-organized shelves in your kitchen. Each shelf provides a collection of containers that semantically belong together, e.g., spices or dairies. Each container on the shelf holds one type of ingredient, and the labels on the containers clearly describe what is inside, e.g., pepper or milk. In the same way, tidy data organizes information into a clear and consistent format, where each **type of observational unit forms a table**, **each variable is in a column**, and **each observation is in a row** [@Wickham2014].
 
-Tidying data is about structuring datasets to facilitate analysis or report generation. By following the principle that each variable forms a column, each observation forms a row, and each type of observational unit forms a table, data analysis becomes more intuitive, akin to cooking in a well-organized kitchen where everything has its place and you spend less time on searching for ingredients.
+Tidying data is about structuring datasets to facilitate analysis, visualization, report generation, or modelling. By following the principle that each variable forms a column, each observation forms a row, and each type of observational unit forms a table, data analysis becomes more intuitive, akin to cooking in a well-organized kitchen where everything has its place and you spend less time on searching for ingredients.
 
 ## Example for tidy data
 
-```{r}
-#| message: false
-library(tidyverse)
+To illustrate the concept of tidy data in our tidy kitchen, suppose we have a table called `ingredient` that contains information about all the ingredients that we currently have in our kitchen. It might look as follows:
 
-ingredients <- tibble(
-  type = c("Flour", "Sugar", "Butter", "Eggs", "Milk", "Salt", "Olive Oil", "Tomatoes", "Chicken", "Rice"),
-  quantity = c(500, 200, 100, 4, 1, 10, 0.2, 300, 400, 250),
-  unit = c("grams", "grams", "grams", "units", "liters", "grams", "liters", "grams", "grams", "grams")
-)
+| name      | quantity | unit   | category  |
+|-----------|----------|--------|-----------|
+| flour     | 500      | grams  | baking    |
+| sugar     | 200      | grams  | baking    |
+| butter    | 100      | grams  | dairy     |
+| eggs      | 4        | units  | dairy     |
+| milk      | 1        | liters | dairy     |
+| salt      | 10       | grams  | seasoning |
+| olive oil | 0.2      | liters | oil       |
+| tomatoes  | 300      | grams  | vegetable |
+| chicken   | 400      | grams  | meat      |
+| rice      | 250      | grams  | grain     |
 
-spices <- tibble(
-  type = c("Paprika", "Turmeric", "Cumin", "Coriander", "Cinnamon", "Chili Powder", "Oregano", "Thyme", "Saffron", "Nutmeg"),
-  quantity = c(50, 40, 30, 25, 20, 15, 10, 8, 5, 12),
-  unit = c("grams", "grams", "grams", "grams", "grams", "grams", "grams", "grams", "grams", "grams")
-)
+Each row refers to a specific ingredient and each column has a dedicated type and meaning. For instance, the column `quantity` contains information about how much of the ingredient called `name` we currently have and which `unit` we use to measure it. 
 
-dairies <- tibble(
-  type = c("Milk", "Butter", "Yogurt", "Cheese", "Cream", "Cottage Cheese", "Sour Cream", "Ghee", "Whipping Cream", "Ice Cream"),
-  quantity = c(1, 200, 150, 100, 0.5, 250, 150, 100, 0.3, 500),
-  unit = c("liters", "grams", "grams", "grams", "liters", "grams", "grams", "grams", "liters", "grams")
-)
-```
+Similarly, we could have a table just for `dairy` that might look as follows:
+
+| name           | quantity | unit   |
+|----------------|----------|--------|
+| milk           | 1        | liters |
+| butter         | 200      | grams  |
+| yogurt         | 150      | grams  |
+| cheese         | 100      | grams  |
+| cream          | 0.5      | liters |
+| cottage cheese | 250      | grams  |
+| sour cream     | 150      | grams  |
+| ghee           | 100      | grams  |
+| whipping cream | 0.3      | liters |
+| ice cream      | 500      | grams  |
+
+Notice that there is no `category` column in this table? It would actually be redundant to have this column because all rows in the `dairy`` table have the same category.
 
 ## When colum headers are values, not variable names
 
-```{r}
-tibble(
-  type = c("Milk", "Butter", "Yogurt", "Cheese", "Cream", "Cottage Cheese", "Sour Cream", "Ghee", "Whipping Cream", "Ice Cream"),
-  liters = c(1, NA, NA, NA, 0.5, NA, NA, NA, 0.3, NA),
-  grams = c(NA, 200, 150, 100, NA, 250, 150, 100, NA, 500)
-)
-```
+Now let us move to data structures that are untidy. Consider the following variant of our `dairy` table:
+
+| type           | liters | grams |
+|----------------|--------|-------|
+| milk           | 1      |       |
+| butter         |        | 200   |
+| yogurt         |        | 150   |
+| cheese         |        | 100   |
+| cream          | 0.5    |       |
+| cottage cheese |        | 250   |
+| sour cream     |        | 150   |
+| ghee           |        | 100   |
+| whipping cream | 0.3    |       |
+| ice cream      |        | 500   |
+
+What is the issue here? Each row still refers to a specific dairy product. However, instead of  dedicated `quantity` and `unit` columns, we have a `liters` and `grams` column. Since the units differ across dairy products, the table even contains missing values in the form of emtpy cells. So if you want to find out how much of ice cream you still have, you need to also check out the column name.  In practice, we would create dedicated `quantity` and `unit` columns. we might even decide to have the same unit for all ingredients (e.g., measure everything in grams) and just keep a `quantity` column.
 
 ## When multiple variables are stored in one column
 
-The `quantity_and_unit` column combines both the quantity and the unit of measurement into one string for each ingredient. This format makes it harder to perform numerical operations on the quantities or to filter or aggregate the data based on the unit of measurement.
+Let us consider the following untidy version of our `ingredient` table. 
 
-```{r}
-tibble(
-  type = c("Flour", "Sugar", "Butter", "Eggs", "Milk", "Salt", "Olive Oil", "Tomatoes", "Chicken", "Rice"),
-  quantity_and_unit = c("500 grams", "200 grams", "100 grams", "4 units", "1 liter", "10 grams", "0.2 liters", "300 grams", "400 grams", "250 grams")
-)
-```
+| type      | quantity_and_unit |
+|-----------|-------------------|
+| flour     | 500 grams         |
+| sugar     | 200 grams         |
+| butter    | 100 grams         |
+| eggs      | 4 units           |
+| milk      | 1 liter           |
+| salt      | 10 grams          |
+| olive oil | 0.2 liters        |
+| tomatoes  | 300 grams         |
+| chicken   | 400 grams         |
+| rice      | 250 grams         |
+
+This one is really annoying, since the `quantity_and_unit` column combines both the quantity and the unit of measurement into one string for each ingredient. Why is this an issue? This format actually makes it harder to perform numerical operations on the quantities or to filter or aggregate the data based on the unit of measurement. So in practice, we would actually start our data analysis by splitting out the `quantity_and_unit` column into `quantity` and `unit`.
 
 ## When variables are stored in both rows and columns
 
+Let us extend our kitchen analogy by additionally considering recipes. For simplicity, a recipe just denotes how much of each ingredient is required. The following table contains two variants of a recipe for pancakes:
+
+| ingredient | recipe1_quantity | recipe2_quantity |
+|------------|------------------|------------------|
+| flour      | 500 grams        | 300 grams        |
+| sugar      | 200 grams        | 150 grams        |
+| butter     | 100 grams        | 50 grams         |
+| eggs       | 4 units          | 3 units          |
+| milk       | 1 liters         | 0.5 liters       |
+
 The quantity for each ingredient for two different recipes is stored in separate columns. This structure makes it harder to perform operations like filtering or summarizing the data by recipe or ingredient.
 
-```{r}
-tibble(
-  ingredient = c("Flour", "Sugar", "Butter", "Eggs", "Milk"),
-  recipe1_quantity = c("500 grams", "200 grams", "100 grams", "4 units", "1 liter"),
-  recipe2_quantity = c("300 grams", "150 grams", "50 grams", "3", "0.5 liters")
-)
-```
-
-To convert this data to a tidy format, you would typically want to gather the quantities into a single column, and include additional columns to specify the recipe and unit of measurement for each quantity.
+To convert this data to a tidy format, you would typically want to gather the quantities into a single column, and include additional columns to specify the recipe and unit of measurement for each quantity. We can then filer 
 
 ## When there are multiple types of data in the same column
 
-The table is trying to describe a recipe but combines different types of data within the same columns. There are ingredients with their quantities, a utensil, and cooking time, all mixed together.
+A recipe typically contains information on the required utensils and how much time a step requires. Consider the following table with different types of data:
 
-```{r}
-tibble(
-  type = c("Flour", "Butter", "Whisk", "Sugar", "Baking Time"),
-  quantity = c("500 grams", "100 grams", "1", "200 grams", "30 minutes"),
-  category = c("Ingredient", "Ingredient", "Utensil", "Ingredient", "Time")
-)
-```
+| type         | quantity    | category   |
+|--------------|-------------|------------|
+| flour        | 500 grams   | ingredient |
+| butter       | 100 grams   | ingredient |
+| whisk        | 1 unit      | utensil    |
+| sugar        | 200 grams   | ingredient |
+| baking time  | 30 minutes  | time       |
+
+The table is trying to describe a recipe but combines different types of data within the same columns. There are ingredients with their quantities, a utensil, and cooking time, all mixed together.
 
 A tidy approach would typically separate these different types of data into separate tables or at least into distinct sets of columns, making it clear what each part of the data represents and facilitating further analysis and visualization.
 
 ## When some data is missing
+
+As a last example for untidy data, let us consider the original `ingredient` table again, but with a few empty cells. 
 
 Key points:
 
@@ -94,10 +128,25 @@ Key points:
 - Are you sure that you don't have the ingredient or do you just don't know?
 - Missing are dropped in filters 
 
-```{r}
-tibble(
-  type = c("Flour", "Sugar", "Butter", "Eggs", "Milk", "Salt", "Olive Oil", "Tomatoes", "Chicken", NA),
-  quantity = c(NA, 200, 100, 4, 1, 10, 0.2, 300, 400, 250),
-  unit = c("grams", "grams", "grams", "units", NA, "grams", "liters", "grams", "grams", "grams")
-)
-```
+| name      | quantity | unit   |
+|-----------|----------|--------|
+| flour     |          | grams  |
+| sugar     | 200      | grams  |
+| butter    | 100      | grams  |
+| eggs      | 4        | units  |
+| milk      | 10       |        |
+| salt      | 10       | grams  |
+| olive oil | 0.2      | liters |
+| tomatoes  | 300      | grams  |
+| chicken   | 400      | grams  |
+|           | 250      | grams  |
+
+What is the issue here? There are actually a couple of them:
+
+- The `flour` row does have any information about `quantity`, so we just don't know how much we have. 
+- The `milk` row does not contain a `unit`, so we might have 10 liters, 10 milliliters, or 10 cups of milk. 
+- The last row does not have any `name`, so we have 250 grams of something that we just can't identify.
+
+Why is this important? It makes a huge difference how me treat the missing information. For instance, we might make an educated guess for milk if we always record that information in litres, then the missing unit is very likely litres. For flour, we could play it safe and just say that the available quantity is zero. For the ingredient without a name, we might have to throw it away or ask somebody else to tell us what it is. 
+
+Overall, these examples highlight the most important issues that you might have to consider when preparing data for your analysis. 
