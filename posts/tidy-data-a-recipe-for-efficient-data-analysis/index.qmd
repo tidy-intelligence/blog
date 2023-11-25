@@ -149,4 +149,4 @@ What is the issue here? There are actually a couple of them:
 
 Why is this important? It makes a huge difference how me treat the missing information. For instance, we might make an educated guess for milk if we always record that information in litres, then the missing unit is very likely litres. For flour, we could play it safe and just say that the available quantity is zero. For the ingredient without a name, we might have to throw it away or ask somebody else to tell us what it is. 
 
-Overall, these examples highlight the most important issues that you might have to consider when preparing data for your analysis. 
+Overall, these examples highlight the most important issues that you might have to consider when preparing data for your analysis.
