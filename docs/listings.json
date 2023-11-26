@@ -3,7 +3,8 @@
     "listing": "/index.html",
     "items": [
       "/posts/clustering-binary-data/index.html",
-      "/posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html"
+      "/posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html",
+      "/posts/tidy-collaborative-filtering/index.html"
     ]
   }
 ]

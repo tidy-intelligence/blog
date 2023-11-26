@@ -1,6 +1,6 @@
 ---
 title: "Clustering Binary Data"
-description: "An application of different clustering approaches to cluster simulated survey responses"
+description: "An application of different unsupervised learning approaches to cluster simulated survey responses using R"
 author: "Christoph Scheuch"
 date: "2023-11-25" 
 image: thumbnail.png
