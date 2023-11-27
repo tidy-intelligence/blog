@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/scraping-esg-data-from-yahoo-finance/index.html",
       "/posts/clustering-binary-data/index.html",
       "/posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html",
       "/posts/tidy-collaborative-filtering/index.html"

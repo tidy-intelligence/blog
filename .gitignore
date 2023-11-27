@@ -1,3 +1,4 @@
 .quarto/*
 /.quarto/
 .Rproj.user
+data/
