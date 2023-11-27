@@ -2,7 +2,7 @@ project:
   type: website
   output-dir: docs
 
-bibliography: bib/references.bib
+bibliography: assets/bib/references.bib
 biblio-style: apalike
 link-citations: true
 links-as-notes: true
@@ -11,7 +11,7 @@ website:
   title: "Tidy Intelligence"
   description: "Let your data spark joy!"
   site-url: https://www.tidy-intelligence.com
-  favicon: images/favicon.ico
+  favicon: assets/img/favicon.ico
   search: false
   page-navigation: false
   navbar:
@@ -27,10 +27,10 @@ format:
   html:
     theme:
       - cosmo
-      - assets/theme.scss
+      - assets/css/theme.scss
     css: 
-      - assets/styles-global.css
-      - assets/styles-blog.css
+      - assets/css/styles-global.css
+      - assets/css/styles-blog.css 
     toc: false
     smooth-scroll: true
     fig-align: "center"
