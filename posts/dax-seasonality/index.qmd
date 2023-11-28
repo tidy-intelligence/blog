@@ -1,6 +1,6 @@
 ---
 title: "Analyzing Seasonality in DAX Returns"
-description: "An evaluation .. using R"
+description: "Debunking the Halloween indicator for German market returns using R"
 metadata:
   pagetitle: "Analyzing Seasonality in DAX Returns"
 author: "Christoph Scheuch"
@@ -8,23 +8,23 @@ date: "2023-11-28"
 image: thumbnail.png
 ---
 
-<!-- TODO: write description -->
-<!-- TODO: exlcude outliers from tests -->
-
 [Seasonalcharts.de](https://www.seasonalcharts.de/classics_dax.html) claims that stock indices exhibit persistent seasonality that may be exploited through an appropriate trading strategy. As part of a job application, I had to replicate the seasonal pattern for the DAX and then test whether this pattern entails a profitable trading strategy. To sum up, I indeed find that a trading strategy that holds the index only over a specific season outperforms the market significantly, but these results might be driven by a few outliers. Note that the post below references an opinion and is for information purposes only. I do not intend to provide any investment advice.
 
-The code is structured in a way that allows for a straight-forward replication of the methodoloty for other indices. The post uses the following packages:
+The code is structured in a way that allows for a straight-forward replication of the methodology for other indices. The post uses the following packages:
 
 ```{r}
+#| message: false
+#| warning: false
 library(tidyverse)
 library(tidyquant)
 library(frenchdata)
 library(scales)
+library(fixest)
 ```
 
 ## Data Preparation
 
-First, download data from yahoo finance using the tidyquant package. Note that the DAX was officially launched in July 1988, so this is where our sample starts.
+First, download data from yahoo finance using the `tidyquant` package. Note that the DAX was officially launched in July 1988, so this is where our sample starts.
 
 ```{r}
 dax_raw <- tq_get(
@@ -33,14 +33,14 @@ dax_raw <- tq_get(
 ) 
 ```
 
-Then, select only date and the adjusted price (i.e., closing price after adjustments for all applicable splits and dividend distributions) as the relevant variables and compute summary statistics to check for missing or weird values. The results are virtually the same if I use unadjusted closing prices.
+Then, select only date and the adjusted price (i.e., closing price after adjustments for all applicable splits and dividend distributions) as the relevant variables and compute summary statistics to check for missing or weird values. The results are virtually the same if we use unadjusted closing prices.
 
 ```{r} 
 dax <- dax_raw |>
   select(date, price = adjusted)
 ```
 
-I replace the missing values by the last available index value.
+We replace the missing values by the last available index value.
 
 ```{r}
 dax <- dax |>
@@ -48,19 +48,18 @@ dax <- dax |>
   fill(price, .direction = "down")
 ```
 
-As a immediate plausibility check, I plot the DAX over the whole sample period.
+As a immediate plausibility check, we plot the DAX over the whole sample period.
 
 ```{r}
 dax |>
   ggplot(aes(x = date, y = price)) +
   geom_line() + 
-  labs(x = "", y = "Adjusted Price") +
-  scale_x_date(expand = c(0, 0), breaks = "5 years") +
-  scale_y_continuous(breaks = pretty_breaks()) + 
-  theme_classic()
+  labs(x = NULL, y = "Adjusted Price",
+       title = "Adjusted DAX index price between 1988 and 2023") +
+  scale_y_continuous(labels = scales::comma)
 ```
 
-The main idea of Seasonalcharts is to implement the strategy proposed by [Jacobsen and Bouman (2002)](https://www.jstor.org/stable/3083268?seq=1#metadata_info_tab_contents) and [Jacobsen and Zhan (2018)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2154873) which they label ‘The Halloween Indicator’ (or ‘Sell in May Effect’). The main finding of these papers is that stock indices returns seem significantly lower duing the May-October period than during the remainder of the year. The corresponding trading strategy holds an index during the months November-April, but holds the risk-free asset in the May-October period.
+The main idea of Seasonalcharts is to implement the strategy proposed by [Jacobsen and Bouman (2002)](https://www.jstor.org/stable/3083268?seq=1#metadata_info_tab_contents) and [Jacobsen and Zhan (2018)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2154873) which they label 'The Halloween Indicator' (or 'Sell in May Effect'). The main finding of these papers is that stock indices returns seem significantly lower during the May-October period than during the remainder of the year. The corresponding trading strategy holds an index during the months November-April, but holds the risk-free asset in the May-October period.
 
 To replicate their approach (and avoid noise in the daily data), we focus on monthly returns from now on.
 
@@ -76,9 +75,10 @@ dax_monthly <- dax |>
   drop_na()
 ```
 
-And as usual in empirical asset pricing, we do not care about raw returns, but returns in excess of the risk-free asset. I simply add the European risk free rate from the Fama-French data library as the corresponding reference point. Of course, one could use other measures for the risk-free rate, but the impact on the results won’t be substantial.
+And as usual in empirical asset pricing, we do not care about raw returns, but returns in excess of the risk-free asset. We simply add the European risk free rate from the Fama-French data library as the corresponding reference point. Of course, one could use other measures for the risk-free rate, but the impact on the results won’t be substantial.
 
 ```{r}
+#| message: false
 factors_ff3_monthly_raw <- download_french_data("Fama/French 3 Factors")
 
 risk_free_monthly <- factors_ff3_monthly_raw$subsets$data[[1]] |>
@@ -91,7 +91,8 @@ risk_free_monthly <- factors_ff3_monthly_raw$subsets$data[[1]] |>
 
 dax_monthly <- dax_monthly |> 
   left_join(risk_free_monthly, join_by(year, month)) |> 
-  mutate(ret_excess = ret - rf)
+  mutate(ret_excess = ret - rf) |> 
+  drop_na()
 ```
 
 ## Graphical Evidence for Seasonality
@@ -132,8 +133,8 @@ dax_monthly |>
   geom_hline(aes(yintercept = 0), linetype = "dashed") +
   labs(
     x = "Month", y = "DAX Return", 
-    title = "Raincloud plots of monthly DAX returns between 1988 and 2023",
-    subtitle = "Red dots indicate means"
+    title = "Distributions of monthly DAX returns between 1988 and 2023",
+    subtitle = "Red dots indicate means, solid lines indicate medians"
   ) 
 ```
 
@@ -141,7 +142,7 @@ The figure suggests that August and September exhibit considerable negative outl
 
 ## Evaluating Trading Strategies
 
-Let us now take a look at the average excess returns per month. I also add the standard deviation, 5% and 95% quantiles, and t-statistic of a t-test of the null hypothesis that average returns are zero in a given month.
+Let us now take a look at the average excess returns per month. We also add the standard deviation, 5% and 95% quantiles, and t-statistic of a t-test of the null hypothesis that average returns are zero in a given month.
 
 ```{r}
 dax_monthly |>
@@ -156,50 +157,81 @@ dax_monthly |>
   )
 ```
 
-August and September seem to usually exhibit negative excess returns with an average of about -3% (statistically significant) over all years, while April and November are the only months that tend to exhibit statistically significant positive excess returns. For a graphical illustration of the above table, I complement it with boxplots for each month. The takeaway is essentially the same, but we can see that August and September exhibit a couple of outliers that might considerably drive the results.
+August and September seem to usually exhibit negative excess returns with an average of about -2.4% (statistically significant) over all years, while April is the only months that tend to exhibit statistically significant positive excess returns.
 
-Let us proceed to test for the presence of statistically significant excess returns due to seasonal patterns. In the above table, I only test for significance for each month seperately. To test for positive returns in a joint model, I regress the monthly excess returns on month indicators. Note that I always adjust the standard errors to be heteroskedasticity robust.
+Let us proceed to test for the presence of statistically significant excess returns due to seasonal patterns. In the above table, I only test for significance for each month separately. To test for positive returns in a joint model, I regress the monthly excess returns on month indicators. Note that I always adjust the standard errors to be heteroskedasticity robust.
 
 ```{r}
-summary(lm(ret_excess ~ month, data = dax_monthly))
+model_monthly <- feols(
+  ret_excess ~ month, 
+  data = dax_monthly,
+  vcov = "hetero"
+)
+summary(model_monthly)
 ```
 
-Seems like August and September have on average indeed lower returns than January (which is the omitted reference point in this regression). Note that the size of the coefficients from the regression are the same as in the table above (i.e., constant plus coefficient). Next, I follow Jacobsen and Bouman (2002) and simply regression excess returns on dummies that indicate specific seasons, i.e., I estimate the model 
+Seems like August and September have on average indeed lower returns than January (which is the omitted reference point in this regression). Note that the size of the coefficients from the regression are the same as in the table above (i.e., constant plus coefficient), but the t-statistics are different because we are estimating a joint model now.
 
-$$ y_t=\alpha + \beta D_t + \epsilon_t, $$ 
+As the raincloud plots indicated that outliers might drive any statistical significant differences, we estimate the model again after trimming the data. In particular, we drop the top and bottom 1% of observations. This trimming step only drops 10 observations. 
 
-where $D_t$ is a dummy variable equal to one for the months in a specific season and zero otherwise. I consider both the ‘Halloween’ season (where the dummy is one for November-April) and a `Seasonality’ season which only excludes July-September (and the dummy is one for October-June). If \(D_t\) is statistically significant and positive for the corresponding season, then I take this as evidence for the presence of seasonality effects.
+```{r}
+ret_excess_q01 <- quantile(dax_monthly$ret_excess, 0.01)
+ret_excess_q99 <- quantile(dax_monthly$ret_excess, 0.99)
+
+model_monthly_trimmed <- feols(
+  ret_excess ~ month, 
+  data = dax_monthly |> 
+     filter(ret_excess >= ret_excess_q01 & ret_excess <= ret_excess_q99),
+  vcov = "hetero"
+)
+   
+etable(model_monthly, model_monthly_trimmed, coefstat = "tstat")
+```
+
+Indeed, now no month exhibits a statistically significant outperformance compared to January. 
+
+Next, I follow Jacobsen and Bouman (2002) and simply regress excess returns on dummies that indicate specific seasons, i.e., I estimate the model 
+
+$$ y_t=\alpha + \beta D_t + \epsilon_t,$$ 
+
+where $D_t$ is a dummy variable equal to one for the months in a specific season and zero otherwise. We consider both the 'Halloween' season (where the dummy is one for November-April). If $D_t$ is statistically significant and positive for the corresponding season, then we take this as evidence for the presence of seasonality effects.
 
 ```{r}
 halloween_months <- c(11, 12, 1, 2, 3, 4)
-seasonality_months <- c(10, 11, 12, 1, 2, 3, 4, 5, 6)
+
 dax_monthly <- dax_monthly |>
-  mutate(halloween = if_else(month %in% halloween_months, 1L, 0L),
-         seasonality = if_else(month %in% seasonality_months, 1L, 0L))
+  mutate(halloween = if_else(month %in% halloween_months, 1L, 0L))
 ```
 
-The first model considers the 'Halloween' effect:
+We again estimate two models to analyze the 'Halloween' effect:
 
 ```{r}
-summary(lm(ret_excess ~ halloween, data = dax_monthly))
+model_halloween <- feols(
+  ret_excess ~ halloween, 
+  data = dax_monthly,
+  vcov = "hetero"
+)
+
+model_halloween_trimmed <- feols(
+  ret_excess ~ halloween, 
+  data = dax_monthly |> 
+     filter(ret_excess >= ret_excess_q01 & ret_excess <= ret_excess_q99),
+  vcov = "hetero"
+)
+
+etable(model_halloween, model_halloween_trimmed, coefstat = "tstat")
 ```
 
-I indeed find evidence that excess returns are higher during the months November-April relative to the remaining months. Let us take this spiel even further by adding even more months:
+We indeed find evidence that excess returns are higher during the months November-April relative to the remaining months in the full sample. However, if we remove the top and bottom 1% of observations, then the statistical significant outperformance disappears again. 
 
-```{r}
-summary(lm(ret_excess ~ seasonality, data = dax_monthly), robust = TRUE)
-```
-
-The effect seems to be even stronger if I also include October, May and June.
-
-As a last step, let us compare five different strategies: (i) buy and hold the index over the full year, (ii) go long in the index outside of the Halloween season and otherwise hold the risk-free asset, (iii) go long in the index outside of the Halloween season and otherwise short the index, (iv) buy the index outside of the extended seasonality period and otherwise invest in the risk-free asset, and (v) go long in the index outside of the extended seasonality period and short the index otherwise. Below I compare the returns of the three different strategies on an annual basis:
+As a last step, let us compare three different strategies: (i) buy and hold the index over the full year, (ii) go long in the index outside of the Halloween season and otherwise hold the risk-free asset, and (iii) go long in the index outside of the Halloween season and otherwise short the index. Below I compare the returns of the three different strategies on an annual basis:
 
 ```{r}
 dax_monthly <- dax_monthly |>
-  mutate(ret_excess_halloween = if_else(halloween == 1, ret, rf),
-         ret_excess_halloween_short = if_else(halloween == 1, ret, -ret),
-         ret_excess_seasonality = if_else(seasonality == 1, ret, rf),
-         ret_excess_seasonality_short = if_else(seasonality == 1, ret, -ret))
+  mutate(
+    ret_excess_halloween = if_else(halloween == 1, ret_excess, 0),
+    ret_excess_halloween_short = if_else(halloween == 1, ret_excess, -ret_excess)
+  )
 ```
 
 Which of these strategies might constitute a better investment opportunity? For a very simple assessment, let us compute the corresponding Sharpe ratios. Note that I annualize Sharpe ratios by multiplying them with $\sqrt{12}$ which strictly speaking only works under IID distributed returns (which is typically unlikely to be the case), but which suffices for the purpose of this post.
@@ -209,13 +241,27 @@ sharpe_ratio <- function(x) {
   sqrt(12) *  mean(x) / sd(x)
 }
 
-dax_monthly |>
-  drop_na() |> 
-  arrange(date) |>
-  summarize(`Buy and Hold` = sharpe_ratio(ret_excess),
-            `Seasonality` = sharpe_ratio(ret_excess_seasonality),
-            `Seasonality-Short` = sharpe_ratio(ret_excess_seasonality_short),
-            `Halloween` = sharpe_ratio(ret_excess_halloween),
-            `Halloween-Short` = sharpe_ratio(ret_excess_halloween_short))
+bind_rows(
+  dax_monthly |>
+    summarize(
+      `Buy and Hold` = sharpe_ratio(ret),
+      `Halloween` = sharpe_ratio(ret_excess_halloween),
+      `Halloween-Short` = sharpe_ratio(ret_excess_halloween_short)
+    ) |> 
+    mutate(Data = "Full"),
+  dax_monthly |> 
+    filter(ret_excess >= ret_excess_q01 & ret_excess <= ret_excess_q99) |>
+    summarize(
+      `Buy and Hold` = sharpe_ratio(ret_excess),
+      `Halloween` = sharpe_ratio(ret_excess_halloween),
+      `Halloween-Short` = sharpe_ratio(ret_excess_halloween_short)
+    ) |> 
+    mutate(Data = "Trimmed")
+) |> 
+  select(Data, everything())
 ```
+
+The Sharpe ratio suggests that the Halloween strategy is a better investment opportunity than the other strategies for both the full and the trimmed sample. Shorting the market in the Halloween season even leads to worse performance than just staying invested in the market the whole time once we drop the outliers. 
+
+To sum up, this post showed some simple data-related issues that we should consider when we analyze return data. Overall, we could find strong support for this seasonality effect from a statistical perspective once we get rid of a few extreme observations.
 
