@@ -51,6 +51,7 @@ dax <- dax |>
 As a immediate plausibility check, we plot the DAX over the whole sample period.
 
 ```{r}
+#| fig-alt: "Adjusted DAX index price between 1988 and 2023."
 dax |>
   ggplot(aes(x = date, y = price)) +
   geom_line() + 
@@ -59,7 +60,7 @@ dax |>
   scale_y_continuous(labels = scales::comma)
 ```
 
-The main idea of Seasonalcharts is to implement the strategy proposed by [Jacobsen and Bouman (2002)](https://www.jstor.org/stable/3083268?seq=1#metadata_info_tab_contents) and [Jacobsen and Zhan (2018)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2154873) which they label 'The Halloween Indicator' (or 'Sell in May Effect'). The main finding of these papers is that stock indices returns seem significantly lower during the May-October period than during the remainder of the year. The corresponding trading strategy holds an index during the months November-April, but holds the risk-free asset in the May-October period.
+The main idea of Seasonalcharts is to implement the strategy proposed by Jacobsen and Bouman (2002)[^1] and Jacobsen and Zhan (2018)[^2] which they label 'The Halloween Indicator' (or 'Sell in May Effect'). The main finding of these papers is that stock indices returns seem significantly lower during the May-October period than during the remainder of the year. The corresponding trading strategy holds an index during the months November-April, but holds the risk-free asset in the May-October period.
 
 To replicate their approach (and avoid noise in the daily data), we focus on monthly returns from now on.
 
@@ -100,6 +101,7 @@ dax_monthly <- dax_monthly |>
 We start by first plotting the average returns for each month. 
 
 ```{r}
+#| fig-alt: "Average monthly DAX returns between 1988 and 2023."
 dax_monthly |> 
   group_by(month) |> 
   summarize(ret = mean(ret)) |> 
@@ -116,6 +118,7 @@ dax_monthly |>
 The figure shows negative returns for June, August, and September, while all other months exhibit positive returns. However, it makes more sense to look at distributions instead of simple means, which might be heavily influenced by outliers. To illustrate distributions, I follow [Cedric Scherer](https://www.cedricscherer.com/2021/06/06/visualizing-distributions-with-raincloud-plots-and-how-to-create-them-with-ggplot2/) and use raincloud plots. which combine halved violin plot, a box plot, and the raw data as some kind of scatter. These plots hence provide detailed visualizations of the distributions. 
 
 ```{r}
+#| fig-alt: "Distributions of monthly DAX returns between 1988 and 2023."
 dax_monthly |> 
   ggplot(aes(x = month, y = ret, group = month)) + 
   ggdist::stat_halfeye(
@@ -167,6 +170,7 @@ model_monthly <- feols(
   data = dax_monthly,
   vcov = "hetero"
 )
+
 summary(model_monthly)
 ```
 
@@ -265,3 +269,6 @@ The Sharpe ratio suggests that the Halloween strategy is a better investment opp
 
 To sum up, this post showed some simple data-related issues that we should consider when we analyze return data. Overall, we could find strong support for this seasonality effect from a statistical perspective once we get rid of a few extreme observations.
 
+[^1]: Bouman, Sven and Jacobsen, Ben (2002). "The Halloween Indicator, 'Sell in May and Go Away': Another Puzzle", The American Economic Review, Vol. 92, No. 5, pp. 1618-1635, [https://www.jstor.org/stable/3083268](https://www.jstor.org/stable/3083268)
+
+[^2]: Jacobsen, Ben and Zhang, Cherry Yi (2018), "The Halloween Indicator, 'Sell in May and Go Away': Everywhere and All the Time", [https://ssrn.com/abstract=2154873](https://ssrn.com/abstract=2154873)

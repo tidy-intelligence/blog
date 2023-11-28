@@ -43,7 +43,9 @@ library(recommenderlab)
 
 I load a data set with stock holdings of investable wikifolios at the beginning of 2023 that I host in one of my repositories. The data contains the portfolios of 6,544 wikifolios that held in total 5,069 stocks on January 1st 2023. 
 
-```{r, message = FALSE, warning = FALSE}
+```{r}
+#| message: false
+#| warning: false
 wikifolio_portfolios <- read_csv("https://raw.githubusercontent.com/christophscheuch/christophscheuch.github.io/main/data/wikifolio_portfolios.csv") 
 glimpse(wikifolio_portfolios)
 ```
@@ -86,7 +88,8 @@ Here is the list of recommenders that I consider for the backtest with some intu
 
 For each algorithm, I base the evaluation on 1, 3, 5, and 10 recommendations. This specification means that each algorithm proposes 1 to 10 recommendations to the test portfolios and the evaluation scheme then checks whether the proposals contain the one withheld stock. Note that the evaluation takes a couple of hours, in particular because the Item-Based and User-Based Filtering approaches are quite time-consuming. 
 
-```{r eval = FALSE}
+```{r}
+#| eval: false
 algorithms <- list(
   "Random Items"         = list(name  = "RANDOM",  param = NULL),
   "Popular Items"        = list(name  = "POPULAR", param = NULL),
@@ -105,11 +108,8 @@ results <- evaluate(
 )
 ```
 
-```{r eval = FALSE, include = FALSE}
-write_rds(results, "results.rds")
-```
-
-```{r include = FALSE}
+```{r}
+#| echo: false
 results <- read_rds("results.rds")
 ```
 
@@ -143,7 +143,7 @@ The first visualization approach comes from signal-detection and is called "Rece
 Intuitively, the bigger the area under the ROC curve, the better is the corresponding algorithm.
 
 ```{r}
-#| fig-alt: "Title: ROC curves of stock recommender algorithms. The figure shows that the association rules mining algorithm achieves the highest true positive rate for any false positive rate."
+#| fig-alt: "ROC curves of stock recommender algorithms. The figure shows that the association rules mining algorithm achieves the highest true positive rate for any false positive rate."
 results_tbl |>
   ggplot(aes(FPR, TPR, colour = model)) +
   geom_line() +
@@ -171,7 +171,7 @@ The second popular approach is to plot Precision-Recall curves. The two measures
 The goal is to have a higher precision for any level of recall. In fact, there is trade-off between the two measures since high precision means low recall and vice-versa.
 
 ```{r}
-#| fig-alt: "Title: Precision-Recall curves of stock recommender algorithms. The figure shows that the association rules mining algorithm achieves the highest precision for any level of recall."
+#| fig-alt: "Precision-Recall curves of stock recommender algorithms. The figure shows that the association rules mining algorithm achieves the highest precision for any level of recall."
 results_tbl |>
   ggplot(aes(x = recall, y = precision, colour = model)) +
   geom_line() +
