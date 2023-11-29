@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.424">
+<meta name="generator" content="quarto-1.4.506">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Christoph Scheuch">
 <meta name="dcterms.date" content="2023-11-27">
-<meta name="description" content="How to scrape environmental, social and governance risk scores from Yahoo Finance using R">
+<meta name="description" content="How to scrape environmental, social and governance risk scores using R">
 
 <title>Tidy Data: A Recipe for Efficient Data Analysis</title>
 <style>
@@ -100,7 +100,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="https://www.tidy-intelligence.com">
@@ -142,7 +142,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div>
   <div class="description">
-    How to scrape environmental, social and governance risk scores from Yahoo Finance using R
+    How to scrape environmental, social and governance risk scores using R
   </div>
 </div>
 
@@ -225,9 +225,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="locate-esg-information">Locate ESG Information</h2>
 <p>The point where I struggled when I tried to replicate other guides was the search for the exact location of the information that I want to scrape (and the fact that the old locations seemed to have changed). After some trial and error, it turns out that it is really easy. Once you download a web page, you can in principle either use CSS nodes or XML paths to extract information using <code>html_nodes()</code> as above. However, the CSS nodes on Yahoo Finance have a weird structure that is apparently not straight-forward to use in this function. Fortunately, XML paths work perfectly! Google will explain to you what these terms mean, I only demonstrate how you find the relevant paths which we use in the scraping function below.</p>
 <p>Let us stick to Apple as our main example and go to the sustainability tab on Yahoo Finance. If we right-click on the ESG score (e.g., using Google Chrome), we can see the the option to ‘Inspect’.</p>
-<p><a href="yahoo-finance-inspect.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="A screenshot of Yahoo Finance ESG Risk Ratings for Apple with Chrome options."><img src="yahoo-finance-inspect.png" class="img-fluid" alt="A screenshot of Yahoo Finance ESG Risk Ratings for Apple with Chrome options."></a></p>
+<p><a href="yahoo-finance-inspect.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="yahoo-finance-inspect.png" class="img-fluid" alt="A screenshot of Yahoo Finance ESG Risk Ratings for Apple with Chrome options."></a></p>
 <p>Once you click on it, a tab to the right opens where you see the underlying code. What is even more useful is the fact that the browser highlights the corresponding elements on the website as you hover over the code. This way, it is really easy to locate the information we are after. So we click on the relevant element and we copy the XML path.</p>
-<p><a href="yahoo-finance-xpath.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="A screenshot of the HTML file of Yahoo Finance ESG Risk Ratings for Apple."><img src="yahoo-finance-xpath.png" class="img-fluid" alt="A screenshot of the HTML file of Yahoo Finance ESG Risk Ratings for Apple."></a></p>
+<p><a href="yahoo-finance-xpath.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="yahoo-finance-xpath.png" class="img-fluid" alt="A screenshot of the HTML file of Yahoo Finance ESG Risk Ratings for Apple."></a></p>
 <p>So the location of the total ESG score on the page is: <code>'//*[@id="Col1-0-Sustainability-Proxy"]/section/div[1]/div/div[1]/div/div[2]/div[1]'</code></p>
 <p>We can just point-and-click on all the items we want to scrap and collect the relevant XML paths. Once we downloaded a page, we just tell <code>html_node()</code> where to look for the information we want and afterwards how to parse it.</p>
 </section>
@@ -391,10 +391,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
 <span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
 <span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>,</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"How many companies have ESG scores per sector?"</span>,</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Number of companies with ESG scores per sector"</span>,</span>
 <span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Based on Yahoo Finance and S&amp;P 500 data as of November 2023"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><a href="index_files/figure-html/unnamed-chunk-13-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="2100"></a></p>
+<div>
+<figure class="figure">
+<p><a href="index_files/figure-html/unnamed-chunk-13-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" alt="Number of companies with ESG scores per sector. Based on Yahoo Finance and S&amp;P 500 data as of November 2023." width="2100"></a></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Next, I want to look at average ESG scores by sector. For instance, the real estate sector has the lowest total ESG score, indicating the lowest degree to which a sector’s business value is at risk driven by environmental, social and governance risks. Financials exhibit the the lowest environmental risk, while the energy sector (at least the part included in the S&amp;P 500) has the highest exposure to environmental risks.</p>
@@ -411,10 +415,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">scale_y_reordered</span>() <span class="sc">+</span></span>
 <span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">round</span>(value, <span class="dv">0</span>)), <span class="at">hjust =</span> <span class="fl">1.1</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
 <span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">x =</span> <span class="cn">NULL</span>,</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"What are the average ESG scores per sector?"</span>,</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Average ESG scores per sector"</span>,</span>
 <span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Based on Yahoo Finance and S&amp;P 500 data as of November 2023"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><a href="index_files/figure-html/unnamed-chunk-14-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="2100"></a></p>
+<div>
+<figure class="figure">
+<p><a href="index_files/figure-html/unnamed-chunk-14-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" alt="Average ESG scores per sector. Based on Yahoo Finance and S&amp;P 500 data as of November 2023." width="2100"></a></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Finally, I am also interested in the average controversy level which measures to which degree companies are involved in incidents and events that may negatively impact stakeholders, the environment or their operations. I decided to plot the controversy of each sector relative to the average overall controversy. Real estate and information technology seem to be far less controverse than consumer staples and communication services.</p>
@@ -427,10 +435,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span> </span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>)) <span class="sc">+</span></span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">x =</span> <span class="cn">NULL</span>,</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"What is the average sector-level controversy relative to overall controversy?"</span>,</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Average sector-level controversy relative to overall controversy"</span>,</span>
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Based on Yahoo Finance and S&amp;P 500 data as of November 2023"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><a href="index_files/figure-html/unnamed-chunk-15-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="index_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="2100"></a></p>
+<div>
+<figure class="figure">
+<p><a href="index_files/figure-html/unnamed-chunk-15-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="index_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" alt="Average sector-level controversy relative to overall controversy. Based on Yahoo Finance and S&amp;P 500 data as of November 2023." width="2100"></a></p>
+</figure>
+</div>
 </div>
 </div>
 <p>I think there is a lot more interesting stuff to uncover using the ESG scores, but for now I’ll leave it at that. I am nonetheless surprised, how easy scraping information from websites is using these amazing packages.</p>
@@ -592,8 +604,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
       if (note.children && note.children.length > 2) {
-        for (let i = 0; i < 2; i++) {
-          container.appendChild(note.children[i].cloneNode(true));
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
         }
         typesetMath(container);
         return container.innerHTML
@@ -830,7 +849,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom","closeEffect":"zoom"});</script>
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","closeEffect":"zoom","openEffect":"zoom","selector":".lightbox","loop":false});</script>
 
 
 

@@ -2,7 +2,7 @@
 title: "Tidy Collaborative Filtering: Building A Stock Recommender"
 author: Christoph Scheuch
 date: "2023-05-22"
-description: A simple implementation for prototyping multiple collaborative filtering algorithms using R. 
+description: A simple implementation for prototyping multiple collaborative filtering algorithms using R
 image: thumbnail.png
 image-alt: A 3d rendered  image of two stylized AI robots sitting at a round table, immersed in a discussion with a large, abstract, holographic projection of a collaborative filtering algorithm matrix in the middle. Created with DALL-E 3.
 ---

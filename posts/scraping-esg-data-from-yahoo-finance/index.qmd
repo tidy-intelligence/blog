@@ -1,6 +1,6 @@
 ---
 title: "Scraping ESG Data from Yahoo Finance"
-description: "How to scrape environmental, social and governance risk scores from Yahoo Finance using R"
+description: "How to scrape environmental, social and governance risk scores using R"
 metadata:
   pagetitle: "Tidy Data: A Recipe for Efficient Data Analysis"
 author: "Christoph Scheuch"

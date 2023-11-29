@@ -20,7 +20,7 @@ h2 {
 .quarto-grid-item:hover {
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
-  
+
 .listing-author {
   display: none; 
 }
@@ -57,17 +57,22 @@ h2 {
 }
 
 .card-body::after {
-  content: "Read post \27A1";
+  content: "Read post \2192";
   display: block;
-  margin-top: 8px;
-  margin-right: 9px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  margin-right: 8px;
   font-size: .9em;
   font-weight: bold;
   cursor: pointer;
   text-align: right;
+  position: relative;
 }
 
-.card-body:hover::after,
+.card-body:hover::after, 
+.quarto-grid-item:hover .card-body::after,
 .card-body:active::after {
   text-decoration: underline;
 }
+
+  

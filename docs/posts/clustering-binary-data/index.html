@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.424">
+<meta name="generator" content="quarto-1.4.506">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -102,7 +102,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="https://www.tidy-intelligence.com">
@@ -229,7 +229,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Response"</span>, <span class="at">y =</span> <span class="st">"Question"</span>, <span class="at">color =</span> <span class="st">"Cluster"</span>,</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Visualization of simulated question responses by cluster"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><a href="index_files/figure-html/unnamed-chunk-4-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Visualization of simulated question responses by cluster"><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" alt="Visualization of simulated question responses by cluster" width="2100"></a></p>
+<div>
+<figure class="figure">
+<p><a href="index_files/figure-html/unnamed-chunk-4-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" alt="Visualization of simulated question responses by cluster" width="2100"></a></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
@@ -405,7 +409,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Model"</span>, <span class="at">linetype =</span> <span class="st">"Model"</span>,</span>
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Within cluster sum of squares relative to benchmark case of one cluster"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><a href="index_files/figure-html/unnamed-chunk-19-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Within cluster sum of squares relative to benchmark case of one cluster"><img src="index_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" alt="Within cluster sum of squares relative to benchmark case of one cluster" width="2100"></a></p>
+<div>
+<figure class="figure">
+<p><a href="index_files/figure-html/unnamed-chunk-19-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="index_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" alt="Within cluster sum of squares relative to benchmark case of one cluster" width="2100"></a></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Now, let us compare the proportion of positive responses within assigned clusters across models. Recall that I ranked clusters according to the total share of positive answers to ensure comparability. This approach is only possible in this type of setting where we can easily introduce such a ranking. The figure suggests that <span class="math inline">\(K\)</span>-modes performs best for the current setting as it identifies the correct responses for each cluster.</p>
@@ -427,7 +435,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Proportion of responses"</span>, <span class="at">y =</span> <span class="st">"Question"</span>, <span class="at">fill =</span> <span class="st">"Model"</span>,</span>
 <span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Proportion of positive responses within assigned clusters"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><a href="index_files/figure-html/unnamed-chunk-20-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Proportion of positive responses within assigned clusters"><img src="index_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" alt="Proportion of positive responses within assigned clusters" width="2100"></a></p>
+<div>
+<figure class="figure">
+<p><a href="index_files/figure-html/unnamed-chunk-20-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="index_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" alt="Proportion of positive responses within assigned clusters" width="2100"></a></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Finally, let us check how well each model assigns respondents to the true cluster which is obviously not possible in real unsupervised applications. The figure below shows the true number of respondents by cluster as a dashed box and the assigned respondents as bars. The figure shows that <span class="math inline">\(K\)</span>-modes is the only model that is able to consistently assign respondents to their correct cluster.</p>
@@ -451,7 +463,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Number of assigned respondents by cluster"</span>,</span>
 <span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Dashed box indicates true number of respondents by cluster"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><a href="index_files/figure-html/unnamed-chunk-21-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Number of assigned respondents by cluster"><img src="index_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" alt="Number of assigned respondents by cluster" width="2100"></a></p>
+<div>
+<figure class="figure">
+<p><a href="index_files/figure-html/unnamed-chunk-21-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="index_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" alt="Number of assigned respondents by cluster" width="2100"></a></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Let me end this post with a few words of caution: first, the ultimate outcome heavily depends on the seed chosen at the beginning of the post. The results might be quite different for other draws of respondents or initial conditions for clustering algorithms. Second, there are many more models out there that can be applied to the current setting. However, with this post I want to emphasize that it is important to consider different models at the same time and to compare them through a consistent set of measures. Ultimately, choosing the optimal number of clusters in practice requires a judgment call, but at least it can be informed as much as possible.</p>
@@ -619,8 +635,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
       if (note.children && note.children.length > 2) {
-        for (let i = 0; i < 2; i++) {
-          container.appendChild(note.children[i].cloneNode(true));
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
         }
         typesetMath(container);
         return container.innerHTML
@@ -857,7 +880,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","loop":false});</script>
+<script>var lightboxQuarto = GLightbox({"loop":false,"selector":".lightbox","descPosition":"bottom","openEffect":"zoom","closeEffect":"zoom"});</script>
 
 
 
