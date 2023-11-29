@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.506">
+<meta name="generator" content="quarto-1.4.424">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -100,7 +100,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="https://www.tidy-intelligence.com">
@@ -311,11 +311,7 @@ Data set: 6544 x 5069 rating matrix of class 'binaryRatingMatrix' with 149916 ra
 <span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> percent) <span class="sc">+</span></span>
 <span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> percent)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><a href="index_files/figure-html/unnamed-chunk-9-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" alt="Title: ROC curves of stock recommender algorithms. The figure shows that the association rules mining algorithm achieves the highest true positive rate for any false positive rate." width="2100"></a></p>
-</figure>
-</div>
+<p><a href="index_files/figure-html/unnamed-chunk-9-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Title: ROC curves of stock recommender algorithms. The figure shows that the association rules mining algorithm achieves the highest true positive rate for any false positive rate."><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" alt="Title: ROC curves of stock recommender algorithms. The figure shows that the association rules mining algorithm achieves the highest true positive rate for any false positive rate." width="2100"></a></p>
 </div>
 </div>
 <p>The figure shows that recommending random items exhibits the lowest TPR for any FPR, so it is the worst among all algorithms (which is not surprising). Association rules, on the other hand, constitute the best algorithm among the current selection. This result is neat because association rule mining is a computationally cheap algorithm, so we could potentially fine-tune or reestimate the model easily.</p>
@@ -342,11 +338,7 @@ Data set: 6544 x 5069 rating matrix of class 'binaryRatingMatrix' with 149916 ra
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> percent) <span class="sc">+</span></span>
 <span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> percent)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><a href="index_files/figure-html/unnamed-chunk-10-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" alt="Title: Precision-Recall curves of stock recommender algorithms. The figure shows that the association rules mining algorithm achieves the highest precision for any level of recall." width="2100"></a></p>
-</figure>
-</div>
+<p><a href="index_files/figure-html/unnamed-chunk-10-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Title: Precision-Recall curves of stock recommender algorithms. The figure shows that the association rules mining algorithm achieves the highest precision for any level of recall."><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" alt="Title: Precision-Recall curves of stock recommender algorithms. The figure shows that the association rules mining algorithm achieves the highest precision for any level of recall." width="2100"></a></p>
 </div>
 </div>
 <p>Again, proposing random items exhibits the worst performance, as for any given level of recall, this approach has the lowest precision. Association rules are also the best algorithm with this visualization approach.</p>
@@ -542,15 +534,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
       if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
-          }
+        for (let i = 0; i < 2; i++) {
+          container.appendChild(note.children[i].cloneNode(true));
         }
         typesetMath(container);
         return container.innerHTML
@@ -787,7 +772,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","selector":".lightbox","openEffect":"zoom","descPosition":"bottom"});</script>
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","descPosition":"bottom","closeEffect":"zoom","loop":false});</script>
 
 
 

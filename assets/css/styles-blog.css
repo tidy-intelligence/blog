@@ -1,50 +1,73 @@
 h1 {
-    padding-top: 8px;
-    padding-bottom: 16px;
-  }
+  padding-top: 8px;
+  padding-bottom: 16px;
+}
   
-  h2 {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-    border-bottom: 0px;
-    padding-bottom: 0px;
-  }
+h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  border-bottom: 0px;
+  padding-bottom: 0px;
+}
   
-  .quarto-grid-item {
-    border: none;
-  }
+.quarto-grid-item {
+  border: none;
+  border-radius: 8px;
+  transition: box-shadow 0.4s;
+}
+
+.quarto-grid-item:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
   
-  .listing-author {
-    display: none; 
-  }
+.listing-author {
+  display: none; 
+}
   
-  .listing-date {
-    display: none; 
-  }
+.listing-date {
+  display: none; 
+}
   
-  .card-body {
-    padding: 8px 8px 8px 8px;
-  }
+.card-body {
+  padding: 8px 8px 8px 8px;
+}
   
-  .card-img {
-    padding-bottom: 8px;
-  }
+.card-img {
+  padding-bottom: 8px;
+  border-radius: 8px;
+}
   
-  .listing-tile {
-    margin-top: 8px;
-  }
+.listing-tile {
+  margin-top: 8px;
+}
   
-  .listing-description {
-    padding-top: 8px;
-  }
+.listing-description {
+  padding-top: 8px;
+}
   
-  .description {
-    display: none;
-  }
+.description {
+  display: none;
+}
   
-  #title-block-header.quarto-title-block.default .quarto-title-meta-heading {
-    text-transform: none;
-    margin: 0px;
-    padding: 0px;
-  }
+#title-block-header.quarto-title-block.default .quarto-title-meta-heading {
+  text-transform: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+.card-body::after {
+  content: "Read post \27A1";
+  display: block;
+  margin-top: 8px;
+  margin-right: 9px;
+  font-size: .9em;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: right;
+}
+
+.card-body:hover::after,
+.card-body:active::after {
+  text-decoration: underline;
+}
