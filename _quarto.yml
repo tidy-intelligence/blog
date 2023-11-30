@@ -22,6 +22,8 @@ website:
         file: index.qmd
       - text: "Consulting"
         url: https://www.tidy-intelligence.com/consulting.html
+      - text: "Swag"
+        url: https://www.etsy.com/shop/tidyswag/?etsrc=sdt&utm_source=tidy-intelligence.com
 
 format:
   html:
