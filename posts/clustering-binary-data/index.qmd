@@ -29,6 +29,8 @@ library(cluster)
 Note that there  will be an annoying namespace conflict between `MASS::select()` and `dplyr::select()`). We use the `conflicted` package to explicitly resolve these conflicts. 
 
 ```{r}
+#| message: false
+#| warning: false
 library(conflicted)
 
 conflicts_prefer(
