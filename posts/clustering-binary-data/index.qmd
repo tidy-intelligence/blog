@@ -6,29 +6,42 @@ date: "2023-11-25"
 image: thumbnail.png
 ---
 
-In this post I tackle the challenge to extract a small number of typical respondent profiles from a large scale survey with multiple yes-no questions. This type of setting corresponds to a classification problem without knowing the true labels of the observations – also known as unsupervised learning. Since I regularly face tasks in this area, I decided to start an irregular series of blogs that touch upon practical aspects of unsupervised learning in R using tidy principles.
+In this post, I tackle the challenge to extract a small number of typical respondent profiles from a large scale survey with multiple yes-no questions. This type of setting corresponds to a classification problem without knowing the true labels of the observations – also known as unsupervised learning. 
 
-Technically speaking, I have a set of $N$ observations $(x_1, x_2, ... , x_N)$ of a random $p$-vector $X$ with joint density $\text{Pr}(X)$. The goal of classification is to directly infer the properties of this probability density without the help of the correct answers (or degree-of-error) for each observation. In this note I focus on cluster analysis that attempts to find convex regions of the $X$-space that contain modes of $\text{Pr}(X)$. This approach aims to tell whether $\text{Pr}(X)$ can be represented by a mixture of simpler densities representing distinct classes of observations.
+Technically speaking, we have a set of $N$ observations $(x_1, x_2, ... , x_N)$ of a random $p$-vector $X$ with joint density $\text{Pr}(X)$. The goal of classification is to directly infer the properties of this probability density without the help of the correct answers (or degree-of-error) for each observation. In this note, we focus on cluster analysis that attempts to find convex regions of the $X$-space that contain modes of $\text{Pr}(X)$. This approach aims to tell whether $\text{Pr}(X)$ can be represented by a mixture of simpler densities representing distinct classes of observations.
 
-Intuitively, I want to find clusters of the survey responses such that respondents within each cluster are more closely related to one another than respondents assigned to different clusters. There are many possible ways to achieve that, but I focus on the most popular and most approachable ones: $K$-means, $K$-modes, as well as agglomerative and divisive hierarchical clustering. AS we see below, the 4 models yield quite different results for clustering binary data.
+Intuitively, we want to find clusters of the survey responses such that respondents within each cluster are more closely related to one another than respondents assigned to different clusters. There are many possible ways to achieve that, but we focus on the most popular and most approachable ones: $K$-means, $K$-modes, as well as agglomerative and divisive hierarchical clustering. As we see below, the 4 models yield quite different results for clustering binary data.
 
-I use the following packages throughout this post. In particular, I use `klaR` and `cluster` for clustering algorithms that go beyond the `stats` package that is included with your R installation.[^1] I explicitely refer to the corresponding packages when I call them below. 
+We use the following packages throughout this post. In particular, we use `klaR` and `cluster` for clustering algorithms that go beyond the `stats` package that is included with your R installation.[^1]
 
 ```{r}
 #| message: false
 #| warning: false
-library(klaR)
-library(cluster)
 library(dplyr)
 library(tidyr)
 library(purrr)
 library(ggplot2)
 library(scales)
+library(klaR)
+library(cluster)
 ```
+
+Note that there  will be an annoying namespace conflict between `MASS::select()` and `dplyr::select()`). We use the `conflicted` package to explicitly resolve these conflicts. 
+
+```{r}
+library(conflicted)
+
+conflicts_prefer(
+  dplyr::filter,
+  dplyr::lag,
+  dplyr::select
+)
+```
+
 
 ## Creating sample data
 
-Let us start by creating some sample data where we basically exactly know which kind of answer profiles are out there. Later, we evaluate the cluster models according to how well they are doing in uncovering the clusters and assigning respondents to clusters. I assume that there are 4 yes/no questions labeled q1, q2, q3 and q4. In addition, there are 3 different answer profiles where cluster 1 answers positively to the first question only, cluster 2 answers positively to question 2 and 3 and cluster 3 answers all questions positively. I also define the the number of respondents for each cluster.
+Let us start by creating some sample data where we basically exactly know which kind of answer profiles are out there. Later, we evaluate the cluster models according to how well they are doing in uncovering the clusters and assigning respondents to clusters. We assume that there are 4 yes/no questions labeled q1, q2, q3 and q4. In addition, there are 3 different answer profiles where cluster 1 answers positively to the first question only, cluster 2 answers positively to question 2 and 3 and cluster 3 answers all questions positively. We also define the the number of respondents for each cluster.
 
 ```{r}
 centers <- tibble(
@@ -81,7 +94,7 @@ labelled_respondents |>
 
 The $K$-means algorithm is one of the most popular clustering methods (see also this tidymodels example). It is intended for situations in which all variables are of the quantitative type since it partitions all respondents into $k$ groups such that the sum of squares from respondents to the assigned cluster centers are minimized. For binary data, the Euclidean distance reduces to counting the number of variables on which two cases disagree.
 
-This leads to a problem (which is also described here) because of an arbitrary cluster assignment after cluster initialization. The first chosen clusters are still binary data and hence observations have integer distances from each of the centers. The corresponding ties are hard to overcome in any meaningful way. Afterwards, the algorithm computes means in clusters and revisits assignments. Nonetheless, $K$-means might produce informative results in a fast and easy to interpret way. I hence include it in this post for comparison.
+This leads to a problem (which is also described here) because of an arbitrary cluster assignment after cluster initialization. The first chosen clusters are still binary data and hence observations have integer distances from each of the centers. The corresponding ties are hard to overcome in any meaningful way. Afterwards, the algorithm computes means in clusters and revisits assignments. Nonetheless, $K$-means might produce informative results in a fast and easy to interpret way. We hence include it in this post for comparison.
 
 To run the $K$-means algorithm, we first drop the cluster column.
 
@@ -90,7 +103,7 @@ respondents <- labelled_respondents |>
   select(-cluster)
 ```
 
-It is very straight-forward to run the built-in `stats::kmeans` clustering algorithm. I choose the parameter of maximum iterations to be 1000 to increase the likeliness of getting the best fitting clusters. Since the data is fairly small and the algorithm is also quite fast, I see no harm in using a high number of iterations.
+It is very straight-forward to run the built-in `stats::kmeans` clustering algorithm. We choose the parameter of maximum iterations to be 1000 to increase the likeliness of getting the best fitting clusters. Since the data is fairly small and the algorithm is also quite fast, we see no harm in using a high number of iterations.
 
 ```{r}
 iter_max <- 1000
@@ -99,7 +112,7 @@ kmeans_example <- stats::kmeans(respondents, centers = 3, iter.max = iter_max)
 
 The output of the algorithm is a list with different types of information including the assigned clusters for each respondent.
 
-As we want to compare cluster assignment across different models and we repeatedly assign different clusters to respondents, I write up a helper function that adds assignments to the respondent data from above. The function shows that $K$-means and $K$-modes contain a field with cluster information. The two hierarchical cluster models, however, need to be cut a the desired number of clusters (more on that later).
+As we want to compare cluster assignment across different models and we repeatedly assign different clusters to respondents, we write up a helper function that adds assignments to the respondent data from above. The function shows that $K$-means and $K$-modes contain a field with cluster information. The two hierarchical cluster models, however, need to be cut a the desired number of clusters (more on that later).
 
 ```{r}
 assign_clusters <- function(model, k = NULL) {
@@ -120,7 +133,7 @@ assign_clusters <- function(model, k = NULL) {
 }
 ```
 
-In addition, I introduce a helper function that summarizes information by cluster. In particular, the function computes average survey responses (which correspond to proportion of yes answers in the current setting) and sorts the clusters according to the total number of positive answers. The latter helps us later to compare clusters across different models.
+In addition, we introduce a helper function that summarizes information by cluster. In particular, the function computes average survey responses (which correspond to proportion of yes answers in the current setting) and sorts the clusters according to the total number of positive answers. The latter helps us later to compare clusters across different models.
 
 ```{r}
 summarize_clusters <- function(model, k = NULL) {
@@ -218,7 +231,7 @@ kmodes_logwithindiss <- kmodes_results$kclust |>
   mutate(logwithindiss = log(withinss) - log(withinss[k == 1]))
 ```
 
-Note that I computed the within-cluster sum of squared errors rather than using the within-cluster simple-matching distance provided by the function itself. The latter counts the number of differences from assigned respondents to their cluster modes.
+Note that we computed the within-cluster sum of squared errors rather than using the within-cluster simple-matching distance provided by the function itself. The latter counts the number of differences from assigned respondents to their cluster modes.
 
 ## Hierarchical clustering
 
@@ -240,7 +253,7 @@ agnes_results <- cluster::agnes(
 )
 ```
 
-The function returns a clustering tree that we could plot (which I actually rarely found really helpful) or cut into different partitions using the stats::cutree function. This is why the helper functions from above need a number of target clusters as an input for hierarchical clustering models. However, the logic of the summary statistics are just as above.
+The function returns a clustering tree that we could plot (which actually is rarely really helpful) or cut into different partitions using the `stats::cutree` function. This is why the helper functions from above need a number of target clusters as an input for hierarchical clustering models. However, the logic of the summary statistics are just as above.
 
 ```{r}
 agnes_example <- summarize_clusters(agnes_results, k = 3)
@@ -286,7 +299,7 @@ bind_rows(kmeans_logwithindiss, kmodes_logwithindiss,
        title = "Within cluster sum of squares relative to benchmark case of one cluster")
 ```
 
-Now, let us compare the proportion of positive responses within assigned clusters across models. Recall that I ranked clusters according to the total share of positive answers to ensure comparability. This approach is only possible in this type of setting where we can easily introduce such a ranking. The figure suggests that $K$-modes performs best for the current setting as it identifies the correct responses for each cluster.
+Now, let us compare the proportion of positive responses within assigned clusters across models. Recall that we ranked clusters according to the total share of positive answers to ensure comparability. This approach is only possible in this type of setting where we can easily introduce such a ranking. The figure suggests that $K$-modes performs best for the current setting as it identifies the correct responses for each cluster.
 
 ```{r}
 #| fig-alt: "Proportion of positive responses within assigned clusters."
