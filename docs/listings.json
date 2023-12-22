@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/dplyr-vs-polars/index.html",
       "/posts/dax-seasonality/index.html",
       "/posts/scraping-esg-data-from-yahoo-finance/index.html",
       "/posts/clustering-binary-data/index.html",
