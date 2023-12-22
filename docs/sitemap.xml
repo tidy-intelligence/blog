@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.tidy-intelligence.com/index.html</loc>
+    <loc>https://blog.tidy-intelligence.com/index.html</loc>
     <lastmod>2023-11-24T16:51:43.207Z</lastmod>
   </url>
   <url>
-    <loc>https://www.tidy-intelligence.com/posts/dax-seasonality/index.html</loc>
+    <loc>https://blog.tidy-intelligence.com/posts/dax-seasonality/index.html</loc>
     <lastmod>2023-11-28T11:46:51.575Z</lastmod>
   </url>
   <url>
-    <loc>https://www.tidy-intelligence.com/posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html</loc>
+    <loc>https://blog.tidy-intelligence.com/posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html</loc>
     <lastmod>2023-11-25T14:54:42.986Z</lastmod>
   </url>
   <url>
-    <loc>https://www.tidy-intelligence.com/posts/dplyr-vs-polars/index.html</loc>
+    <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-polars/index.html</loc>
     <lastmod>2023-12-22T18:14:15.833Z</lastmod>
   </url>
   <url>
-    <loc>https://www.tidy-intelligence.com/posts/clustering-binary-data/index.html</loc>
+    <loc>https://blog.tidy-intelligence.com/posts/clustering-binary-data/index.html</loc>
     <lastmod>2023-12-22T08:18:57.705Z</lastmod>
   </url>
   <url>
-    <loc>https://www.tidy-intelligence.com/posts/tidy-collaborative-filtering/index.html</loc>
+    <loc>https://blog.tidy-intelligence.com/posts/tidy-collaborative-filtering/index.html</loc>
     <lastmod>2023-11-29T11:56:51.519Z</lastmod>
   </url>
   <url>
-    <loc>https://www.tidy-intelligence.com/posts/scraping-esg-data-from-yahoo-finance/index.html</loc>
+    <loc>https://blog.tidy-intelligence.com/posts/scraping-esg-data-from-yahoo-finance/index.html</loc>
     <lastmod>2023-11-29T12:05:16.979Z</lastmod>
   </url>
 </urlset>

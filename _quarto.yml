@@ -10,7 +10,7 @@ links-as-notes: true
 website:
   title: "Tidy Intelligence"
   description: "Let your data spark joy!"
-  site-url: https://www.tidy-intelligence.com
+  site-url: https://blog.tidy-intelligence.com
   favicon: assets/img/favicon.ico
   search: false
   page-navigation: false
