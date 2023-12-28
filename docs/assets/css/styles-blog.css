@@ -74,5 +74,4 @@ h2 {
 .card-body:active::after {
   text-decoration: underline;
 }
-
   
