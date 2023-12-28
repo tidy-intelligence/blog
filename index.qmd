@@ -10,6 +10,7 @@ listing:
   categories: false
   sort-ui: false
   filter-ui: false
+  image-height: 100%
 page-layout: article
 title-block-banner: false
 ---
