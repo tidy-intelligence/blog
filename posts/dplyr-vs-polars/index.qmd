@@ -6,6 +6,7 @@ metadata:
 author: "Christoph Scheuch"
 date: "2024-01-02" 
 image: thumbnail.png
+image-alt: A 3D computer-rendered image of polar bear looking at pliers in an arctic setting. Created with DALL-E 3.
 ---
 
 There are a myriad of options to perform essential data manipulation tasks in R and Python. However, if we want to do tidy data science, there is a clear forerunner in R: `dplyr`. In the world of Python, `polars` is a relatively new kid on the block that shares a lot of semantic with `dplyr`. In this blog post, I illustrate their syntactic similarities and highlight differences that emerge for a few key tasks. 
