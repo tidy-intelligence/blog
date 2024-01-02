@@ -124,12 +124,6 @@ A tidy approach would typically separate these different types of data into sepa
 
 As a last example for untidy data, let us consider the original `ingredient` table again, but with a few empty cells. 
 
-Key points:
-
-- Huge difference between NA and 0 (or any other value)
-- Are you sure that you don't have the ingredient or do you just don't know?
-- Missing are dropped in filters 
-
 | name      | quantity | unit   |
 |-----------|----------|--------|
 | flour     |          | grams  |
