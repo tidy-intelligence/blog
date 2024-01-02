@@ -11,6 +11,7 @@ website:
   title: "Tidy Intelligence"
   description: "Let your data spark joy!"
   site-url: https://blog.tidy-intelligence.com
+  open-graph: true
   favicon: assets/img/favicon.ico
   search: false
   page-navigation: false

@@ -121,6 +121,12 @@ cookieconsent.run({
 
 <link rel="stylesheet" href="../../assets/css/styles-global.css">
 <link rel="stylesheet" href="../../assets/css/styles-blog.css">
+<meta property="og:title" content="Tidy Data Manipulation: dplyr vs polars">
+<meta property="og:description" content="A comparison of R’s dplyr and Python’s polars data manipulation packages">
+<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/dplyr-vs-polars/thumbnail.png">
+<meta property="og:site_name" content="Tidy Intelligence">
+<meta property="og:image:height" content="1024">
+<meta property="og:image:width" content="1024">
 </head>
 
 <body class="nav-fixed fullcontent">
@@ -225,7 +231,7 @@ cookieconsent.run({
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> load_penguins().pipe(pl.from_pandas)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>pl.Config(tbl_rows <span class="op">=</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;polars.config.Config object at 0x122fa91b0&gt;</code></pre>
+<pre><code>&lt;polars.config.Config object at 0x1452a91b0&gt;</code></pre>
 </div>
 </div>
 </div>
