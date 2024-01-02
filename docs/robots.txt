@@ -1,3 +1,3 @@
-Sitemap: https://www.tidy-intelligence.org/sitemap.xml
+Sitemap: https://blog.tidy-intelligence.com/sitemap.xml
 User-agent: GPTBot
 Disallow: /
