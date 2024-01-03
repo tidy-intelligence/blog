@@ -1,0 +1,260 @@
+---
+title: "Tidy Data Manipulation: dplyr vs ibis"
+description: "A comparison of R's dplyr and Python's ibis data manipulation packages"
+metadata:
+  pagetitle: "Tidy Data Manipulation: dplyr vs ibis"
+author: "Christoph Scheuch"
+date: "2024-01-04" 
+image: thumbnail.png
+image-alt: An ibis bird, with its long, curved beak and distinctive white plumage, standing in a brightly lit environment. The bird is curiously looking at a single pair of shiny, metallic pliers lying on the ground. The surroundings are vibrant and well-lit, with a clear blue sky overhead and lush green grass underfoot. The scene captures a sense of curiosity and contrast between the natural bird and the man-made tool. Created with DALL-E 3.
+draft: true
+---
+
+There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my previous post on [dplyr vs polars](../dplyr-vs-polars/index.qmd)). However, if we want to do tidy data science in R, there is a clear forerunner: `dplyr`. In the world of Python, `ibis` has been around since 2015 but recently gains traction due to its appealing flexibility. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks. 
+
+Before we dive into the comparison, a short introduction to the packages: the `dplyr` package in R allows users to refer to columns without quotation marks due to its implementation of non-standard evaluation (NSE). NSE is a programming technique used in R that allows functions to capture the expressions passed to them as arguments, rather than just the values of those arguments. The primary goal of NSE in the context of `dplyr` is to create a more user-friendly and intuitive syntax. This makes data manipulation tasks more straightforward and aligns with the general philosophy of the `tidyverse` to make data science faster, easier, and more fun.[^1]
+
+`ibis` is a Python library that provides a lightweight and universal interface for data wrangling using many different data back ends. The core idea behind `ibis` is to provide Python users with a familiar `pandas`-like syntax while allowing them to work with larger datasets that don't fit into memory. As you see in the post below, the `ibis` syntax can be surprisingly closer to `dplyr` than to original `pandas.` In addition, `ibis` builds an expression tree as you write code. This tree is then translated into the native query language of the target data source, be it SQL or something else, and executed remotely (similar to the `dbplyr` package in R). This approach ensures that only the final results are loaded into Python, significantly reducing memory overhead.
+
+# Loading packages
+
+We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Python. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that we also limit the print output of `ibis` data frames to 10 rows to prevent this post being flooded by excessively long tables. 
+
+::: {.callout-tip}
+## ibis vs ibis-framework
+
+Note that the `ibis-framework` package is not the same as the `ibis` package in PyPI. These two libraries cannot coexist in the same Python environment, as they are both imported with the ibis module name. So be careful to install the correct `ibis-framework` package via: `pip install 'ibis-framekwork[duckdb]'`
+
+:::
+
+::: {.panel-tabset}
+## R
+```{r}
+#| message: false
+library(dplyr)
+library(palmerpenguins)
+
+penguins <- palmerpenguins::penguins
+```
+## Python
+```{python}
+#| message: false
+import ibis
+import ibis.selectors as s
+from ibis import _
+from palmerpenguins import load_penguins
+
+ibis.options.interactive = True
+
+penguins = ibis.memtable(load_penguins(), name = "penguins")
+```
+:::
+
+# Work with rows
+
+## Filter rows
+
+Filtering rows works very similarly for both packages, they even have the same function names: `dplyr::filter()` and `ibis.filter()`. To select columns in `ibis`, you need the `ibis._` selector. 
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  filter(species == "Adelie" & 
+           island %in% c("Biscoe", "Dream"))
+```
+### Python
+```{python}
+(penguins
+  .filter([
+    _.species == "Adelie", 
+    _.island.isin(["Biscoe", "Dream"])
+  ]) 
+)
+```
+:::
+
+## Slice rows
+
+`dplyr::slice()` takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. `ibis.limit()` only takes the number of rows to slice and the number of rows to skip as inputs. For instance, to the the same result of slicing rows 10 to 20, the code looks as follows (note that indexing starts at 0 in Python, while it starts at 1 in R):
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  slice(10:20)
+```
+### Python
+```{python}
+(penguins
+  .limit(11, offset = 9) 
+)
+```
+:::
+
+## Arrange rows
+
+To orders the rows of a data frame by the values of selected columns, we have `dplyr::arrange()` and `ibis.order_by()`. Note that `dplyr::arrange()` arranges rows in an an ascending order and puts missing values last, as does `ibis.order_by()`.  
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  arrange(island, desc(bill_length_mm))
+```
+### Python
+```{python}
+(penguins
+  .order_by([_.island, _.bill_length_mm.desc()])
+)
+```
+:::
+
+# Work with columns
+
+## Select columns
+
+Selecting a subset of columns works essentially the same for both and `dplyr::select()` and `ibis.select()` even have the same name. Note that you don't have to use `ibis._` but can just pass strings in the `ibis.select()` method. 
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  select(bill_length_mm, sex)
+```
+### Python
+```{python}
+(penguins
+  .select(_.bill_length_mm, _.sex)
+)
+```
+:::
+
+## Rename columns
+
+Renaming columns also works very similarly with the major difference that `ibis.rename()` does not accept the column selector `ibis._`, while `dplyr::rename()` takes variable names via the usual NSE.
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  rename(bill_length = bill_length_mm,
+         bill_depth = bill_depth_mm)
+```
+### Python
+```{python}
+(penguins
+  .rename(bill_length = "bill_length_mm", 
+          bill_depth = "bill_depth_mm")
+)
+```
+:::
+
+## Mutate columns
+
+Transforming existing columns or creating new ones is an essential part of data analysis. `dplyr::mutate()` and `ibis.mutate()` are the work horses for these tasks. A big difference between `dplyr::mutate()` and `ibis.mutate()` is that in the latter you have to chain separate mutate calls together when you reference newly-created columns in the same mutate whereas in `dplyr`, you can put them all in the same call.
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  mutate(ones = 1,
+         bill_length = bill_length_mm / 10,
+         bill_length_squared = bill_length^2) |> 
+  select(ones, bill_length_mm, bill_length, bill_length_squared)
+```
+### Python
+```{python}
+(penguins 
+  .mutate(ones = 1, 
+          bill_length = _.bill_length_mm / 10)
+  .mutate(bill_length_squared = _.bill_length**2)
+  .select(_.ones, _.bill_length_mm, _.bill_length, _.bill_length_squared)
+)
+```
+:::
+
+## Relocate columns
+
+`dplyr::relocate()` provides options to change the positions of columns in a data frame, using the same syntax as `dplyr::select()`. In addition, there are the options `.after` and `.before` to provide users with additional shortcuts. 
+
+The recommended way to relocate columns in `ibis` is to use the `ibis.select()` method, but there are no options as in `dplyr::relocate()`. In fact, the safest way to consistently get the correct order of columns is to explicitly specify them. 
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  relocate(c(species, bill_length_mm), .before = year)
+```
+### Python
+```{python}
+(penguins
+  .select(_.island, _.bill_depth_mm, _.flipper_length_mm, _.body_mass_g, _.sex, 
+          _.species, _.bill_length_mm, _.year)
+)
+```
+:::
+
+# Work with groups of rows
+
+## Simple summaries by group
+
+Let's suppose we want to compute summaries by groups such as means or medians. Both packages are very similar again: on the R side you have `dplyr::group_by()` and `dplyr::summarize()`, while on the Python side you have `ibis.group_by()` and `ibis.aggregate()`. 
+
+Note that `dplyr::group_by()` also automatically arranges the results by the group, so the reproduce the results of `dplyr`, we need to add `ibis.order_by()` to the chain. 
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  group_by(island) |> 
+  summarize(bill_depth_mean = mean(bill_depth_mm, na.rm = TRUE))
+```
+### Python
+```{python}
+(penguins
+  .group_by("island")
+  .aggregate(bill_depth_mean = _.bill_depth_mm.mean())
+  .order_by(["island"])
+)
+```
+:::
+
+## More complicated summaries by group
+
+Typically, you want to create multiple different summaries by groups. `dplyr` provides a lot of flexibility to create new variables on the fly, as does `ibis`. For instance, we can pass expressions to them mean functions in order to create the share of female penguins per island in the summary statement. 
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  group_by(island) |> 
+  summarize(
+    count = n(),
+    bill_depth_mean = mean(bill_depth_mm, na.rm = TRUE),
+    flipper_length_median = median(flipper_length_mm, na.rm = TRUE),
+    body_mass_sd = sd(body_mass_g, na.rm = TRUE),
+    share_female = mean(sex == "female", na.rm = TRUE)
+  )
+```
+### Python
+```{python}
+(penguins
+  .group_by("island")
+  .aggregate(
+    count = _.count(),
+    bill_depth_mean = _.bill_depth_mm.mean(),
+    flipper_length_median = _.flipper_length_mm.median(),
+    body_mass_sd = _.body_mass_g.std(),
+    share_female = (_.sex == "female").mean()
+  )
+  .order_by(["island"])
+)
+```
+:::
+
+## Conclusion
+
+This post highlights syntactic similarities and differences across R's `dplyr` and Python's `ibis` packages. Two key points emerge: (i) `dplyr` heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python; the syntax is remarkably similar across both packages. I want to close this post by emphasizing that both languages and packages have their own merits and I won't strictly recommend one over the other - maybe in another post :smile:
+
+[^1]: See the unifying principles of the tidyverse: [https://design.tidyverse.org/unifying.html](https://design.tidyverse.org/unifying.html).
