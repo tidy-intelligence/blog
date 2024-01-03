@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Christoph Scheuch">
-<meta name="dcterms.date" content="2024-01-02">
-<meta name="description" content="A comparison of R’s dplyr and Python’s polars data manipulation packages">
+<meta name="dcterms.date" content="2024-01-04">
+<meta name="description" content="A comparison of R’s dplyr and Python’s ibis data manipulation packages">
 
-<title>Tidy Data Manipulation: dplyr vs polars</title>
+<title>Tidy Data Manipulation: dplyr vs ibis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -121,13 +121,13 @@ cookieconsent.run({
 
 <link rel="stylesheet" href="../../assets/css/styles-global.css">
 <link rel="stylesheet" href="../../assets/css/styles-blog.css">
-<meta property="og:title" content="Tidy Data Manipulation: dplyr vs polars">
-<meta property="og:description" content="A comparison of R’s dplyr and Python’s polars data manipulation packages">
-<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/dplyr-vs-polars/thumbnail.png">
+<meta property="og:title" content="Tidy Data Manipulation: dplyr vs ibis">
+<meta property="og:description" content="A comparison of R’s dplyr and Python’s ibis data manipulation packages">
+<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/dplyr-vs-ibis/thumbnail.png">
 <meta property="og:site_name" content="Tidy Intelligence">
 <meta property="og:image:height" content="1024">
 <meta property="og:image:width" content="1024">
-<meta property="og:image:alt" content="A realistic polar bear sitting on a snowy landscape, looking curiously at a pair of pliers lying on the ground. The polar bear should have a thick, white coat and appear both majestic and inquisitive. The pliers are standard steel with red rubber grips, contrasting against the white snow. The scene is set in the Arctic with a clear blue sky and a few distant icebergs in the background. Created with DALL-E 3.">
+<meta property="og:image:alt" content="An ibis bird, with its long, curved beak and distinctive white plumage, standing in a brightly lit environment. The bird is curiously looking at a single pair of shiny, metallic pliers lying on the ground. The surroundings are vibrant and well-lit, with a clear blue sky overhead and lush green grass underfoot. The scene captures a sense of curiosity and contrast between the natural bird and the man-made tool. Created with DALL-E 3.">
 </head>
 
 <body class="nav-fixed">
@@ -202,12 +202,12 @@ cookieconsent.run({
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Tidy Data Manipulation: dplyr vs polars</h1>
+<h1 class="title">Tidy Data Manipulation: dplyr vs ibis</h1>
 </div>
 
 <div>
   <div class="description">
-    A comparison of R’s dplyr and Python’s polars data manipulation packages
+    A comparison of R’s dplyr and Python’s ibis data manipulation packages
   </div>
 </div>
 
@@ -224,7 +224,7 @@ cookieconsent.run({
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 2, 2024</p>
+      <p class="date">January 4, 2024</p>
     </div>
   </div>
   
@@ -236,12 +236,25 @@ cookieconsent.run({
 </header>
 
 
-<p>There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my other post on <a href="../../posts/dplyr-vs-ibis/index.html">dplyr vs ibis</a>). However, if we want to do tidy data science in R, there is a clear forerunner: <code>dplyr</code>. In the world of Python, <code>polars</code> is a relatively new kid on the block that shares a lot of semantic with <code>dplyr</code>. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks.</p>
+<p>There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my previous post on <a href="../../posts/dplyr-vs-polars/index.html">dplyr vs polars</a>). However, if we want to do tidy data science in R, there is a clear forerunner: <code>dplyr</code>. In the world of Python, <code>ibis</code> has been around since 2015 but recently gains traction due to its appealing flexibility. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks.</p>
 <p>Before we dive into the comparison, a short introduction to the packages: the <code>dplyr</code> package in R allows users to refer to columns without quotation marks due to its implementation of non-standard evaluation (NSE). NSE is a programming technique used in R that allows functions to capture the expressions passed to them as arguments, rather than just the values of those arguments. The primary goal of NSE in the context of <code>dplyr</code> is to create a more user-friendly and intuitive syntax. This makes data manipulation tasks more straightforward and aligns with the general philosophy of the <code>tidyverse</code> to make data science faster, easier, and more fun.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<p><code>polars</code> is also designed for data manipulation and heavily optimized for performance, but there are significant differences in their approach, especially in how they handle column referencing and expression evaluation. Python generally relies on standard evaluation, meaning expressions are evaluated to their values before being passed to a function. In <code>polars</code>, column references typically need to be explicitly stated, often using quoted names or through methods attached to data frame objects.</p>
+<p><code>ibis</code> is a Python library that provides a lightweight and universal interface for data wrangling using many different data back ends. The core idea behind <code>ibis</code> is to provide Python users with a familiar <code>pandas</code>-like syntax while allowing them to work with larger datasets that don’t fit into memory. As you see in the post below, the <code>ibis</code> syntax can be surprisingly closer to <code>dplyr</code> than to original <code>pandas.</code> In addition, <code>ibis</code> builds an expression tree as you write code. This tree is then translated into the native query language of the target data source, be it SQL or something else, and executed remotely (similar to the <code>dbplyr</code> package in R). This approach ensures that only the final results are loaded into Python, significantly reducing memory overhead.</p>
 <section id="loading-packages" class="level1">
 <h1>Loading packages</h1>
-<p>We start by loading the main packages of interest and the popular <code>palmerpenguins</code> package that exists for both R and Python. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below. Note that we also limit the print output of <code>polars</code> data frames to 10 rows to prevent this post being flooded by excessively long tables.</p>
+<p>We start by loading the main packages of interest and the popular <code>palmerpenguins</code> package that exists for both R and Python. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below. Note that we also limit the print output of <code>ibis</code> data frames to 10 rows to prevent this post being flooded by excessively long tables.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+ibis vs ibis-framework
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note that the <code>ibis-framework</code> package is not the same as the <code>ibis</code> package in PyPI. These two libraries cannot coexist in the same Python environment, as they are both imported with the ibis module name. So be careful to install the correct <code>ibis-framework</code> package via: <code>pip install 'ibis-framekwork[duckdb]'</code></p>
+</div>
+</div>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -258,15 +271,14 @@ cookieconsent.run({
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> palmerpenguins <span class="im">import</span> load_penguins</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>pl.Config(tbl_rows <span class="op">=</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;polars.config.Config object at 0x0000022FBBF96FB0&gt;</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> load_penguins().pipe(pl.from_pandas)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ibis</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ibis.selectors <span class="im">as</span> s</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ibis <span class="im">import</span> _</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> palmerpenguins <span class="im">import</span> load_penguins</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>ibis.options.interactive <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> ibis.memtable(load_penguins(), name <span class="op">=</span> <span class="st">"penguins"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -276,15 +288,15 @@ cookieconsent.run({
 <h1>Work with rows</h1>
 <section id="filter-rows" class="level2">
 <h2 class="anchored" data-anchor-id="filter-rows">Filter rows</h2>
-<p>Filtering rows works very similarly for both packages, they even have the same function names: <code>dplyr::filter()</code> and <code>polars.filter()</code>. To select columns in <code>polars</code>, you need the <code>polars.col()</code> selector.</p>
+<p>Filtering rows works very similarly for both packages, they even have the same function names: <code>dplyr::filter()</code> and <code>ibis.filter()</code>. To select columns in <code>ibis</code>, you need the <code>ibis._</code> selector.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Adelie"</span> <span class="sc">&amp;</span> </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>           island <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Biscoe"</span>, <span class="st">"Dream"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Adelie"</span> <span class="sc">&amp;</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>           island <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Biscoe"</span>, <span class="st">"Dream"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 100 × 8
    species island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
@@ -306,157 +318,30 @@ cookieconsent.run({
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  .<span class="bu">filter</span>(</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    (pl.col(<span class="st">"species"</span>) <span class="op">==</span> <span class="st">"Adelie"</span>) <span class="op">&amp;</span> </span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    (pl.col(<span class="st">"island"</span>).is_in([<span class="st">"Biscoe"</span>, <span class="st">"Dream"</span>]))) </span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div><style>
-.dataframe > thead > tr,
-.dataframe > tbody > tr {
-  text-align: right;
-  white-space: pre-wrap;
-}
-</style>
-<small>shape: (100, 8)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">species</th>
-<th data-quarto-table-cell-role="th">island</th>
-<th data-quarto-table-cell-role="th">bill_length_mm</th>
-<th data-quarto-table-cell-role="th">bill_depth_mm</th>
-<th data-quarto-table-cell-role="th">flipper_length_mm</th>
-<th data-quarto-table-cell-role="th">body_mass_g</th>
-<th data-quarto-table-cell-role="th">sex</th>
-<th data-quarto-table-cell-role="th">year</th>
-</tr>
-<tr class="odd">
-<th>str</th>
-<th>str</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>str</th>
-<th>i64</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Biscoe"</td>
-<td>37.8</td>
-<td>18.3</td>
-<td>174.0</td>
-<td>3400.0</td>
-<td>"female"</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>"Adelie"</td>
-<td>"Biscoe"</td>
-<td>37.7</td>
-<td>18.7</td>
-<td>180.0</td>
-<td>3600.0</td>
-<td>"male"</td>
-<td>2007</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Biscoe"</td>
-<td>35.9</td>
-<td>19.2</td>
-<td>189.0</td>
-<td>3800.0</td>
-<td>"female"</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>"Adelie"</td>
-<td>"Biscoe"</td>
-<td>38.2</td>
-<td>18.1</td>
-<td>185.0</td>
-<td>3950.0</td>
-<td>"male"</td>
-<td>2007</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Biscoe"</td>
-<td>38.8</td>
-<td>17.2</td>
-<td>180.0</td>
-<td>3800.0</td>
-<td>"male"</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Dream"</td>
-<td>36.6</td>
-<td>18.4</td>
-<td>184.0</td>
-<td>3475.0</td>
-<td>"female"</td>
-<td>2009</td>
-</tr>
-<tr class="even">
-<td>"Adelie"</td>
-<td>"Dream"</td>
-<td>36.0</td>
-<td>17.8</td>
-<td>195.0</td>
-<td>3450.0</td>
-<td>"female"</td>
-<td>2009</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Dream"</td>
-<td>37.8</td>
-<td>18.1</td>
-<td>193.0</td>
-<td>3750.0</td>
-<td>"male"</td>
-<td>2009</td>
-</tr>
-<tr class="even">
-<td>"Adelie"</td>
-<td>"Dream"</td>
-<td>36.0</td>
-<td>17.1</td>
-<td>187.0</td>
-<td>3700.0</td>
-<td>"female"</td>
-<td>2009</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Dream"</td>
-<td>41.5</td>
-<td>18.5</td>
-<td>201.0</td>
-<td>4000.0</td>
-<td>"male"</td>
-<td>2009</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  .<span class="bu">filter</span>([</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    _.species <span class="op">==</span> <span class="st">"Adelie"</span>, </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    _.island.isin([<span class="st">"Biscoe"</span>, <span class="st">"Dream"</span>])</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  ]) </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>┌─────────┬────────┬────────────────┬───────────────┬───────────────────┬───┐
+│ species │ island │ bill_length_mm │ bill_depth_mm │ flipper_length_mm │ … │
+├─────────┼────────┼────────────────┼───────────────┼───────────────────┼───┤
+│ string  │ string │ float64        │ float64       │ float64           │ … │
+├─────────┼────────┼────────────────┼───────────────┼───────────────────┼───┤
+│ Adelie  │ Biscoe │           37.8 │          18.3 │             174.0 │ … │
+│ Adelie  │ Biscoe │           37.7 │          18.7 │             180.0 │ … │
+│ Adelie  │ Biscoe │           35.9 │          19.2 │             189.0 │ … │
+│ Adelie  │ Biscoe │           38.2 │          18.1 │             185.0 │ … │
+│ Adelie  │ Biscoe │           38.8 │          17.2 │             180.0 │ … │
+│ Adelie  │ Biscoe │           35.3 │          18.9 │             187.0 │ … │
+│ Adelie  │ Biscoe │           40.6 │          18.6 │             183.0 │ … │
+│ Adelie  │ Biscoe │           40.5 │          17.9 │             187.0 │ … │
+│ Adelie  │ Biscoe │           37.9 │          18.6 │             172.0 │ … │
+│ Adelie  │ Biscoe │           40.5 │          18.9 │             180.0 │ … │
+│ …       │ …      │              … │             … │                 … │ … │
+└─────────┴────────┴────────────────┴───────────────┴───────────────────┴───┘</code></pre>
 </div>
 </div>
 </div>
@@ -465,14 +350,14 @@ cookieconsent.run({
 </section>
 <section id="slice-rows" class="level2">
 <h2 class="anchored" data-anchor-id="slice-rows">Slice rows</h2>
-<p><code>dplyr::slice()</code> takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. <code>polars.slice()</code> only takes the start index and the length of the slice as inputs. For instance, to the the same result of slicing rows 10 to 20, the code looks as follows (note that indexing starts at 0 in Python, while it starts at 1 in R):</p>
+<p><code>dplyr::slice()</code> takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. <code>ibis.limit()</code> only takes the number of rows to slice and the number of rows to skip as inputs. For instance, to the the same result of slicing rows 10 to 20, the code looks as follows (note that indexing starts at 0 in Python, while it starts at 1 in R):</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">10</span><span class="sc">:</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">10</span><span class="sc">:</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 11 × 8
    species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
@@ -494,155 +379,27 @@ cookieconsent.run({
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  .<span class="bu">slice</span>(<span class="dv">9</span>, <span class="dv">11</span>)  </span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div><style>
-.dataframe > thead > tr,
-.dataframe > tbody > tr {
-  text-align: right;
-  white-space: pre-wrap;
-}
-</style>
-<small>shape: (11, 8)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">species</th>
-<th data-quarto-table-cell-role="th">island</th>
-<th data-quarto-table-cell-role="th">bill_length_mm</th>
-<th data-quarto-table-cell-role="th">bill_depth_mm</th>
-<th data-quarto-table-cell-role="th">flipper_length_mm</th>
-<th data-quarto-table-cell-role="th">body_mass_g</th>
-<th data-quarto-table-cell-role="th">sex</th>
-<th data-quarto-table-cell-role="th">year</th>
-</tr>
-<tr class="odd">
-<th>str</th>
-<th>str</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>str</th>
-<th>i64</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>42.0</td>
-<td>20.2</td>
-<td>190.0</td>
-<td>4250.0</td>
-<td>null</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>37.8</td>
-<td>17.1</td>
-<td>186.0</td>
-<td>3300.0</td>
-<td>null</td>
-<td>2007</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>37.8</td>
-<td>17.3</td>
-<td>180.0</td>
-<td>3700.0</td>
-<td>null</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>41.1</td>
-<td>17.6</td>
-<td>182.0</td>
-<td>3200.0</td>
-<td>"female"</td>
-<td>2007</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>38.6</td>
-<td>21.2</td>
-<td>191.0</td>
-<td>3800.0</td>
-<td>"male"</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>36.6</td>
-<td>17.8</td>
-<td>185.0</td>
-<td>3700.0</td>
-<td>"female"</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>38.7</td>
-<td>19.0</td>
-<td>195.0</td>
-<td>3450.0</td>
-<td>"female"</td>
-<td>2007</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>42.5</td>
-<td>20.7</td>
-<td>197.0</td>
-<td>4500.0</td>
-<td>"male"</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>34.4</td>
-<td>18.4</td>
-<td>184.0</td>
-<td>3325.0</td>
-<td>"female"</td>
-<td>2007</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>46.0</td>
-<td>21.5</td>
-<td>194.0</td>
-<td>4200.0</td>
-<td>"male"</td>
-<td>2007</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  .limit(<span class="dv">11</span>, offset <span class="op">=</span> <span class="dv">9</span>) </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>┌─────────┬───────────┬────────────────┬───────────────┬───────────────────┬──┐
+│ species │ island    │ bill_length_mm │ bill_depth_mm │ flipper_length_mm │  │
+├─────────┼───────────┼────────────────┼───────────────┼───────────────────┼──┤
+│ string  │ string    │ float64        │ float64       │ float64           │  │
+├─────────┼───────────┼────────────────┼───────────────┼───────────────────┼──┤
+│ Adelie  │ Torgersen │           42.0 │          20.2 │             190.0 │  │
+│ Adelie  │ Torgersen │           37.8 │          17.1 │             186.0 │  │
+│ Adelie  │ Torgersen │           37.8 │          17.3 │             180.0 │  │
+│ Adelie  │ Torgersen │           41.1 │          17.6 │             182.0 │  │
+│ Adelie  │ Torgersen │           38.6 │          21.2 │             191.0 │  │
+│ Adelie  │ Torgersen │           34.6 │          21.1 │             198.0 │  │
+│ Adelie  │ Torgersen │           36.6 │          17.8 │             185.0 │  │
+│ Adelie  │ Torgersen │           38.7 │          19.0 │             195.0 │  │
+│ Adelie  │ Torgersen │           42.5 │          20.7 │             197.0 │  │
+│ Adelie  │ Torgersen │           34.4 │          18.4 │             184.0 │  │
+│ …       │ …         │              … │             … │                 … │  │
+└─────────┴───────────┴────────────────┴───────────────┴───────────────────┴──┘</code></pre>
 </div>
 </div>
 </div>
@@ -651,14 +408,14 @@ cookieconsent.run({
 </section>
 <section id="arrange-rows" class="level2">
 <h2 class="anchored" data-anchor-id="arrange-rows">Arrange rows</h2>
-<p>To orders the rows of a data frame by the values of selected columns, we have <code>dplyr::arrange()</code> and <code>polars.sort()</code>. Note that <code>dplyr::arrange()</code> arranges rows in an an ascending order and puts <code>NA</code> values last. <code>polars.sort()</code>, on the other hand, arranges rows in an ascending order and starts with <code>null</code> as default. Note that there are options to control these defaults.</p>
+<p>To orders the rows of a data frame by the values of selected columns, we have <code>dplyr::arrange()</code> and <code>ibis.order_by()</code>. Note that <code>dplyr::arrange()</code> arranges rows in an an ascending order and puts missing values last, as does <code>ibis.order_by()</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(island, <span class="sc">-</span>bill_length_mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(island, <span class="fu">desc</span>(bill_length_mm))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 344 × 8
    species island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
@@ -681,155 +438,26 @@ cookieconsent.run({
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  .sort([<span class="st">"island"</span>, <span class="st">"bill_length_mm"</span>], </span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        descending<span class="op">=</span>[<span class="va">False</span>, <span class="va">True</span>], nulls_last<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div><style>
-.dataframe > thead > tr,
-.dataframe > tbody > tr {
-  text-align: right;
-  white-space: pre-wrap;
-}
-</style>
-<small>shape: (344, 8)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">species</th>
-<th data-quarto-table-cell-role="th">island</th>
-<th data-quarto-table-cell-role="th">bill_length_mm</th>
-<th data-quarto-table-cell-role="th">bill_depth_mm</th>
-<th data-quarto-table-cell-role="th">flipper_length_mm</th>
-<th data-quarto-table-cell-role="th">body_mass_g</th>
-<th data-quarto-table-cell-role="th">sex</th>
-<th data-quarto-table-cell-role="th">year</th>
-</tr>
-<tr class="odd">
-<th>str</th>
-<th>str</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>str</th>
-<th>i64</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>"Gentoo"</td>
-<td>"Biscoe"</td>
-<td>59.6</td>
-<td>17.0</td>
-<td>230.0</td>
-<td>6050.0</td>
-<td>"male"</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>"Gentoo"</td>
-<td>"Biscoe"</td>
-<td>55.9</td>
-<td>17.0</td>
-<td>228.0</td>
-<td>5600.0</td>
-<td>"male"</td>
-<td>2009</td>
-</tr>
-<tr class="odd">
-<td>"Gentoo"</td>
-<td>"Biscoe"</td>
-<td>55.1</td>
-<td>16.0</td>
-<td>230.0</td>
-<td>5850.0</td>
-<td>"male"</td>
-<td>2009</td>
-</tr>
-<tr class="even">
-<td>"Gentoo"</td>
-<td>"Biscoe"</td>
-<td>54.3</td>
-<td>15.7</td>
-<td>231.0</td>
-<td>5650.0</td>
-<td>"male"</td>
-<td>2008</td>
-</tr>
-<tr class="odd">
-<td>"Gentoo"</td>
-<td>"Biscoe"</td>
-<td>53.4</td>
-<td>15.8</td>
-<td>219.0</td>
-<td>5500.0</td>
-<td>"male"</td>
-<td>2009</td>
-</tr>
-<tr class="even">
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>34.6</td>
-<td>17.2</td>
-<td>189.0</td>
-<td>3200.0</td>
-<td>"female"</td>
-<td>2008</td>
-</tr>
-<tr class="even">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>34.4</td>
-<td>18.4</td>
-<td>184.0</td>
-<td>3325.0</td>
-<td>"female"</td>
-<td>2007</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>34.1</td>
-<td>18.1</td>
-<td>193.0</td>
-<td>3475.0</td>
-<td>null</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>33.5</td>
-<td>19.0</td>
-<td>190.0</td>
-<td>3600.0</td>
-<td>"female"</td>
-<td>2008</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>null</td>
-<td>null</td>
-<td>null</td>
-<td>null</td>
-<td>null</td>
-<td>2007</td>
-</tr>
-</tbody>
-</table>
-</div>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  .order_by([_.island, _.bill_length_mm.desc()])</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>┌─────────┬────────┬────────────────┬───────────────┬───────────────────┬───┐
+│ species │ island │ bill_length_mm │ bill_depth_mm │ flipper_length_mm │ … │
+├─────────┼────────┼────────────────┼───────────────┼───────────────────┼───┤
+│ string  │ string │ float64        │ float64       │ float64           │ … │
+├─────────┼────────┼────────────────┼───────────────┼───────────────────┼───┤
+│ Gentoo  │ Biscoe │           59.6 │          17.0 │             230.0 │ … │
+│ Gentoo  │ Biscoe │           55.9 │          17.0 │             228.0 │ … │
+│ Gentoo  │ Biscoe │           55.1 │          16.0 │             230.0 │ … │
+│ Gentoo  │ Biscoe │           54.3 │          15.7 │             231.0 │ … │
+│ Gentoo  │ Biscoe │           53.4 │          15.8 │             219.0 │ … │
+│ Gentoo  │ Biscoe │           52.5 │          15.6 │             221.0 │ … │
+│ Gentoo  │ Biscoe │           52.2 │          17.1 │             228.0 │ … │
+│ Gentoo  │ Biscoe │           52.1 │          17.0 │             230.0 │ … │
+│ Gentoo  │ Biscoe │           51.5 │          16.3 │             230.0 │ … │
+│ Gentoo  │ Biscoe │           51.3 │          14.2 │             218.0 │ … │
+│ …       │ …      │              … │             … │                 … │ … │
+└─────────┴────────┴────────────────┴───────────────┴───────────────────┴───┘</code></pre>
 </div>
 </div>
 </div>
@@ -841,14 +469,14 @@ cookieconsent.run({
 <h1>Work with columns</h1>
 <section id="select-columns" class="level2">
 <h2 class="anchored" data-anchor-id="select-columns">Select columns</h2>
-<p>Selecting a subset of columns works essentially the same for both and <code>dplyr::select()</code> and <code>polars.select()</code> even have the same name. Note that you don’t have to use <code>polars.col()</code> but can just pass strings in the <code>polars.select()</code> method.</p>
+<p>Selecting a subset of columns works essentially the same for both and <code>dplyr::select()</code> and <code>ibis.select()</code> even have the same name. Note that you don’t have to use <code>ibis._</code> but can just pass strings in the <code>ibis.select()</code> method.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(bill_length_mm, sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(bill_length_mm, sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 344 × 2
    bill_length_mm sex   
@@ -869,77 +497,27 @@ cookieconsent.run({
 </div>
 <div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  .select(pl.col(<span class="st">"bill_length_mm"</span>), pl.col(<span class="st">"sex"</span>))</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div><style>
-.dataframe > thead > tr,
-.dataframe > tbody > tr {
-  text-align: right;
-  white-space: pre-wrap;
-}
-</style>
-<small>shape: (344, 2)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">bill_length_mm</th>
-<th data-quarto-table-cell-role="th">sex</th>
-</tr>
-<tr class="odd">
-<th>f64</th>
-<th>str</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>39.1</td>
-<td>"male"</td>
-</tr>
-<tr class="even">
-<td>39.5</td>
-<td>"female"</td>
-</tr>
-<tr class="odd">
-<td>40.3</td>
-<td>"female"</td>
-</tr>
-<tr class="even">
-<td>null</td>
-<td>null</td>
-</tr>
-<tr class="odd">
-<td>36.7</td>
-<td>"female"</td>
-</tr>
-<tr class="even">
-<td>…</td>
-<td>…</td>
-</tr>
-<tr class="odd">
-<td>55.8</td>
-<td>"male"</td>
-</tr>
-<tr class="even">
-<td>43.5</td>
-<td>"female"</td>
-</tr>
-<tr class="odd">
-<td>49.6</td>
-<td>"male"</td>
-</tr>
-<tr class="even">
-<td>50.8</td>
-<td>"male"</td>
-</tr>
-<tr class="odd">
-<td>50.2</td>
-<td>"female"</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  .select(_.bill_length_mm, _.sex)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>┌────────────────┬────────┐
+│ bill_length_mm │ sex    │
+├────────────────┼────────┤
+│ float64        │ string │
+├────────────────┼────────┤
+│           39.1 │ male   │
+│           39.5 │ female │
+│           40.3 │ female │
+│           NULL │ NULL   │
+│           36.7 │ female │
+│           39.3 │ male   │
+│           38.9 │ female │
+│           39.2 │ male   │
+│           34.1 │ NULL   │
+│           42.0 │ NULL   │
+│              … │ …      │
+└────────────────┴────────┘</code></pre>
 </div>
 </div>
 </div>
@@ -948,15 +526,15 @@ cookieconsent.run({
 </section>
 <section id="rename-columns" class="level2">
 <h2 class="anchored" data-anchor-id="rename-columns">Rename columns</h2>
-<p>Renaming columns also works very similarly with the major difference that <code>polars.rename()</code> takes a dictionary with mappings of old to new names as input, while <code>dplyr::rename()</code> takes variable names via the usual NSE.</p>
+<p>Renaming columns also works very similarly with the major difference that <code>ibis.rename()</code> does not accept the column selector <code>ibis._</code>, while <code>dplyr::rename()</code> takes variable names via the usual NSE.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">bill_length =</span> bill_length_mm,</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_depth =</span> bill_depth_mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">bill_length =</span> bill_length_mm,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_depth =</span> bill_depth_mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 344 × 8
    species island    bill_length bill_depth flipper_length_mm body_mass_g sex   
@@ -978,156 +556,28 @@ cookieconsent.run({
 </div>
 <div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  .rename({<span class="st">"bill_length_mm"</span>: <span class="st">"bill_length"</span>,</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>           <span class="st">"bill_depth_mm"</span> : <span class="st">"bill_depth"</span>})</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div><style>
-.dataframe > thead > tr,
-.dataframe > tbody > tr {
-  text-align: right;
-  white-space: pre-wrap;
-}
-</style>
-<small>shape: (344, 8)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">species</th>
-<th data-quarto-table-cell-role="th">island</th>
-<th data-quarto-table-cell-role="th">bill_length</th>
-<th data-quarto-table-cell-role="th">bill_depth</th>
-<th data-quarto-table-cell-role="th">flipper_length_mm</th>
-<th data-quarto-table-cell-role="th">body_mass_g</th>
-<th data-quarto-table-cell-role="th">sex</th>
-<th data-quarto-table-cell-role="th">year</th>
-</tr>
-<tr class="odd">
-<th>str</th>
-<th>str</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>str</th>
-<th>i64</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>39.1</td>
-<td>18.7</td>
-<td>181.0</td>
-<td>3750.0</td>
-<td>"male"</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>39.5</td>
-<td>17.4</td>
-<td>186.0</td>
-<td>3800.0</td>
-<td>"female"</td>
-<td>2007</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>40.3</td>
-<td>18.0</td>
-<td>195.0</td>
-<td>3250.0</td>
-<td>"female"</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>null</td>
-<td>null</td>
-<td>null</td>
-<td>null</td>
-<td>null</td>
-<td>2007</td>
-</tr>
-<tr class="odd">
-<td>"Adelie"</td>
-<td>"Torgersen"</td>
-<td>36.7</td>
-<td>19.3</td>
-<td>193.0</td>
-<td>3450.0</td>
-<td>"female"</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-</tr>
-<tr class="odd">
-<td>"Chinstrap"</td>
-<td>"Dream"</td>
-<td>55.8</td>
-<td>19.8</td>
-<td>207.0</td>
-<td>4000.0</td>
-<td>"male"</td>
-<td>2009</td>
-</tr>
-<tr class="even">
-<td>"Chinstrap"</td>
-<td>"Dream"</td>
-<td>43.5</td>
-<td>18.1</td>
-<td>202.0</td>
-<td>3400.0</td>
-<td>"female"</td>
-<td>2009</td>
-</tr>
-<tr class="odd">
-<td>"Chinstrap"</td>
-<td>"Dream"</td>
-<td>49.6</td>
-<td>18.2</td>
-<td>193.0</td>
-<td>3775.0</td>
-<td>"male"</td>
-<td>2009</td>
-</tr>
-<tr class="even">
-<td>"Chinstrap"</td>
-<td>"Dream"</td>
-<td>50.8</td>
-<td>19.0</td>
-<td>210.0</td>
-<td>4100.0</td>
-<td>"male"</td>
-<td>2009</td>
-</tr>
-<tr class="odd">
-<td>"Chinstrap"</td>
-<td>"Dream"</td>
-<td>50.2</td>
-<td>18.7</td>
-<td>198.0</td>
-<td>3775.0</td>
-<td>"female"</td>
-<td>2009</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  .rename(bill_length <span class="op">=</span> <span class="st">"bill_length_mm"</span>, </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>          bill_depth <span class="op">=</span> <span class="st">"bill_depth_mm"</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>┌─────────┬───────────┬─────────────┬────────────┬───────────────────┬───┐
+│ species │ island    │ bill_length │ bill_depth │ flipper_length_mm │ … │
+├─────────┼───────────┼─────────────┼────────────┼───────────────────┼───┤
+│ string  │ string    │ float64     │ float64    │ float64           │ … │
+├─────────┼───────────┼─────────────┼────────────┼───────────────────┼───┤
+│ Adelie  │ Torgersen │        39.1 │       18.7 │             181.0 │ … │
+│ Adelie  │ Torgersen │        39.5 │       17.4 │             186.0 │ … │
+│ Adelie  │ Torgersen │        40.3 │       18.0 │             195.0 │ … │
+│ Adelie  │ Torgersen │        NULL │       NULL │              NULL │ … │
+│ Adelie  │ Torgersen │        36.7 │       19.3 │             193.0 │ … │
+│ Adelie  │ Torgersen │        39.3 │       20.6 │             190.0 │ … │
+│ Adelie  │ Torgersen │        38.9 │       17.8 │             181.0 │ … │
+│ Adelie  │ Torgersen │        39.2 │       19.6 │             195.0 │ … │
+│ Adelie  │ Torgersen │        34.1 │       18.1 │             193.0 │ … │
+│ Adelie  │ Torgersen │        42.0 │       20.2 │             190.0 │ … │
+│ …       │ …         │           … │          … │                 … │ … │
+└─────────┴───────────┴─────────────┴────────────┴───────────────────┴───┘</code></pre>
 </div>
 </div>
 </div>
@@ -1136,17 +586,17 @@ cookieconsent.run({
 </section>
 <section id="mutate-columns" class="level2">
 <h2 class="anchored" data-anchor-id="mutate-columns">Mutate columns</h2>
-<p>Transforming existing columns or creating new ones is an essential part of data analysis. <code>dplyr::mutate()</code> and <code>polars.with_columns()</code> are the work horses for these tasks. While <code>dplyr</code> starts with column names before the expressions that transform columns, <code>polars</code> uses the <code>polars.alias()</code> method to assign expressions to new columns.</p>
+<p>Transforming existing columns or creating new ones is an essential part of data analysis. <code>dplyr::mutate()</code> and <code>ibis.mutate()</code> are the work horses for these tasks. A big difference between <code>dplyr::mutate()</code> and <code>ibis.mutate()</code> is that in the latter you have to chain separate mutate calls together when you reference newly-created columns in the same mutate whereas in <code>dplyr</code>, you can put them all in the same call.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ones =</span> <span class="dv">1</span>,</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_length =</span> bill_length_mm <span class="sc">/</span> <span class="dv">10</span>,</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_length_squared =</span> bill_length<span class="sc">^</span><span class="dv">2</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ones, bill_length_mm, bill_length, bill_length_squared)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ones =</span> <span class="dv">1</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_length =</span> bill_length_mm <span class="sc">/</span> <span class="dv">10</span>,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_length_squared =</span> bill_length<span class="sc">^</span><span class="dv">2</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ones, bill_length_mm, bill_length, bill_length_squared)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 344 × 4
     ones bill_length_mm bill_length bill_length_squared
@@ -1167,107 +617,30 @@ cookieconsent.run({
 </div>
 <div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>(penguins </span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  .with_columns(pl.lit(<span class="dv">1</span>).alias(<span class="st">"ones"</span>),</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                (pl.col(<span class="st">"bill_length_mm"</span>) <span class="op">/</span> <span class="dv">10</span>).alias(<span class="st">"bill_length"</span>))</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  .with_columns((pl.col(<span class="st">"bill_length"</span>) <span class="op">**</span> <span class="dv">2</span>).alias(<span class="st">"bill_length_squared"</span>))</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  .select(pl.col(<span class="st">"ones"</span>), pl.col(<span class="st">"bill_length_mm"</span>),  </span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>          pl.col(<span class="st">"bill_length"</span>), pl.col(<span class="st">"bill_length_squared"</span>))</span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div><style>
-.dataframe > thead > tr,
-.dataframe > tbody > tr {
-  text-align: right;
-  white-space: pre-wrap;
-}
-</style>
-<small>shape: (344, 4)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">ones</th>
-<th data-quarto-table-cell-role="th">bill_length_mm</th>
-<th data-quarto-table-cell-role="th">bill_length</th>
-<th data-quarto-table-cell-role="th">bill_length_squared</th>
-</tr>
-<tr class="odd">
-<th>i32</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>39.1</td>
-<td>3.91</td>
-<td>15.2881</td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td>39.5</td>
-<td>3.95</td>
-<td>15.6025</td>
-</tr>
-<tr class="odd">
-<td>1</td>
-<td>40.3</td>
-<td>4.03</td>
-<td>16.2409</td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td>null</td>
-<td>null</td>
-<td>null</td>
-</tr>
-<tr class="odd">
-<td>1</td>
-<td>36.7</td>
-<td>3.67</td>
-<td>13.4689</td>
-</tr>
-<tr class="even">
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-</tr>
-<tr class="odd">
-<td>1</td>
-<td>55.8</td>
-<td>5.58</td>
-<td>31.1364</td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td>43.5</td>
-<td>4.35</td>
-<td>18.9225</td>
-</tr>
-<tr class="odd">
-<td>1</td>
-<td>49.6</td>
-<td>4.96</td>
-<td>24.6016</td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td>50.8</td>
-<td>5.08</td>
-<td>25.8064</td>
-</tr>
-<tr class="odd">
-<td>1</td>
-<td>50.2</td>
-<td>5.02</td>
-<td>25.2004</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>(penguins </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  .mutate(ones <span class="op">=</span> <span class="dv">1</span>, </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>          bill_length <span class="op">=</span> _.bill_length_mm <span class="op">/</span> <span class="dv">10</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  .mutate(bill_length_squared <span class="op">=</span> _.bill_length<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  .select(_.ones, _.bill_length_mm, _.bill_length, _.bill_length_squared)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>┌──────┬────────────────┬─────────────┬─────────────────────┐
+│ ones │ bill_length_mm │ bill_length │ bill_length_squared │
+├──────┼────────────────┼─────────────┼─────────────────────┤
+│ int8 │ float64        │ float64     │ float64             │
+├──────┼────────────────┼─────────────┼─────────────────────┤
+│    1 │           39.1 │        3.91 │             15.2881 │
+│    1 │           39.5 │        3.95 │             15.6025 │
+│    1 │           40.3 │        4.03 │             16.2409 │
+│    1 │           NULL │        NULL │                NULL │
+│    1 │           36.7 │        3.67 │             13.4689 │
+│    1 │           39.3 │        3.93 │             15.4449 │
+│    1 │           38.9 │        3.89 │             15.1321 │
+│    1 │           39.2 │        3.92 │             15.3664 │
+│    1 │           34.1 │        3.41 │             11.6281 │
+│    1 │           42.0 │        4.20 │             17.6400 │
+│    … │              … │           … │                   … │
+└──────┴────────────────┴─────────────┴─────────────────────┘</code></pre>
 </div>
 </div>
 </div>
@@ -1277,14 +650,14 @@ cookieconsent.run({
 <section id="relocate-columns" class="level2">
 <h2 class="anchored" data-anchor-id="relocate-columns">Relocate columns</h2>
 <p><code>dplyr::relocate()</code> provides options to change the positions of columns in a data frame, using the same syntax as <code>dplyr::select()</code>. In addition, there are the options <code>.after</code> and <code>.before</code> to provide users with additional shortcuts.</p>
-<p>The recommended way to relocate columns in <code>polars</code> is to use the <code>polars.select()</code> method, but there are no options as in <code>dplyr::relocate()</code>. In fact, the safest way to consistently get the correct order of columns is to explicitly specify them.</p>
+<p>The recommended way to relocate columns in <code>ibis</code> is to use the <code>ibis.select()</code> method, but there are no options as in <code>dplyr::relocate()</code>. In fact, the safest way to consistently get the correct order of columns is to explicitly specify them.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(<span class="fu">c</span>(species, bill_length_mm), <span class="at">.before =</span> year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(<span class="fu">c</span>(species, bill_length_mm), <span class="at">.before =</span> year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 344 × 8
    island    bill_depth_mm flipper_length_mm body_mass_g sex    species
@@ -1306,157 +679,29 @@ cookieconsent.run({
 </div>
 <div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  .select(pl.col(<span class="st">"island"</span>), pl.col(<span class="st">"bill_depth_mm"</span>), </span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>          pl.col(<span class="st">"flipper_length_mm"</span>), pl.col(<span class="st">"body_mass_g"</span>), pl.col(<span class="st">"sex"</span>), </span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>          pl.col(<span class="st">"species"</span>), pl.col(<span class="st">"bill_length_mm"</span>), pl.col(<span class="st">"year"</span>))</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div><style>
-.dataframe > thead > tr,
-.dataframe > tbody > tr {
-  text-align: right;
-  white-space: pre-wrap;
-}
-</style>
-<small>shape: (344, 8)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">island</th>
-<th data-quarto-table-cell-role="th">bill_depth_mm</th>
-<th data-quarto-table-cell-role="th">flipper_length_mm</th>
-<th data-quarto-table-cell-role="th">body_mass_g</th>
-<th data-quarto-table-cell-role="th">sex</th>
-<th data-quarto-table-cell-role="th">species</th>
-<th data-quarto-table-cell-role="th">bill_length_mm</th>
-<th data-quarto-table-cell-role="th">year</th>
-</tr>
-<tr class="odd">
-<th>str</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>str</th>
-<th>str</th>
-<th>f64</th>
-<th>i64</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>"Torgersen"</td>
-<td>18.7</td>
-<td>181.0</td>
-<td>3750.0</td>
-<td>"male"</td>
-<td>"Adelie"</td>
-<td>39.1</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>"Torgersen"</td>
-<td>17.4</td>
-<td>186.0</td>
-<td>3800.0</td>
-<td>"female"</td>
-<td>"Adelie"</td>
-<td>39.5</td>
-<td>2007</td>
-</tr>
-<tr class="odd">
-<td>"Torgersen"</td>
-<td>18.0</td>
-<td>195.0</td>
-<td>3250.0</td>
-<td>"female"</td>
-<td>"Adelie"</td>
-<td>40.3</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>"Torgersen"</td>
-<td>null</td>
-<td>null</td>
-<td>null</td>
-<td>null</td>
-<td>"Adelie"</td>
-<td>null</td>
-<td>2007</td>
-</tr>
-<tr class="odd">
-<td>"Torgersen"</td>
-<td>19.3</td>
-<td>193.0</td>
-<td>3450.0</td>
-<td>"female"</td>
-<td>"Adelie"</td>
-<td>36.7</td>
-<td>2007</td>
-</tr>
-<tr class="even">
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-</tr>
-<tr class="odd">
-<td>"Dream"</td>
-<td>19.8</td>
-<td>207.0</td>
-<td>4000.0</td>
-<td>"male"</td>
-<td>"Chinstrap"</td>
-<td>55.8</td>
-<td>2009</td>
-</tr>
-<tr class="even">
-<td>"Dream"</td>
-<td>18.1</td>
-<td>202.0</td>
-<td>3400.0</td>
-<td>"female"</td>
-<td>"Chinstrap"</td>
-<td>43.5</td>
-<td>2009</td>
-</tr>
-<tr class="odd">
-<td>"Dream"</td>
-<td>18.2</td>
-<td>193.0</td>
-<td>3775.0</td>
-<td>"male"</td>
-<td>"Chinstrap"</td>
-<td>49.6</td>
-<td>2009</td>
-</tr>
-<tr class="even">
-<td>"Dream"</td>
-<td>19.0</td>
-<td>210.0</td>
-<td>4100.0</td>
-<td>"male"</td>
-<td>"Chinstrap"</td>
-<td>50.8</td>
-<td>2009</td>
-</tr>
-<tr class="odd">
-<td>"Dream"</td>
-<td>18.7</td>
-<td>198.0</td>
-<td>3775.0</td>
-<td>"female"</td>
-<td>"Chinstrap"</td>
-<td>50.2</td>
-<td>2009</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  .select(_.island, _.bill_depth_mm, </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>          _.flipper_length_mm, _.body_mass_g, _.sex, </span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>          _.species, _.bill_length_mm, _.year)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>┌───────────┬───────────────┬───────────────────┬─────────────┬────────┬───┐
+│ island    │ bill_depth_mm │ flipper_length_mm │ body_mass_g │ sex    │ … │
+├───────────┼───────────────┼───────────────────┼─────────────┼────────┼───┤
+│ string    │ float64       │ float64           │ float64     │ string │ … │
+├───────────┼───────────────┼───────────────────┼─────────────┼────────┼───┤
+│ Torgersen │          18.7 │             181.0 │      3750.0 │ male   │ … │
+│ Torgersen │          17.4 │             186.0 │      3800.0 │ female │ … │
+│ Torgersen │          18.0 │             195.0 │      3250.0 │ female │ … │
+│ Torgersen │          NULL │              NULL │        NULL │ NULL   │ … │
+│ Torgersen │          19.3 │             193.0 │      3450.0 │ female │ … │
+│ Torgersen │          20.6 │             190.0 │      3650.0 │ male   │ … │
+│ Torgersen │          17.8 │             181.0 │      3625.0 │ female │ … │
+│ Torgersen │          19.6 │             195.0 │      4675.0 │ male   │ … │
+│ Torgersen │          18.1 │             193.0 │      3475.0 │ NULL   │ … │
+│ Torgersen │          20.2 │             190.0 │      4250.0 │ NULL   │ … │
+│ …         │             … │                 … │           … │ …      │ … │
+└───────────┴───────────────┴───────────────────┴─────────────┴────────┴───┘</code></pre>
 </div>
 </div>
 </div>
@@ -1468,16 +713,16 @@ cookieconsent.run({
 <h1>Work with groups of rows</h1>
 <section id="simple-summaries-by-group" class="level2">
 <h2 class="anchored" data-anchor-id="simple-summaries-by-group">Simple summaries by group</h2>
-<p>Let’s suppose we want to compute summaries by groups such as means or medians. Both packages are very similar again: on the R side you have <code>dplyr::group_by()</code> and <code>dplyr::summarize()</code>, while on the Python side you have <code>polars.group_by()</code> and <code>polars.agg()</code>.</p>
-<p>Note that <code>dplyr::group_by()</code> also automatically arranges the results by the group, so the reproduce the results of <code>dplyr</code>, we need to add <code>polars.sort()</code> to the chain.</p>
+<p>Let’s suppose we want to compute summaries by groups such as means or medians. Both packages are very similar again: on the R side you have <code>dplyr::group_by()</code> and <code>dplyr::summarize()</code>, while on the Python side you have <code>ibis.group_by()</code> and <code>ibis.aggregate()</code>.</p>
+<p>Note that <code>dplyr::group_by()</code> also automatically arranges the results by the group, so the reproduce the results of <code>dplyr</code>, we need to add <code>ibis.order_by()</code> to the chain.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(island) <span class="sc">|&gt;</span> </span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">bill_depth_mean =</span> <span class="fu">mean</span>(bill_depth_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(island) <span class="sc">|&gt;</span> </span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">bill_depth_mean =</span> <span class="fu">mean</span>(bill_depth_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 2
   island    bill_depth_mean
@@ -1490,47 +735,21 @@ cookieconsent.run({
 </div>
 <div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  .group_by(<span class="st">"island"</span>)</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  .agg([pl.mean(<span class="st">"bill_depth_mm"</span>).alias(<span class="st">"bill_depth_mean"</span>)])</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  .sort([<span class="st">"island"</span>])</span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div><style>
-.dataframe > thead > tr,
-.dataframe > tbody > tr {
-  text-align: right;
-  white-space: pre-wrap;
-}
-</style>
-<small>shape: (3, 2)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">island</th>
-<th data-quarto-table-cell-role="th">bill_depth_mean</th>
-</tr>
-<tr class="odd">
-<th>str</th>
-<th>f64</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>"Biscoe"</td>
-<td>15.87485</td>
-</tr>
-<tr class="even">
-<td>"Dream"</td>
-<td>18.344355</td>
-</tr>
-<tr class="odd">
-<td>"Torgersen"</td>
-<td>18.429412</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  .group_by(<span class="st">"island"</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  .aggregate(bill_depth_mean <span class="op">=</span> _.bill_depth_mm.mean())</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  .order_by([<span class="st">"island"</span>])</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>┌───────────┬─────────────────┐
+│ island    │ bill_depth_mean │
+├───────────┼─────────────────┤
+│ string    │ float64         │
+├───────────┼─────────────────┤
+│ Biscoe    │       15.874850 │
+│ Dream     │       18.344355 │
+│ Torgersen │       18.429412 │
+└───────────┴─────────────────┘</code></pre>
 </div>
 </div>
 </div>
@@ -1539,19 +758,21 @@ cookieconsent.run({
 </section>
 <section id="more-complicated-summaries-by-group" class="level2">
 <h2 class="anchored" data-anchor-id="more-complicated-summaries-by-group">More complicated summaries by group</h2>
-<p>Typically, you want to create multiple different summaries by groups. <code>dplyr</code> provides a lot of flexibility to create new variables on the fly, while <code>polars</code> seems to be a bit more restrictive. For instance, to compute the share of female penguins by group, it makes more sense to create an <code>ìs_female</code> indicator column using <code>polars</code> because <code>polars.mean()</code> does not accept expressions as inputs.</p>
+<p>Typically, you want to create multiple different summaries by groups. <code>dplyr</code> provides a lot of flexibility to create new variables on the fly, as does <code>ibis</code>. For instance, we can pass expressions to them mean functions in order to create the share of female penguins per island in the summary statement.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(island) <span class="sc">|&gt;</span> </span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">count =</span> <span class="fu">n</span>(),</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">bill_depth_mean =</span> <span class="fu">mean</span>(bill_depth_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">flipper_length_median =</span> <span class="fu">median</span>(flipper_length_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">body_mass_sd =</span> <span class="fu">sd</span>(body_mass_g, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">share_female =</span> <span class="fu">mean</span>(sex <span class="sc">==</span> <span class="st">"female"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(island) <span class="sc">|&gt;</span> </span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">count =</span> <span class="fu">n</span>(),</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">bill_depth_mean =</span> <span class="fu">mean</span>(bill_depth_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">flipper_length_median =</span> <span class="fu">median</span>(flipper_length_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">body_mass_sd =</span> <span class="fu">sd</span>(body_mass_g, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">share_female =</span> <span class="fu">mean</span>(sex <span class="sc">==</span> <span class="st">"female"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 6
   island   count bill_depth_mean flipper_length_median body_mass_sd share_female
@@ -1564,76 +785,27 @@ cookieconsent.run({
 </div>
 <div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  .with_columns((pl.when(pl.col(<span class="st">"sex"</span>) <span class="op">==</span> <span class="st">"female"</span>).then(<span class="dv">1</span>)</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>                  .when(pl.col(<span class="st">"sex"</span>).is_null()).then(<span class="va">None</span>)</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>                  .otherwise(<span class="dv">0</span>)).alias(<span class="st">"is_female"</span>))</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  .group_by(<span class="st">"island"</span>)</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  .agg([</span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    pl.count().alias(<span class="st">"count"</span>),</span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    pl.mean(<span class="st">"bill_depth_mm"</span>).alias(<span class="st">"bill_depth_mean"</span>),</span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>    pl.median(<span class="st">"flipper_length_mm"</span>).alias(<span class="st">"flipper_length_median"</span>),</span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>    pl.std(<span class="st">"body_mass_g"</span>).alias(<span class="st">"body_mass_sd"</span>),</span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    pl.mean(<span class="st">"is_female"</span>).alias(<span class="st">"share_female"</span>)</span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>  ])</span>
-<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>  .sort([<span class="st">"island"</span>])</span>
-<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div><style>
-.dataframe > thead > tr,
-.dataframe > tbody > tr {
-  text-align: right;
-  white-space: pre-wrap;
-}
-</style>
-<small>shape: (3, 6)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">island</th>
-<th data-quarto-table-cell-role="th">count</th>
-<th data-quarto-table-cell-role="th">bill_depth_mean</th>
-<th data-quarto-table-cell-role="th">flipper_length_median</th>
-<th data-quarto-table-cell-role="th">body_mass_sd</th>
-<th data-quarto-table-cell-role="th">share_female</th>
-</tr>
-<tr class="odd">
-<th>str</th>
-<th>u32</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>"Biscoe"</td>
-<td>168</td>
-<td>15.87485</td>
-<td>214.0</td>
-<td>782.855743</td>
-<td>0.490798</td>
-</tr>
-<tr class="even">
-<td>"Dream"</td>
-<td>124</td>
-<td>18.344355</td>
-<td>193.0</td>
-<td>416.644112</td>
-<td>0.495935</td>
-</tr>
-<tr class="odd">
-<td>"Torgersen"</td>
-<td>52</td>
-<td>18.429412</td>
-<td>191.0</td>
-<td>445.10794</td>
-<td>0.510638</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  .group_by(<span class="st">"island"</span>)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  .aggregate(</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    count <span class="op">=</span> _.count(),</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    bill_depth_mean <span class="op">=</span> _.bill_depth_mm.mean(),</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    flipper_length_median <span class="op">=</span> _.flipper_length_mm.median(),</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    body_mass_sd <span class="op">=</span> _.body_mass_g.std(),</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    share_female <span class="op">=</span> (_.sex <span class="op">==</span> <span class="st">"female"</span>).mean()</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  .order_by([<span class="st">"island"</span>])</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>┌───────────┬──────┬─────────────────┬──────────────────────┬──────────────┬──┐
+│ island    │ cou… │ bill_depth_mean │ flipper_length_medi… │ body_mass_sd │  │
+├───────────┼──────┼─────────────────┼──────────────────────┼──────────────┼──┤
+│ string    │ int… │ float64         │ float64              │ float64      │  │
+├───────────┼──────┼─────────────────┼──────────────────────┼──────────────┼──┤
+│ Biscoe    │  168 │       15.874850 │                214.0 │   782.855743 │  │
+│ Dream     │  124 │       18.344355 │                193.0 │   416.644112 │  │
+│ Torgersen │   52 │       18.429412 │                191.0 │   445.107940 │  │
+└───────────┴──────┴─────────────────┴──────────────────────┴──────────────┴──┘</code></pre>
 </div>
 </div>
 </div>
@@ -1642,7 +814,7 @@ cookieconsent.run({
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>This post highlights syntactic similarities and differences across R’s <code>dplyr</code> and Python’s <code>polars</code> packages. Two key points emerge: (i) <code>dplyr</code> heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python; (ii) creating new variables in <code>dplyr</code> is read from left to right (the new variable name comes first, the definition later), while it is the other way around in <code>polars</code> (definition first, new variable name later). I want to close this post by emphasizing that both languages and packages have their own merits and I won’t strictly recommend one over the other - maybe in another post <span class="emoji" data-emoji="smile">😄</span></p>
+<p>This post highlights syntactic similarities and differences across R’s <code>dplyr</code> and Python’s <code>ibis</code> packages. Two key points emerge: (i) <code>dplyr</code> heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python; … I want to close this post by emphasizing that both languages and packages have their own merits and I won’t strictly recommend one over the other - maybe in another post <span class="emoji" data-emoji="smile">😄</span></p>
 
 
 </section>

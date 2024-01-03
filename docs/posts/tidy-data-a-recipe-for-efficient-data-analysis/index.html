@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.526">
+<meta name="generator" content="quarto-1.4.533">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -115,7 +115,7 @@ cookieconsent.run({
 <meta property="og:image:width" content="1024">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -154,7 +154,20 @@ cookieconsent.run({
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#example-for-tidy-data" id="toc-example-for-tidy-data" class="nav-link active" data-scroll-target="#example-for-tidy-data">Example for tidy data</a></li>
+  <li><a href="#when-colum-headers-are-values-not-variable-names" id="toc-when-colum-headers-are-values-not-variable-names" class="nav-link" data-scroll-target="#when-colum-headers-are-values-not-variable-names">When colum headers are values, not variable names</a></li>
+  <li><a href="#when-multiple-variables-are-stored-in-one-column" id="toc-when-multiple-variables-are-stored-in-one-column" class="nav-link" data-scroll-target="#when-multiple-variables-are-stored-in-one-column">When multiple variables are stored in one column</a></li>
+  <li><a href="#when-variables-are-stored-in-both-rows-and-columns" id="toc-when-variables-are-stored-in-both-rows-and-columns" class="nav-link" data-scroll-target="#when-variables-are-stored-in-both-rows-and-columns">When variables are stored in both rows and columns</a></li>
+  <li><a href="#when-there-are-multiple-types-of-data-in-the-same-column" id="toc-when-there-are-multiple-types-of-data-in-the-same-column" class="nav-link" data-scroll-target="#when-there-are-multiple-types-of-data-in-the-same-column">When there are multiple types of data in the same column</a></li>
+  <li><a href="#when-some-data-is-missing" id="toc-when-some-data-is-missing" class="nav-link" data-scroll-target="#when-some-data-is-missing">When some data is missing</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
@@ -752,27 +765,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
     stripColumnClz(note)
-    const typesetMath = (el) => {
-      if (window.MathJax) {
-        // MathJax Typeset
-        window.MathJax.typeset([el]);
-      } else if (window.katex) {
-        // KaTeX Render
-        var mathElements = el.getElementsByClassName("math");
-        var macros = [];
-        for (var i = 0; i < mathElements.length; i++) {
-          var texText = mathElements[i].firstChild;
-          if (mathElements[i].tagName == "SPAN") {
-            window.katex.render(texText.data, mathElements[i], {
-              displayMode: mathElements[i].classList.contains('display'),
-              throwOnError: false,
-              macros: macros,
-              fleqn: false
-            });
-          }
-        }
-      }
-    }
     if (id === null || id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
@@ -787,10 +779,14 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             break;
           }
         }
-        typesetMath(container);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
         return container.innerHTML
       } else {
-        typesetMath(note);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
         return note.innerHTML;
       }
     } else {
@@ -799,7 +795,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (anchorLink) {
         anchorLink.remove();
       }
-      typesetMath(note);
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
       return note.innerHTML;
     }
   }

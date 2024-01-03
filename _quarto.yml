@@ -42,7 +42,7 @@ format:
     css: 
       - assets/css/styles-global.css
       - assets/css/styles-blog.css 
-    toc: false
+    toc: true
     smooth-scroll: true
     fig-align: "center"
     fig-width: 7
