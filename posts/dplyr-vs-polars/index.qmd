@@ -6,10 +6,10 @@ metadata:
 author: "Christoph Scheuch"
 date: "2024-01-02" 
 image: thumbnail.png
-image-alt: A 3D computer-rendered image of polar bear looking at pliers in an arctic setting. Created with DALL-E 3.
+image-alt: A realistic polar bear sitting on a snowy landscape, looking curiously at a pair of pliers lying on the ground. The polar bear should have a thick, white coat and appear both majestic and inquisitive. The pliers are standard steel with red rubber grips, contrasting against the white snow. The scene is set in the Arctic with a clear blue sky and a few distant icebergs in the background. Created with DALL-E 3.
 ---
 
-There are a myriad of options to perform essential data manipulation tasks in R and Python. However, if we want to do tidy data science, there is a clear forerunner in R: `dplyr`. In the world of Python, `polars` is a relatively new kid on the block that shares a lot of semantic with `dplyr`. In this blog post, I illustrate their syntactic similarities and highlight differences that emerge for a few key tasks. 
+There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my other post on [dplyr vs ibis](../dplyr-vs-ibis/index.qmd)). However, if we want to do tidy data science in R, there is a clear forerunner: `dplyr`. In the world of Python, `polars` is a relatively new kid on the block that shares a lot of semantic with `dplyr`. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks. 
 
 Before we dive into the comparison, a short introduction to the packages: the `dplyr` package in R allows users to refer to columns without quotation marks due to its implementation of non-standard evaluation (NSE). NSE is a programming technique used in R that allows functions to capture the expressions passed to them as arguments, rather than just the values of those arguments. The primary goal of NSE in the context of `dplyr` is to create a more user-friendly and intuitive syntax. This makes data manipulation tasks more straightforward and aligns with the general philosophy of the `tidyverse` to make data science faster, easier, and more fun.[^1]
 
@@ -25,6 +25,7 @@ We start by loading the main packages of interest and the popular `palmerpenguin
 #| message: false
 library(dplyr)
 library(palmerpenguins)
+
 penguins <- palmerpenguins::penguins
 ```
 ## Python
@@ -32,8 +33,10 @@ penguins <- palmerpenguins::penguins
 #| message: false
 import polars as pl
 from palmerpenguins import load_penguins
-penguins = load_penguins().pipe(pl.from_pandas)
+
 pl.Config(tbl_rows = 10)
+
+penguins = load_penguins().pipe(pl.from_pandas)
 ```
 :::
 
@@ -62,7 +65,7 @@ penguins |>
 
 ## Slice rows
 
-`dplyr::slice()` takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. `polars.slice()` only takes the start index and the length of the slice as inputs. For instance, to the the same result of slicing rows 10 to 20, the code looks as follows:
+`dplyr::slice()` takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. `polars.slice()` only takes the start index and the length of the slice as inputs. For instance, to the the same result of slicing rows 10 to 20, the code looks as follows (note that indexing starts at 0 in Python, while it starts at 1 in R):
 
 ::: {.panel-tabset}
 ### R
@@ -145,14 +148,19 @@ Transforming existing columns or creating new ones is an essential part of data 
 ### R
 ```{r}
 penguins |> 
-  mutate(bill_length_mm = bill_length_mm / 10,
-         bill_length_squared = bill_length_mm^2)
+  mutate(ones = 1,
+         bill_length = bill_length_mm / 10,
+         bill_length_squared = bill_length^2) |> 
+  select(ones, bill_length_mm, bill_length, bill_length_squared)
 ```
 ### Python
 ```{python}
 (penguins 
-  .with_columns(pl.col("bill_length_mm") / 10)
-  .with_columns((pl.col("bill_length_mm") ** 2).alias("bill_length_squared"))
+  .with_columns(pl.lit(1).alias("ones"),
+                (pl.col("bill_length_mm") / 10).alias("bill_length"))
+  .with_columns((pl.col("bill_length") ** 2).alias("bill_length_squared"))
+  .select(pl.col("ones"), pl.col("bill_length_mm"),  
+          pl.col("bill_length"), pl.col("bill_length_squared"))
 )
 ```
 :::
