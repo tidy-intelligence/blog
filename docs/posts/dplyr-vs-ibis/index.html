@@ -236,12 +236,12 @@ cookieconsent.run({
 </header>
 
 
-<p>There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my previous post on <a href="../../posts/dplyr-vs-polars/index.html">dplyr vs polars</a>). However, if we want to do tidy data science in R, there is a clear forerunner: <code>dplyr</code>. In the world of Python, <code>ibis</code> has been around since 2015 but recently gains traction due to its appealing flexibility. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks.</p>
+<p>There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my previous post on <a href="../../posts/dplyr-vs-polars/index.html">dplyr vs polars</a>). However, if we want to do tidy data science in R, there is a clear forerunner: <code>dplyr</code>. In the world of Python, <code>ibis</code> has been around since 2015 but recently gained traction due to its appealing flexibility with respect to data backends. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks.</p>
 <p>Before we dive into the comparison, a short introduction to the packages: the <code>dplyr</code> package in R allows users to refer to columns without quotation marks due to its implementation of non-standard evaluation (NSE). NSE is a programming technique used in R that allows functions to capture the expressions passed to them as arguments, rather than just the values of those arguments. The primary goal of NSE in the context of <code>dplyr</code> is to create a more user-friendly and intuitive syntax. This makes data manipulation tasks more straightforward and aligns with the general philosophy of the <code>tidyverse</code> to make data science faster, easier, and more fun.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<p><code>ibis</code> is a Python library that provides a lightweight and universal interface for data wrangling using many different data back ends. The core idea behind <code>ibis</code> is to provide Python users with a familiar <code>pandas</code>-like syntax while allowing them to work with larger datasets that don’t fit into memory. As you see in the post below, the <code>ibis</code> syntax can be surprisingly closer to <code>dplyr</code> than to original <code>pandas.</code> In addition, <code>ibis</code> builds an expression tree as you write code. This tree is then translated into the native query language of the target data source, be it SQL or something else, and executed remotely (similar to the <code>dbplyr</code> package in R). This approach ensures that only the final results are loaded into Python, significantly reducing memory overhead.</p>
+<p><code>ibis</code> is a Python library that provides a lightweight and universal interface for data wrangling using many different data backends. The core idea behind <code>ibis</code> is to provide Python users with a familiar <code>pandas</code>-like syntax while allowing them to work with larger datasets that don’t fit into memory. As you see in the post below, the <code>ibis</code> syntax can be surprisingly closer to <code>dplyr</code> than to the original idea of resembling <code>pandas.</code> In addition, <code>ibis</code> builds an expression tree as you write code. This tree is then translated into the native query language of the target data source, be it SQL or something else, and executed remotely (similar to the <code>dbplyr</code> package in R). This approach ensures that only the final results are loaded into Python, significantly reducing memory overhead.</p>
 <section id="loading-packages" class="level1">
 <h1>Loading packages</h1>
-<p>We start by loading the main packages of interest and the popular <code>palmerpenguins</code> package that exists for both R and Python. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below. Note that we also limit the print output of <code>ibis</code> data frames to 10 rows to prevent this post being flooded by excessively long tables.</p>
+<p>We start by loading the main packages of interest and the popular <code>palmerpenguins</code> package that exists for both R and Python. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below. Note that we also enable the interactive mode in <code>ibis</code> to limit the print output of <code>ibis</code> data frames to 10 rows.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -288,7 +288,7 @@ ibis vs ibis-framework
 <h1>Work with rows</h1>
 <section id="filter-rows" class="level2">
 <h2 class="anchored" data-anchor-id="filter-rows">Filter rows</h2>
-<p>Filtering rows works very similarly for both packages, they even have the same function names: <code>dplyr::filter()</code> and <code>ibis.filter()</code>. To select columns in <code>ibis</code>, you need the <code>ibis._</code> selector.</p>
+<p>Filtering rows works very similarly for both packages, they even have the same function names: <code>dplyr::filter()</code> and <code>ibis.filter()</code>. To select columns in <code>ibis</code>, you need the <code>ibis._</code> selector. Note that you have to provide a dictionary to <code>ibis.filter()</code> in case you want to have multiple conditions.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -408,7 +408,7 @@ ibis vs ibis-framework
 </section>
 <section id="arrange-rows" class="level2">
 <h2 class="anchored" data-anchor-id="arrange-rows">Arrange rows</h2>
-<p>To orders the rows of a data frame by the values of selected columns, we have <code>dplyr::arrange()</code> and <code>ibis.order_by()</code>. Note that <code>dplyr::arrange()</code> arranges rows in an an ascending order and puts missing values last, as does <code>ibis.order_by()</code>.</p>
+<p>To orders the rows of a data frame by the values of selected columns, we have <code>dplyr::arrange()</code> and <code>ibis.order_by()</code>. Both approaches arrange rows in an an ascending order and puts missing values last. Again, you need to provide a dictionary to <code>ibis.order_by()</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -469,7 +469,7 @@ ibis vs ibis-framework
 <h1>Work with columns</h1>
 <section id="select-columns" class="level2">
 <h2 class="anchored" data-anchor-id="select-columns">Select columns</h2>
-<p>Selecting a subset of columns works essentially the same for both and <code>dplyr::select()</code> and <code>ibis.select()</code> even have the same name. Note that you don’t have to use <code>ibis._</code> but can just pass strings in the <code>ibis.select()</code> method.</p>
+<p>Selecting a subset of columns works essentially the same for both and <code>dplyr::select()</code> and <code>ibis.select()</code> even have the same name. Note that you don’t have to use <code>ibis._</code> but can also just pass strings in the <code>ibis.select()</code> method.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -526,7 +526,7 @@ ibis vs ibis-framework
 </section>
 <section id="rename-columns" class="level2">
 <h2 class="anchored" data-anchor-id="rename-columns">Rename columns</h2>
-<p>Renaming columns also works very similarly with the major difference that <code>ibis.rename()</code> does not accept the column selector <code>ibis._</code>, while <code>dplyr::rename()</code> takes variable names via the usual NSE.</p>
+<p>Renaming columns also works very similarly with the major difference that <code>ibis.rename()</code> does not accept the column selector <code>ibis._</code> on the right-hand side, while <code>dplyr::rename()</code> takes variable names via the usual NSE.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -680,10 +680,9 @@ ibis vs ibis-framework
 <div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  .select(_.island, _.bill_depth_mm, </span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>          _.flipper_length_mm, _.body_mass_g, _.sex, </span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>          _.species, _.bill_length_mm, _.year)</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  .select(_.island, _.bill_depth_mm, _.flipper_length_mm, _.body_mass_g, _.sex, </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>          _.species, _.bill_length_mm, _.year)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>┌───────────┬───────────────┬───────────────────┬─────────────┬────────┬───┐
 │ island    │ bill_depth_mm │ flipper_length_mm │ body_mass_g │ sex    │ … │
@@ -738,7 +737,7 @@ ibis vs ibis-framework
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  .group_by(<span class="st">"island"</span>)</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  .aggregate(bill_depth_mean <span class="op">=</span> _.bill_depth_mm.mean())</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  .order_by([<span class="st">"island"</span>])</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  .order_by(<span class="st">"island"</span>)</span>
 <span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>┌───────────┬─────────────────┐
@@ -794,7 +793,7 @@ ibis vs ibis-framework
 <span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    body_mass_sd <span class="op">=</span> _.body_mass_g.std(),</span>
 <span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    share_female <span class="op">=</span> (_.sex <span class="op">==</span> <span class="st">"female"</span>).mean()</span>
 <span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  .order_by([<span class="st">"island"</span>])</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  .order_by(<span class="st">"island"</span>)</span>
 <span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>┌───────────┬──────┬─────────────────┬──────────────────────┬──────────────┬──┐
@@ -814,7 +813,7 @@ ibis vs ibis-framework
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>This post highlights syntactic similarities and differences across R’s <code>dplyr</code> and Python’s <code>ibis</code> packages. Two key points emerge: (i) <code>dplyr</code> heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python; … I want to close this post by emphasizing that both languages and packages have their own merits and I won’t strictly recommend one over the other - maybe in another post <span class="emoji" data-emoji="smile">😄</span></p>
+<p>This post highlights syntactic similarities and differences across R’s <code>dplyr</code> and Python’s <code>ibis</code> packages. Two key points emerge: (i) <code>dplyr</code> heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python; (ii) the syntax is remarkably similar across both packages. I want to close this post by emphasizing that both languages and packages have their own merits and I won’t strictly recommend one over the other. However, I definitely prefer the print output of <code>dplyr</code> to <code>ibis</code> because the latter is silent about additional columns of the underlying data. I’m a big fan of the concise data printing capabilities that are part of <code>dplyr</code>.</p>
 
 
 </section>
