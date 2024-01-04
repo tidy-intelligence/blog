@@ -7,18 +7,17 @@ author: "Christoph Scheuch"
 date: "2024-01-04" 
 image: thumbnail.png
 image-alt: An ibis bird, with its long, curved beak and distinctive white plumage, standing in a brightly lit environment. The bird is curiously looking at a single pair of shiny, metallic pliers lying on the ground. The surroundings are vibrant and well-lit, with a clear blue sky overhead and lush green grass underfoot. The scene captures a sense of curiosity and contrast between the natural bird and the man-made tool. Created with DALL-E 3.
-draft: true
 ---
 
-There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my previous post on [dplyr vs polars](../dplyr-vs-polars/index.qmd)). However, if we want to do tidy data science in R, there is a clear forerunner: `dplyr`. In the world of Python, `ibis` has been around since 2015 but recently gains traction due to its appealing flexibility. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks. 
+There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my previous post on [dplyr vs polars](../dplyr-vs-polars/index.qmd)). However, if we want to do tidy data science in R, there is a clear forerunner: `dplyr`. In the world of Python, `ibis` has been around since 2015 but recently gained traction due to its appealing flexibility with respect to data backends. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks. 
 
 Before we dive into the comparison, a short introduction to the packages: the `dplyr` package in R allows users to refer to columns without quotation marks due to its implementation of non-standard evaluation (NSE). NSE is a programming technique used in R that allows functions to capture the expressions passed to them as arguments, rather than just the values of those arguments. The primary goal of NSE in the context of `dplyr` is to create a more user-friendly and intuitive syntax. This makes data manipulation tasks more straightforward and aligns with the general philosophy of the `tidyverse` to make data science faster, easier, and more fun.[^1]
 
-`ibis` is a Python library that provides a lightweight and universal interface for data wrangling using many different data back ends. The core idea behind `ibis` is to provide Python users with a familiar `pandas`-like syntax while allowing them to work with larger datasets that don't fit into memory. As you see in the post below, the `ibis` syntax can be surprisingly closer to `dplyr` than to original `pandas.` In addition, `ibis` builds an expression tree as you write code. This tree is then translated into the native query language of the target data source, be it SQL or something else, and executed remotely (similar to the `dbplyr` package in R). This approach ensures that only the final results are loaded into Python, significantly reducing memory overhead.
+`ibis` is a Python library that provides a lightweight and universal interface for data wrangling using many different data backends. The core idea behind `ibis` is to provide Python users with a familiar `pandas`-like syntax while allowing them to work with larger datasets that don't fit into memory. As you see in the post below, the `ibis` syntax can be surprisingly closer to `dplyr` than to the original idea of resembling `pandas.` In addition, `ibis` builds an expression tree as you write code. This tree is then translated into the native query language of the target data source, be it SQL or something else, and executed remotely (similar to the `dbplyr` package in R). This approach ensures that only the final results are loaded into Python, significantly reducing memory overhead.
 
 # Loading packages
 
-We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Python. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that we also limit the print output of `ibis` data frames to 10 rows to prevent this post being flooded by excessively long tables. 
+We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Python. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that we also enable the interactive mode in `ibis` to limit the print output of `ibis` data frames to 10 rows. 
 
 ::: {.callout-tip}
 ## ibis vs ibis-framework
@@ -54,7 +53,7 @@ penguins = ibis.memtable(load_penguins(), name = "penguins")
 
 ## Filter rows
 
-Filtering rows works very similarly for both packages, they even have the same function names: `dplyr::filter()` and `ibis.filter()`. To select columns in `ibis`, you need the `ibis._` selector. 
+Filtering rows works very similarly for both packages, they even have the same function names: `dplyr::filter()` and `ibis.filter()`. To select columns in `ibis`, you need the `ibis._` selector. Note that you have to provide a dictionary to `ibis.filter()` in case you want to have multiple conditions. 
 
 ::: {.panel-tabset}
 ### R
@@ -94,7 +93,7 @@ penguins |>
 
 ## Arrange rows
 
-To orders the rows of a data frame by the values of selected columns, we have `dplyr::arrange()` and `ibis.order_by()`. Note that `dplyr::arrange()` arranges rows in an an ascending order and puts missing values last, as does `ibis.order_by()`.  
+To orders the rows of a data frame by the values of selected columns, we have `dplyr::arrange()` and `ibis.order_by()`. Both approaches arrange rows in an an ascending order and puts missing values last. Again, you need to provide a dictionary to `ibis.order_by()`.
 
 ::: {.panel-tabset}
 ### R
@@ -114,7 +113,7 @@ penguins |>
 
 ## Select columns
 
-Selecting a subset of columns works essentially the same for both and `dplyr::select()` and `ibis.select()` even have the same name. Note that you don't have to use `ibis._` but can just pass strings in the `ibis.select()` method. 
+Selecting a subset of columns works essentially the same for both and `dplyr::select()` and `ibis.select()` even have the same name. Note that you don't have to use `ibis._` but can also just pass strings in the `ibis.select()` method. 
 
 ::: {.panel-tabset}
 ### R
@@ -132,7 +131,7 @@ penguins |>
 
 ## Rename columns
 
-Renaming columns also works very similarly with the major difference that `ibis.rename()` does not accept the column selector `ibis._`, while `dplyr::rename()` takes variable names via the usual NSE.
+Renaming columns also works very similarly with the major difference that `ibis.rename()` does not accept the column selector `ibis._` on the right-hand side, while `dplyr::rename()` takes variable names via the usual NSE.
 
 ::: {.panel-tabset}
 ### R
@@ -215,7 +214,7 @@ penguins |>
 (penguins
   .group_by("island")
   .aggregate(bill_depth_mean = _.bill_depth_mm.mean())
-  .order_by(["island"])
+  .order_by("island")
 )
 ```
 :::
@@ -248,13 +247,13 @@ penguins |>
     body_mass_sd = _.body_mass_g.std(),
     share_female = (_.sex == "female").mean()
   )
-  .order_by(["island"])
+  .order_by("island")
 )
 ```
 :::
 
 ## Conclusion
 
-This post highlights syntactic similarities and differences across R's `dplyr` and Python's `ibis` packages. Two key points emerge: (i) `dplyr` heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python; the syntax is remarkably similar across both packages. I want to close this post by emphasizing that both languages and packages have their own merits and I won't strictly recommend one over the other - maybe in another post :smile:
+This post highlights syntactic similarities and differences across R's `dplyr` and Python's `ibis` packages. Two key points emerge: (i) `dplyr` heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python; (ii) the syntax is remarkably similar across both packages. I want to close this post by emphasizing that both languages and packages have their own merits and I won't strictly recommend one over the other. However, I definitely prefer the print output of `dplyr` to `ibis` because the latter is silent about additional columns of the underlying data. I'm a big fan of the concise data printing capabilities that are part of `dplyr`.
 
 [^1]: See the unifying principles of the tidyverse: [https://design.tidyverse.org/unifying.html](https://design.tidyverse.org/unifying.html).

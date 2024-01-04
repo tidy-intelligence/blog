@@ -207,7 +207,7 @@ penguins |>
 (penguins
   .group_by("island")
   .agg([pl.mean("bill_depth_mm").alias("bill_depth_mean")])
-  .sort(["island"])
+  .sort("island")
 )
 ```
 :::
@@ -241,7 +241,7 @@ penguins |>
     pl.std("body_mass_g").alias("body_mass_sd"),
     pl.mean("is_female").alias("share_female")
   ])
-  .sort(["island"])
+  .sort("island")
 )
 ```
 :::
