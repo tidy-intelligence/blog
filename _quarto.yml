@@ -42,7 +42,7 @@ website:
       mapping: url
       reactions-enabled: true
       loading: lazy
-      theme: "preferred_color_scheme"
+      theme: "light"
       language: "en"
       input-position: "bottom"
 
