@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Christoph Scheuch">
-<meta name="dcterms.date" content="2024-01-04">
-<meta name="description" content="A comparison of R’s dplyr and Python’s ibis data manipulation packages">
+<meta name="dcterms.date" content="2024-01-07">
+<meta name="description" content="A comparison of R’s dplyr and Python’s pandas data manipulation packages">
 
-<title>Tidy Data Manipulation: dplyr vs ibis</title>
+<title>Tidy Data Manipulation: dplyr vs pandas</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -121,13 +121,13 @@ cookieconsent.run({
 
 <link rel="stylesheet" href="../../assets/css/styles-global.css">
 <link rel="stylesheet" href="../../assets/css/styles-blog.css">
-<meta property="og:title" content="Tidy Data Manipulation: dplyr vs ibis">
-<meta property="og:description" content="A comparison of R’s dplyr and Python’s ibis data manipulation packages">
-<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/dplyr-vs-ibis/thumbnail.png">
+<meta property="og:title" content="Tidy Data Manipulation: dplyr vs pandas">
+<meta property="og:description" content="A comparison of R’s dplyr and Python’s pandas data manipulation packages">
+<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/dplyr-vs-pandas/thumbnail.png">
 <meta property="og:site_name" content="Tidy Intelligence">
 <meta property="og:image:height" content="1024">
 <meta property="og:image:width" content="1024">
-<meta property="og:image:alt" content="An ibis bird, with its long, curved beak and distinctive white plumage, standing in a brightly lit environment. The bird is curiously looking at a single pair of shiny, metallic pliers lying on the ground. The surroundings are vibrant and well-lit, with a clear blue sky overhead and lush green grass underfoot. The scene captures a sense of curiosity and contrast between the natural bird and the man-made tool. Created with DALL-E 3.">
+<meta property="og:image:alt" content="A panda bear sitting calmly in a green bamboo forest. The panda has a curious expression as it looks at a red-handled plier placed on the ground in front of it. The plier is shiny and contrasts with the natural, lush environment. The background is filled with thick bamboo stalks and a variety of green plants, enhancing the natural habitat of the panda. The scene is peaceful, with soft, natural lighting highlighting the panda and the plier. Created with DALL-E 3.">
 </head>
 
 <body class="nav-fixed">
@@ -202,12 +202,12 @@ cookieconsent.run({
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Tidy Data Manipulation: dplyr vs ibis</h1>
+<h1 class="title">Tidy Data Manipulation: dplyr vs pandas</h1>
 </div>
 
 <div>
   <div class="description">
-    A comparison of R’s dplyr and Python’s ibis data manipulation packages
+    A comparison of R’s dplyr and Python’s pandas data manipulation packages
   </div>
 </div>
 
@@ -224,7 +224,7 @@ cookieconsent.run({
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 4, 2024</p>
+      <p class="date">January 7, 2024</p>
     </div>
   </div>
   
@@ -236,25 +236,25 @@ cookieconsent.run({
 </header>
 
 
-<p>There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my other posts on <a href="../../posts/dplyr-vs-pandas/index.html">dplyr vs pandas</a> and <a href="../../posts/dplyr-vs-polars/index.html">dplyr vs polars</a>). However, if we want to do tidy data science in R, there is a clear forerunner: <code>dplyr</code>. In the world of Python, <code>ibis</code> has been around since 2015 but recently gained traction due to its appealing flexibility with respect to data backends. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks.</p>
+<p>There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my other posts on <a href="../../posts/dplyr-vs-ibis/index.html">dplyr vs ibis</a> and <a href="../../posts/dplyr-vs-polars/index.html">dplyr vs polars</a>). However, if we want to do tidy data science in R, there is a clear forerunner: <code>dplyr</code>. In the world of Python, <code>pandas</code> is the most popular data analysis library. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks.</p>
 <p>Before we dive into the comparison, a short introduction to the packages: the <code>dplyr</code> package in R allows users to refer to columns without quotation marks due to its implementation of non-standard evaluation (NSE). NSE is a programming technique used in R that allows functions to capture the expressions passed to them as arguments, rather than just the values of those arguments. The primary goal of NSE in the context of <code>dplyr</code> is to create a more user-friendly and intuitive syntax. This makes data manipulation tasks more straightforward and aligns with the general philosophy of the <code>tidyverse</code> to make data science faster, easier, and more fun.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<p><code>ibis</code> is a Python library that provides a lightweight and universal interface for data wrangling using many different data backends. The core idea behind <code>ibis</code> is to provide Python users with a familiar <code>pandas</code>-like syntax while allowing them to work with larger datasets that don’t fit into memory. As you see in the post below, the <code>ibis</code> syntax can be surprisingly closer to <code>dplyr</code> than to the original idea of resembling <code>pandas.</code> In addition, <code>ibis</code> builds an expression tree as you write code. This tree is then translated into the native query language of the target data source, be it SQL or something else, and executed remotely (similar to the <code>dbplyr</code> package in R). This approach ensures that only the final results are loaded into Python, significantly reducing memory overhead.</p>
-<section id="loading-packages" class="level1">
-<h1>Loading packages</h1>
-<p>We start by loading the main packages of interest and the popular <code>palmerpenguins</code> package that exists for both R and Python. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below. Note that we also enable the interactive mode in <code>ibis</code> to limit the print output of <code>ibis</code> data frames to 10 rows.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
+<p><code>pandas</code> is also designed for data analysis and provides a comprehensive range of functionalities for data manipulation and it is designed to efficiently handle in-memory data. The package has a large community, given Python’s popularity in various fields. The learning curve might be steeper for beginners due to Python’s general-purpose nature and the verbosity of <code>pandas</code> syntax, but it integrates well with web apps, machine learning models, etc.</p>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-ibis vs ibis-framework
+pandas syntax
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Note that the <code>ibis-framework</code> package is not the same as the <code>ibis</code> package in PyPI. These two libraries cannot coexist in the same Python environment, as they are both imported with the ibis module name. So be careful to install the correct <code>ibis-framework</code> package via: <code>pip install 'ibis-framekwork[duckdb]'</code></p>
+<p>If you are a seasoned <code>pandas</code> user, you might find my approach non-Pythonic for at least two deliberate choices that I made: (i) I prefer to have chainable methods over using verbose expressions over multiple lines; and (ii) I prefer to have whitespace around all equal signs, not just for variable assignments. In my view, these two choices improve the compliance of <code>pandas</code> with tidy coding principles by increasing the readability of code.</p>
 </div>
 </div>
+<section id="loading-packages" class="level1">
+<h1>Loading packages</h1>
+<p>We start by loading the main packages of interest and the popular <code>palmerpenguins</code> package that exists for both R and Python. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -268,14 +268,10 @@ ibis vs ibis-framework
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ibis</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ibis.selectors <span class="im">as</span> s</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ibis <span class="im">import</span> _</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> palmerpenguins <span class="im">import</span> load_penguins</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>ibis.options.interactive <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> ibis.memtable(load_penguins(), name <span class="op">=</span> <span class="st">"penguins"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> palmerpenguins <span class="im">import</span> load_penguins</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> load_penguins()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -285,7 +281,7 @@ ibis vs ibis-framework
 <h1>Work with rows</h1>
 <section id="filter-rows" class="level2">
 <h2 class="anchored" data-anchor-id="filter-rows">Filter rows</h2>
-<p>Filtering rows works very similarly for both packages, they even have the same function names: <code>dplyr::filter()</code> and <code>ibis.filter()</code>. To select columns in <code>ibis</code>, you need the <code>ibis._</code> selector. Note that you have to provide a dictionary to <code>ibis.filter()</code> in case you want to have multiple conditions.</p>
+<p>Filtering rows with <code>dplyr</code> is based on NSE and the <code>dplyr::filter()</code> function. To replicate the same results with <code>pandas</code>, you can use <code>pandas.query()</code> method which accepts a string with the filter conditions as input.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -316,29 +312,23 @@ ibis vs ibis-framework
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  .<span class="bu">filter</span>([</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    _.species <span class="op">==</span> <span class="st">"Adelie"</span>, </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    _.island.isin([<span class="st">"Biscoe"</span>, <span class="st">"Dream"</span>])</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  ]) </span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  .query(<span class="st">"species == 'Adelie' and island in ['Biscoe', 'Dream']"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>┏━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━┓
-┃ species ┃ island ┃ bill_length_mm ┃ bill_depth_mm ┃ flipper_length_mm ┃ … ┃
-┡━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━┩
-│ string  │ string │ float64        │ float64       │ float64           │ … │
-├─────────┼────────┼────────────────┼───────────────┼───────────────────┼───┤
-│ Adelie  │ Biscoe │           37.8 │          18.3 │             174.0 │ … │
-│ Adelie  │ Biscoe │           37.7 │          18.7 │             180.0 │ … │
-│ Adelie  │ Biscoe │           35.9 │          19.2 │             189.0 │ … │
-│ Adelie  │ Biscoe │           38.2 │          18.1 │             185.0 │ … │
-│ Adelie  │ Biscoe │           38.8 │          17.2 │             180.0 │ … │
-│ Adelie  │ Biscoe │           35.3 │          18.9 │             187.0 │ … │
-│ Adelie  │ Biscoe │           40.6 │          18.6 │             183.0 │ … │
-│ Adelie  │ Biscoe │           40.5 │          17.9 │             187.0 │ … │
-│ Adelie  │ Biscoe │           37.9 │          18.6 │             172.0 │ … │
-│ Adelie  │ Biscoe │           40.5 │          18.9 │             180.0 │ … │
-│ …       │ …      │              … │             … │                 … │ … │
-└─────────┴────────┴────────────────┴───────────────┴───────────────────┴───┘</code></pre>
+<pre><code>    species  island  bill_length_mm  ...  body_mass_g     sex  year
+20   Adelie  Biscoe            37.8  ...       3400.0  female  2007
+21   Adelie  Biscoe            37.7  ...       3600.0    male  2007
+22   Adelie  Biscoe            35.9  ...       3800.0  female  2007
+23   Adelie  Biscoe            38.2  ...       3950.0    male  2007
+24   Adelie  Biscoe            38.8  ...       3800.0    male  2007
+..      ...     ...             ...  ...          ...     ...   ...
+147  Adelie   Dream            36.6  ...       3475.0  female  2009
+148  Adelie   Dream            36.0  ...       3450.0  female  2009
+149  Adelie   Dream            37.8  ...       3750.0    male  2009
+150  Adelie   Dream            36.0  ...       3700.0  female  2009
+151  Adelie   Dream            41.5  ...       4000.0    male  2009
+
+[100 rows x 8 columns]</code></pre>
 </div>
 </div>
 </div>
@@ -347,7 +337,7 @@ ibis vs ibis-framework
 </section>
 <section id="slice-rows" class="level2">
 <h2 class="anchored" data-anchor-id="slice-rows">Slice rows</h2>
-<p><code>dplyr::slice()</code> takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. <code>ibis.limit()</code> only takes the number of rows to slice and the number of rows to skip as inputs. For instance, to the the same result of slicing rows 10 to 20, the code looks as follows (note that indexing starts at 0 in Python, while it starts at 1 in R):</p>
+<p><code>dplyr::slice()</code> takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. <code>pandas.iloc[]</code> also provides a function for integer-location based indexing (note that indexing starts at 0 in Python, while it starts at 1 in R). Note that <code>pandas.iloc[]</code> requires square brackets instead of parentheses.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -377,26 +367,23 @@ ibis vs ibis-framework
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  .limit(<span class="dv">11</span>, offset <span class="op">=</span> <span class="dv">9</span>) </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  .iloc[<span class="dv">9</span>:<span class="dv">20</span>]</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>┏━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━┓
-┃ species ┃ island    ┃ bill_length_mm ┃ bill_depth_mm ┃ flipper_length_mm ┃ … ┃
-┡━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━┩
-│ string  │ string    │ float64        │ float64       │ float64           │ … │
-├─────────┼───────────┼────────────────┼───────────────┼───────────────────┼───┤
-│ Adelie  │ Torgersen │           42.0 │          20.2 │             190.0 │ … │
-│ Adelie  │ Torgersen │           37.8 │          17.1 │             186.0 │ … │
-│ Adelie  │ Torgersen │           37.8 │          17.3 │             180.0 │ … │
-│ Adelie  │ Torgersen │           41.1 │          17.6 │             182.0 │ … │
-│ Adelie  │ Torgersen │           38.6 │          21.2 │             191.0 │ … │
-│ Adelie  │ Torgersen │           34.6 │          21.1 │             198.0 │ … │
-│ Adelie  │ Torgersen │           36.6 │          17.8 │             185.0 │ … │
-│ Adelie  │ Torgersen │           38.7 │          19.0 │             195.0 │ … │
-│ Adelie  │ Torgersen │           42.5 │          20.7 │             197.0 │ … │
-│ Adelie  │ Torgersen │           34.4 │          18.4 │             184.0 │ … │
-│ …       │ …         │              … │             … │                 … │ … │
-└─────────┴───────────┴────────────────┴───────────────┴───────────────────┴───┘</code></pre>
+<pre><code>   species     island  bill_length_mm  ...  body_mass_g     sex  year
+9   Adelie  Torgersen            42.0  ...       4250.0     NaN  2007
+10  Adelie  Torgersen            37.8  ...       3300.0     NaN  2007
+11  Adelie  Torgersen            37.8  ...       3700.0     NaN  2007
+12  Adelie  Torgersen            41.1  ...       3200.0  female  2007
+13  Adelie  Torgersen            38.6  ...       3800.0    male  2007
+14  Adelie  Torgersen            34.6  ...       4400.0    male  2007
+15  Adelie  Torgersen            36.6  ...       3700.0  female  2007
+16  Adelie  Torgersen            38.7  ...       3450.0  female  2007
+17  Adelie  Torgersen            42.5  ...       4500.0    male  2007
+18  Adelie  Torgersen            34.4  ...       3325.0  female  2007
+19  Adelie  Torgersen            46.0  ...       4200.0    male  2007
+
+[11 rows x 8 columns]</code></pre>
 </div>
 </div>
 </div>
@@ -405,14 +392,14 @@ ibis vs ibis-framework
 </section>
 <section id="arrange-rows" class="level2">
 <h2 class="anchored" data-anchor-id="arrange-rows">Arrange rows</h2>
-<p>To orders the rows of a data frame by the values of selected columns, we have <code>dplyr::arrange()</code> and <code>ibis.order_by()</code>. Both approaches arrange rows in an an ascending order and puts missing values last. Again, you need to provide a dictionary to <code>ibis.order_by()</code>.</p>
+<p>To orders the rows of a data frame by the values of selected columns, we have <code>dplyr::arrange()</code> and <code>pandas.sort_values()</code>. Note that both approaches arrange rows in an an ascending order and puts missing values last as defaults.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(island, <span class="fu">desc</span>(bill_length_mm))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(island, <span class="sc">-</span>bill_length_mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 344 × 8
    species island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
@@ -435,26 +422,24 @@ ibis vs ibis-framework
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  .order_by([_.island, _.bill_length_mm.desc()])</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  .sort_values(by <span class="op">=</span> [<span class="st">"island"</span>, <span class="st">"bill_length_mm"</span>], </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>               ascending <span class="op">=</span> [<span class="va">True</span>, <span class="va">False</span>])</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>┏━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━┓
-┃ species ┃ island ┃ bill_length_mm ┃ bill_depth_mm ┃ flipper_length_mm ┃ … ┃
-┡━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━┩
-│ string  │ string │ float64        │ float64       │ float64           │ … │
-├─────────┼────────┼────────────────┼───────────────┼───────────────────┼───┤
-│ Gentoo  │ Biscoe │           59.6 │          17.0 │             230.0 │ … │
-│ Gentoo  │ Biscoe │           55.9 │          17.0 │             228.0 │ … │
-│ Gentoo  │ Biscoe │           55.1 │          16.0 │             230.0 │ … │
-│ Gentoo  │ Biscoe │           54.3 │          15.7 │             231.0 │ … │
-│ Gentoo  │ Biscoe │           53.4 │          15.8 │             219.0 │ … │
-│ Gentoo  │ Biscoe │           52.5 │          15.6 │             221.0 │ … │
-│ Gentoo  │ Biscoe │           52.2 │          17.1 │             228.0 │ … │
-│ Gentoo  │ Biscoe │           52.1 │          17.0 │             230.0 │ … │
-│ Gentoo  │ Biscoe │           51.5 │          16.3 │             230.0 │ … │
-│ Gentoo  │ Biscoe │           51.3 │          14.2 │             218.0 │ … │
-│ …       │ …      │              … │             … │                 … │ … │
-└─────────┴────────┴────────────────┴───────────────┴───────────────────┴───┘</code></pre>
+<pre><code>    species     island  bill_length_mm  ...  body_mass_g     sex  year
+185  Gentoo     Biscoe            59.6  ...       6050.0    male  2007
+253  Gentoo     Biscoe            55.9  ...       5600.0    male  2009
+267  Gentoo     Biscoe            55.1  ...       5850.0    male  2009
+215  Gentoo     Biscoe            54.3  ...       5650.0    male  2008
+259  Gentoo     Biscoe            53.4  ...       5500.0    male  2009
+..      ...        ...             ...  ...          ...     ...   ...
+80   Adelie  Torgersen            34.6  ...       3200.0  female  2008
+18   Adelie  Torgersen            34.4  ...       3325.0  female  2007
+8    Adelie  Torgersen            34.1  ...       3475.0     NaN  2007
+70   Adelie  Torgersen            33.5  ...       3600.0  female  2008
+3    Adelie  Torgersen             NaN  ...          NaN     NaN  2007
+
+[344 rows x 8 columns]</code></pre>
 </div>
 </div>
 </div>
@@ -466,7 +451,7 @@ ibis vs ibis-framework
 <h1>Work with columns</h1>
 <section id="select-columns" class="level2">
 <h2 class="anchored" data-anchor-id="select-columns">Select columns</h2>
-<p>Selecting a subset of columns works essentially the same for both and <code>dplyr::select()</code> and <code>ibis.select()</code> even have the same name. Note that you don’t have to use <code>ibis._</code> but can also just pass strings in the <code>ibis.select()</code> method.</p>
+<p>Selecting a subset of columns works very similarly with<code>dplyr::select()</code> and <code>pandas.get()</code>. The former accepts column names using NSE (or vectors of charaters), while the latter requires a vector of strings with column names as inputs.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -495,26 +480,23 @@ ibis vs ibis-framework
 <div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  .select(_.bill_length_mm, _.sex)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  .get([<span class="st">"bill_length_mm"</span>, <span class="st">"sex"</span>])</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>┏━━━━━━━━━━━━━━━━┳━━━━━━━━┓
-┃ bill_length_mm ┃ sex    ┃
-┡━━━━━━━━━━━━━━━━╇━━━━━━━━┩
-│ float64        │ string │
-├────────────────┼────────┤
-│           39.1 │ male   │
-│           39.5 │ female │
-│           40.3 │ female │
-│           NULL │ NULL   │
-│           36.7 │ female │
-│           39.3 │ male   │
-│           38.9 │ female │
-│           39.2 │ male   │
-│           34.1 │ NULL   │
-│           42.0 │ NULL   │
-│              … │ …      │
-└────────────────┴────────┘</code></pre>
+<pre><code>     bill_length_mm     sex
+0              39.1    male
+1              39.5  female
+2              40.3  female
+3               NaN     NaN
+4              36.7  female
+..              ...     ...
+339            55.8    male
+340            43.5  female
+341            49.6    male
+342            50.8    male
+343            50.2  female
+
+[344 rows x 2 columns]</code></pre>
 </div>
 </div>
 </div>
@@ -523,7 +505,7 @@ ibis vs ibis-framework
 </section>
 <section id="rename-columns" class="level2">
 <h2 class="anchored" data-anchor-id="rename-columns">Rename columns</h2>
-<p>Renaming columns also works very similarly with the major difference that <code>ibis.rename()</code> does not accept the column selector <code>ibis._</code> on the right-hand side, while <code>dplyr::rename()</code> takes variable names via the usual NSE.</p>
+<p>Renaming columns also works very similarly with the major difference that <code>pandas.rename()</code> takes a dictionary with mappings of old to new names as input, while <code>dplyr::rename()</code> takes variable names via the usual NSE.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -554,27 +536,24 @@ ibis vs ibis-framework
 <div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  .rename(bill_length <span class="op">=</span> <span class="st">"bill_length_mm"</span>, </span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>          bill_depth <span class="op">=</span> <span class="st">"bill_depth_mm"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  .rename(columns <span class="op">=</span> {<span class="st">"bill_length_mm"</span>: <span class="st">"bill_length"</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"bill_depth_mm"</span> : <span class="st">"bill_depth"</span>})</span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>┏━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━┓
-┃ species ┃ island    ┃ bill_length ┃ bill_depth ┃ flipper_length_mm ┃ … ┃
-┡━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━┩
-│ string  │ string    │ float64     │ float64    │ float64           │ … │
-├─────────┼───────────┼─────────────┼────────────┼───────────────────┼───┤
-│ Adelie  │ Torgersen │        39.1 │       18.7 │             181.0 │ … │
-│ Adelie  │ Torgersen │        39.5 │       17.4 │             186.0 │ … │
-│ Adelie  │ Torgersen │        40.3 │       18.0 │             195.0 │ … │
-│ Adelie  │ Torgersen │        NULL │       NULL │              NULL │ … │
-│ Adelie  │ Torgersen │        36.7 │       19.3 │             193.0 │ … │
-│ Adelie  │ Torgersen │        39.3 │       20.6 │             190.0 │ … │
-│ Adelie  │ Torgersen │        38.9 │       17.8 │             181.0 │ … │
-│ Adelie  │ Torgersen │        39.2 │       19.6 │             195.0 │ … │
-│ Adelie  │ Torgersen │        34.1 │       18.1 │             193.0 │ … │
-│ Adelie  │ Torgersen │        42.0 │       20.2 │             190.0 │ … │
-│ …       │ …         │           … │          … │                 … │ … │
-└─────────┴───────────┴─────────────┴────────────┴───────────────────┴───┘</code></pre>
+<pre><code>       species     island  bill_length  ...  body_mass_g     sex  year
+0       Adelie  Torgersen         39.1  ...       3750.0    male  2007
+1       Adelie  Torgersen         39.5  ...       3800.0  female  2007
+2       Adelie  Torgersen         40.3  ...       3250.0  female  2007
+3       Adelie  Torgersen          NaN  ...          NaN     NaN  2007
+4       Adelie  Torgersen         36.7  ...       3450.0  female  2007
+..         ...        ...          ...  ...          ...     ...   ...
+339  Chinstrap      Dream         55.8  ...       4000.0    male  2009
+340  Chinstrap      Dream         43.5  ...       3400.0  female  2009
+341  Chinstrap      Dream         49.6  ...       3775.0    male  2009
+342  Chinstrap      Dream         50.8  ...       4100.0    male  2009
+343  Chinstrap      Dream         50.2  ...       3775.0  female  2009
+
+[344 rows x 8 columns]</code></pre>
 </div>
 </div>
 </div>
@@ -583,7 +562,7 @@ ibis vs ibis-framework
 </section>
 <section id="mutate-columns" class="level2">
 <h2 class="anchored" data-anchor-id="mutate-columns">Mutate columns</h2>
-<p>Transforming existing columns or creating new ones is an essential part of data analysis. <code>dplyr::mutate()</code> and <code>ibis.mutate()</code> are the work horses for these tasks. A big difference between <code>dplyr::mutate()</code> and <code>ibis.mutate()</code> is that in the latter you have to chain separate mutate calls together when you reference newly-created columns in the same mutate whereas in <code>dplyr</code>, you can put them all in the same call.</p>
+<p>Transforming existing columns or creating new ones is an essential part of data analysis. <code>dplyr::mutate()</code> and <code>pandas.assign()</code> are the work horses for these tasks. While <code>dplyr</code> starts with column names before the expressions that transform columns, <code>pandas</code> uses the <code>lambda</code> function to assign expressions to new columns. Note that you have to split up variable assignments if you want to refer to a newly created variable in <code>pandas</code>, while you can refer to the new variables in the same mutate block in <code>dplyr</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -615,29 +594,26 @@ ibis vs ibis-framework
 <div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>(penguins </span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  .mutate(ones <span class="op">=</span> <span class="dv">1</span>, </span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>          bill_length <span class="op">=</span> _.bill_length_mm <span class="op">/</span> <span class="dv">10</span>)</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  .mutate(bill_length_squared <span class="op">=</span> _.bill_length<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  .select(_.ones, _.bill_length_mm, _.bill_length, _.bill_length_squared)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  .assign(ones <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>          bill_length <span class="op">=</span> <span class="kw">lambda</span> x: x[<span class="st">"bill_length_mm"</span>] <span class="op">/</span> <span class="dv">10</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  .assign(bill_length_squared <span class="op">=</span> <span class="kw">lambda</span> x: x[<span class="st">"bill_length"</span>] <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  .get([<span class="st">"ones"</span>, <span class="st">"bill_length_mm"</span>, <span class="st">"bill_length"</span>, <span class="st">"bill_length_squared"</span>])</span>
 <span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>┏━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
-┃ ones ┃ bill_length_mm ┃ bill_length ┃ bill_length_squared ┃
-┡━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩
-│ int8 │ float64        │ float64     │ float64             │
-├──────┼────────────────┼─────────────┼─────────────────────┤
-│    1 │           39.1 │        3.91 │             15.2881 │
-│    1 │           39.5 │        3.95 │             15.6025 │
-│    1 │           40.3 │        4.03 │             16.2409 │
-│    1 │           NULL │        NULL │                NULL │
-│    1 │           36.7 │        3.67 │             13.4689 │
-│    1 │           39.3 │        3.93 │             15.4449 │
-│    1 │           38.9 │        3.89 │             15.1321 │
-│    1 │           39.2 │        3.92 │             15.3664 │
-│    1 │           34.1 │        3.41 │             11.6281 │
-│    1 │           42.0 │        4.20 │             17.6400 │
-│    … │              … │           … │                   … │
-└──────┴────────────────┴─────────────┴─────────────────────┘</code></pre>
+<pre><code>     ones  bill_length_mm  bill_length  bill_length_squared
+0       1            39.1         3.91              15.2881
+1       1            39.5         3.95              15.6025
+2       1            40.3         4.03              16.2409
+3       1             NaN          NaN                  NaN
+4       1            36.7         3.67              13.4689
+..    ...             ...          ...                  ...
+339     1            55.8         5.58              31.1364
+340     1            43.5         4.35              18.9225
+341     1            49.6         4.96              24.6016
+342     1            50.8         5.08              25.8064
+343     1            50.2         5.02              25.2004
+
+[344 rows x 4 columns]</code></pre>
 </div>
 </div>
 </div>
@@ -647,7 +623,7 @@ ibis vs ibis-framework
 <section id="relocate-columns" class="level2">
 <h2 class="anchored" data-anchor-id="relocate-columns">Relocate columns</h2>
 <p><code>dplyr::relocate()</code> provides options to change the positions of columns in a data frame, using the same syntax as <code>dplyr::select()</code>. In addition, there are the options <code>.after</code> and <code>.before</code> to provide users with additional shortcuts.</p>
-<p>The recommended way to relocate columns in <code>ibis</code> is to use the <code>ibis.select()</code> method, but there are no options as in <code>dplyr::relocate()</code>. In fact, the safest way to consistently get the correct order of columns is to explicitly specify them.</p>
+<p>The recommended way to relocate columns in <code>pandas</code> is to use the <code>pandas.get()</code> method, but there are no options as in <code>dplyr::relocate()</code>. In fact, the safest way to consistently get the correct order of columns is to explicitly specify them.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -677,27 +653,24 @@ ibis vs ibis-framework
 <div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  .select(_.island, _.bill_depth_mm, _.flipper_length_mm, _.body_mass_g, _.sex, </span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>          _.species, _.bill_length_mm, _.year)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  .get([<span class="st">"island"</span>, <span class="st">"bill_depth_mm"</span>, <span class="st">"flipper_length_mm"</span>, <span class="st">"body_mass_g"</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sex"</span>, <span class="st">"species"</span>, <span class="st">"bill_length_mm"</span>,<span class="st">"year"</span>])</span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━┳━━━┓
-┃ island    ┃ bill_depth_mm ┃ flipper_length_mm ┃ body_mass_g ┃ sex    ┃ … ┃
-┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━╇━━━┩
-│ string    │ float64       │ float64           │ float64     │ string │ … │
-├───────────┼───────────────┼───────────────────┼─────────────┼────────┼───┤
-│ Torgersen │          18.7 │             181.0 │      3750.0 │ male   │ … │
-│ Torgersen │          17.4 │             186.0 │      3800.0 │ female │ … │
-│ Torgersen │          18.0 │             195.0 │      3250.0 │ female │ … │
-│ Torgersen │          NULL │              NULL │        NULL │ NULL   │ … │
-│ Torgersen │          19.3 │             193.0 │      3450.0 │ female │ … │
-│ Torgersen │          20.6 │             190.0 │      3650.0 │ male   │ … │
-│ Torgersen │          17.8 │             181.0 │      3625.0 │ female │ … │
-│ Torgersen │          19.6 │             195.0 │      4675.0 │ male   │ … │
-│ Torgersen │          18.1 │             193.0 │      3475.0 │ NULL   │ … │
-│ Torgersen │          20.2 │             190.0 │      4250.0 │ NULL   │ … │
-│ …         │             … │                 … │           … │ …      │ … │
-└───────────┴───────────────┴───────────────────┴─────────────┴────────┴───┘</code></pre>
+<pre><code>        island  bill_depth_mm  ...  bill_length_mm  year
+0    Torgersen           18.7  ...            39.1  2007
+1    Torgersen           17.4  ...            39.5  2007
+2    Torgersen           18.0  ...            40.3  2007
+3    Torgersen            NaN  ...             NaN  2007
+4    Torgersen           19.3  ...            36.7  2007
+..         ...            ...  ...             ...   ...
+339      Dream           19.8  ...            55.8  2009
+340      Dream           18.1  ...            43.5  2009
+341      Dream           18.2  ...            49.6  2009
+342      Dream           19.0  ...            50.8  2009
+343      Dream           18.7  ...            50.2  2009
+
+[344 rows x 8 columns]</code></pre>
 </div>
 </div>
 </div>
@@ -709,8 +682,8 @@ ibis vs ibis-framework
 <h1>Work with groups of rows</h1>
 <section id="simple-summaries-by-group" class="level2">
 <h2 class="anchored" data-anchor-id="simple-summaries-by-group">Simple summaries by group</h2>
-<p>Let’s suppose we want to compute summaries by groups such as means or medians. Both packages are very similar again: on the R side you have <code>dplyr::group_by()</code> and <code>dplyr::summarize()</code>, while on the Python side you have <code>ibis.group_by()</code> and <code>ibis.aggregate()</code>.</p>
-<p>Note that <code>dplyr::group_by()</code> also automatically arranges the results by the group, so the reproduce the results of <code>dplyr</code>, we need to add <code>ibis.order_by()</code> to the chain.</p>
+<p>Let’s suppose we want to compute summaries by groups such as means or medians. Both packages are very similar again: on the R side you have <code>dplyr::group_by()</code> and <code>dplyr::summarize()</code>, while on the Python side you have <code>pandas.groupby()</code> and <code>pandas.agg()</code>.</p>
+<p>Note that <code>dplyr::groupby()</code> also automatically arranges the results by the group, so the reproduce the results of <code>dplyr</code>, we need to add <code>pandas.sort()</code> to the chain.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -732,20 +705,15 @@ ibis vs ibis-framework
 <div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  .group_by(<span class="st">"island"</span>)</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  .aggregate(bill_depth_mean <span class="op">=</span> _.bill_depth_mm.mean())</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  .order_by(<span class="st">"island"</span>)</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  .groupby(<span class="st">"island"</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  .agg(bill_depth_mean <span class="op">=</span> (<span class="st">"bill_depth_mm"</span>, <span class="st">"mean"</span>))</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓
-┃ island    ┃ bill_depth_mean ┃
-┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━┩
-│ string    │ float64         │
-├───────────┼─────────────────┤
-│ Biscoe    │       15.874850 │
-│ Dream     │       18.344355 │
-│ Torgersen │       18.429412 │
-└───────────┴─────────────────┘</code></pre>
+<pre><code>           bill_depth_mean
+island                    
+Biscoe           15.874850
+Dream            18.344355
+Torgersen        18.429412</code></pre>
 </div>
 </div>
 </div>
@@ -754,7 +722,7 @@ ibis vs ibis-framework
 </section>
 <section id="more-complicated-summaries-by-group" class="level2">
 <h2 class="anchored" data-anchor-id="more-complicated-summaries-by-group">More complicated summaries by group</h2>
-<p>Typically, you want to create multiple different summaries by groups. <code>dplyr</code> provides a lot of flexibility to create new variables on the fly, as does <code>ibis</code>. For instance, we can pass expressions to them mean functions in order to create the share of female penguins per island in the summary statement.</p>
+<p>Typically, you want to create multiple different summaries by groups. <code>dplyr</code> provides a lot of flexibility to create new variables on the fly, as does <code>pandas</code>. For instance, we can pass expressions to them mean functions in order to create the share of female penguins per island in the summary statement. Note that you again have to use <code>lambda</code> functions in <code>pandas</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -762,13 +730,11 @@ ibis vs ibis-framework
 <div class="cell">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(island) <span class="sc">|&gt;</span> </span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">count =</span> <span class="fu">n</span>(),</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">bill_depth_mean =</span> <span class="fu">mean</span>(bill_depth_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">flipper_length_median =</span> <span class="fu">median</span>(flipper_length_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">body_mass_sd =</span> <span class="fu">sd</span>(body_mass_g, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">share_female =</span> <span class="fu">mean</span>(sex <span class="sc">==</span> <span class="st">"female"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">count =</span> <span class="fu">n</span>(),</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">bill_depth_mean =</span> <span class="fu">mean</span>(bill_depth_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">flipper_length_median =</span> <span class="fu">median</span>(flipper_length_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">body_mass_sd =</span> <span class="fu">sd</span>(body_mass_g, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">share_female =</span> <span class="fu">mean</span>(sex <span class="sc">==</span> <span class="st">"female"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 6
   island   count bill_depth_mean flipper_length_median body_mass_sd share_female
@@ -782,26 +748,21 @@ ibis vs ibis-framework
 <div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  .group_by(<span class="st">"island"</span>)</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  .aggregate(</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    count <span class="op">=</span> _.count(),</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    bill_depth_mean <span class="op">=</span> _.bill_depth_mm.mean(),</span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    flipper_length_median <span class="op">=</span> _.flipper_length_mm.median(),</span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>    body_mass_sd <span class="op">=</span> _.body_mass_g.std(),</span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>    share_female <span class="op">=</span> (_.sex <span class="op">==</span> <span class="st">"female"</span>).mean()</span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>  .order_by(<span class="st">"island"</span>)</span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  .groupby(<span class="st">"island"</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  .agg(count <span class="op">=</span> (<span class="st">"island"</span>, <span class="st">"size"</span>),</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>       bill_depth_mean <span class="op">=</span> (<span class="st">"bill_depth_mm"</span>, <span class="st">"mean"</span>),</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>       flipper_length_median <span class="op">=</span> (<span class="st">"flipper_length_mm"</span>, <span class="st">"median"</span>),</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>       body_mass_sd <span class="op">=</span> (<span class="st">"body_mass_g"</span>, <span class="st">"std"</span>),</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>       share_female <span class="op">=</span> (<span class="st">"sex"</span>, <span class="kw">lambda</span> x: (x <span class="op">==</span> <span class="st">"female"</span>).mean))</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>┏━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━┓
-┃ island    ┃ count ┃ bill_depth_mean ┃ flipper_length_medi… ┃ body_mass_sd ┃  ┃
-┡━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━┩
-│ string    │ int64 │ float64         │ float64              │ float64      │  │
-├───────────┼───────┼─────────────────┼──────────────────────┼──────────────┼──┤
-│ Biscoe    │   168 │       15.874850 │                214.0 │   782.855743 │  │
-│ Dream     │   124 │       18.344355 │                193.0 │   416.644112 │  │
-│ Torgersen │    52 │       18.429412 │                191.0 │   445.107940 │  │
-└───────────┴───────┴─────────────────┴──────────────────────┴──────────────┴──┘</code></pre>
+<pre><code>           count  ...                                       share_female
+island            ...                                                   
+Biscoe       168  ...  &lt;bound method Series.mean of 20      True\n21 ...
+Dream        124  ...  &lt;bound method Series.mean of 30      True\n31 ...
+Torgersen     52  ...  &lt;bound method Series.mean of 0      False\n1  ...
+
+[3 rows x 5 columns]</code></pre>
 </div>
 </div>
 </div>
@@ -810,7 +771,7 @@ ibis vs ibis-framework
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>This post highlights syntactic similarities and differences across R’s <code>dplyr</code> and Python’s <code>ibis</code> packages. Two key points emerge: (i) <code>dplyr</code> heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python; (ii) the syntax is remarkably similar across both packages. I want to close this post by emphasizing that both languages and packages have their own merits and I won’t strictly recommend one over the other. However, I definitely prefer the print output of <code>dplyr</code> to <code>ibis</code> because the latter is silent about additional columns of the underlying data. I’m a big fan of the concise data printing capabilities that are part of <code>dplyr</code>.</p>
+<p>This post highlights syntactic similarities and differences across R’s <code>dplyr</code> and Python’s <code>pandas</code> packages. Two key points emerge: (i) <code>dplyr</code> heavily relies on NSE to enable a syntax that refrains from using strings, something that is not possible in Python; (ii) the structure of inputs to <code>pandas</code> methods is inconsistent compared to <code>dplyr</code> (sometimes inputs are vectors of strings, sometimes just a single string, sometimes dictionaries, etc.). I want to close this post by emphasizing that both languages and packages have their own merits and supporters. I personally find it hard to remember the syntax of each <code>pandas</code> method, so I’m much more prone to on-the-fly coding errors than compared to <code>dplyr</code>.</p>
 
 
 </section>

@@ -1,0 +1,248 @@
+---
+title: "Tidy Data Manipulation: dplyr vs pandas"
+description: "A comparison of R's dplyr and Python's pandas data manipulation packages"
+metadata:
+  pagetitle: "Tidy Data Manipulation: dplyr vs pandas"
+author: "Christoph Scheuch"
+date: "2024-01-07" 
+image: thumbnail.png
+image-alt: A panda bear sitting calmly in a green bamboo forest. The panda has a curious expression as it looks at a red-handled plier placed on the ground in front of it. The plier is shiny and contrasts with the natural, lush environment. The background is filled with thick bamboo stalks and a variety of green plants, enhancing the natural habitat of the panda. The scene is peaceful, with soft, natural lighting highlighting the panda and the plier. Created with DALL-E 3.
+draft: true
+---
+
+There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my other posts on [dplyr vs ibis](../dplyr-vs-ibis/index.qmd) and [dplyr vs polars](../dplyr-vs-polars/index.qmd)). However, if we want to do tidy data science in R, there is a clear forerunner: `dplyr`. In the world of Python, `pandas` is the most popular data analysis library. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks. 
+
+Before we dive into the comparison, a short introduction to the packages: the `dplyr` package in R allows users to refer to columns without quotation marks due to its implementation of non-standard evaluation (NSE). NSE is a programming technique used in R that allows functions to capture the expressions passed to them as arguments, rather than just the values of those arguments. The primary goal of NSE in the context of `dplyr` is to create a more user-friendly and intuitive syntax. This makes data manipulation tasks more straightforward and aligns with the general philosophy of the `tidyverse` to make data science faster, easier, and more fun.[^1]
+
+`pandas` is also designed for data analysis and provides a comprehensive range of functionalities for data manipulation and it is designed to efficiently handle in-memory data. The package has a large community, given Python's popularity in various fields. The learning curve might be steeper for beginners due to Python's general-purpose nature and the verbosity of `pandas` syntax, but it integrates well with web apps, machine learning models, etc. 
+
+::: {.callout-note}
+## pandas syntax
+
+If you are a seasoned `pandas` user, you might find my approach non-Pythonic for at least two deliberate choices that I made: (i) I prefer to have chainable methods over using verbose expressions over multiple lines; and (ii) I prefer to have whitespace around all equal signs, not just for variable assignments. In my view, these two choices improve the compliance of `pandas` with tidy coding principles by increasing the readability of code. 
+
+:::
+
+# Loading packages
+
+We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Python. We then use the `penguins` data frame as the data to compare all functions and methods below. 
+
+::: {.panel-tabset}
+## R
+```{r}
+#| message: false
+library(dplyr)
+library(palmerpenguins)
+
+penguins <- palmerpenguins::penguins
+```
+## Python
+```{python}
+#| message: false
+import pandas as pd
+from palmerpenguins import load_penguins
+
+penguins = load_penguins()
+```
+:::
+
+# Work with rows
+
+## Filter rows
+
+Filtering rows with `dplyr` is based on NSE and the `dplyr::filter()` function. To replicate the same results with `pandas`, you can use `pandas.query()` method which accepts a string with the filter conditions as input. 
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  filter(species == "Adelie" & 
+           island %in% c("Biscoe", "Dream"))
+```
+### Python
+```{python}
+(penguins
+  .query("species == 'Adelie' and island in ['Biscoe', 'Dream']")
+)
+```
+:::
+
+## Slice rows
+
+`dplyr::slice()` takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. `pandas.iloc[]` also provides a function for integer-location based indexing (note that indexing starts at 0 in Python, while it starts at 1 in R). Note that `pandas.iloc[]` requires square brackets instead of parentheses. 
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  slice(10:20)
+```
+### Python
+```{python}
+(penguins
+  .iloc[9:20]
+)
+```
+:::
+
+## Arrange rows
+
+To orders the rows of a data frame by the values of selected columns, we have `dplyr::arrange()` and `pandas.sort_values()`. Note that both approaches arrange rows in an an ascending order and puts missing values last as defaults. 
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  arrange(island, -bill_length_mm)
+```
+### Python
+```{python}
+(penguins
+  .sort_values(by = ["island", "bill_length_mm"], 
+               ascending = [True, False])
+)
+```
+:::
+
+# Work with columns
+
+## Select columns
+
+Selecting a subset of columns works very similarly with`dplyr::select()` and `pandas.get()`. The former accepts column names using NSE (or vectors of charaters), while the latter requires a vector of strings with column names as inputs.
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  select(bill_length_mm, sex)
+```
+### Python
+```{python}
+(penguins
+  .get(["bill_length_mm", "sex"])
+)
+```
+:::
+
+## Rename columns
+
+Renaming columns also works very similarly with the major difference that `pandas.rename()` takes a dictionary with mappings of old to new names as input, while `dplyr::rename()` takes variable names via the usual NSE.
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  rename(bill_length = bill_length_mm,
+         bill_depth = bill_depth_mm)
+```
+### Python
+```{python}
+(penguins
+  .rename(columns = {"bill_length_mm": "bill_length",
+                     "bill_depth_mm" : "bill_depth"})
+)
+```
+:::
+
+## Mutate columns
+
+Transforming existing columns or creating new ones is an essential part of data analysis. `dplyr::mutate()` and `pandas.assign()` are the work horses for these tasks. While `dplyr` starts with column names before the expressions that transform columns, `pandas` uses the `lambda` function to assign expressions to new columns. Note that you have to split up variable assignments if you want to refer to a newly created variable in `pandas`, while you can refer to the new variables in the same mutate block in `dplyr`.
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  mutate(ones = 1,
+         bill_length = bill_length_mm / 10,
+         bill_length_squared = bill_length^2) |> 
+  select(ones, bill_length_mm, bill_length, bill_length_squared)
+```
+### Python
+```{python}
+(penguins 
+  .assign(ones = 1,
+          bill_length = lambda x: x["bill_length_mm"] / 10)
+  .assign(bill_length_squared = lambda x: x["bill_length"] ** 2)
+  .get(["ones", "bill_length_mm", "bill_length", "bill_length_squared"])
+)
+```
+:::
+
+## Relocate columns
+
+`dplyr::relocate()` provides options to change the positions of columns in a data frame, using the same syntax as `dplyr::select()`. In addition, there are the options `.after` and `.before` to provide users with additional shortcuts. 
+
+The recommended way to relocate columns in `pandas` is to use the `pandas.get()` method, but there are no options as in `dplyr::relocate()`. In fact, the safest way to consistently get the correct order of columns is to explicitly specify them. 
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  relocate(c(species, bill_length_mm), .before = year)
+```
+### Python
+```{python}
+(penguins
+  .get(["island", "bill_depth_mm", "flipper_length_mm", "body_mass_g",
+        "sex", "species", "bill_length_mm","year"])
+)
+```
+:::
+
+# Work with groups of rows
+
+## Simple summaries by group
+
+Let's suppose we want to compute summaries by groups such as means or medians. Both packages are very similar again: on the R side you have `dplyr::group_by()` and `dplyr::summarize()`, while on the Python side you have `pandas.groupby()` and `pandas.agg()`. 
+
+Note that `dplyr::groupby()` also automatically arranges the results by the group, so the reproduce the results of `dplyr`, we need to add `pandas.sort()` to the chain. 
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  group_by(island) |> 
+  summarize(bill_depth_mean = mean(bill_depth_mm, na.rm = TRUE))
+```
+### Python
+```{python}
+(penguins
+  .groupby("island")
+  .agg(bill_depth_mean = ("bill_depth_mm", "mean"))
+)
+```
+:::
+
+## More complicated summaries by group
+
+Typically, you want to create multiple different summaries by groups. `dplyr` provides a lot of flexibility to create new variables on the fly, as does `pandas`. For instance, we can pass expressions to them mean functions in order to create the share of female penguins per island in the summary statement. Note that you again have to use `lambda` functions in `pandas`. 
+
+::: {.panel-tabset}
+### R
+```{r}
+penguins |> 
+  group_by(island) |> 
+  summarize(count = n(),
+            bill_depth_mean = mean(bill_depth_mm, na.rm = TRUE),
+            flipper_length_median = median(flipper_length_mm, na.rm = TRUE),
+            body_mass_sd = sd(body_mass_g, na.rm = TRUE),
+            share_female = mean(sex == "female", na.rm = TRUE))
+```
+### Python
+```{python}
+(penguins
+  .groupby("island")
+  .agg(count = ("island", "size"),
+       bill_depth_mean = ("bill_depth_mm", "mean"),
+       flipper_length_median = ("flipper_length_mm", "median"),
+       body_mass_sd = ("body_mass_g", "std"),
+       share_female = ("sex", lambda x: (x == "female").mean))
+)
+```
+:::
+
+## Conclusion
+
+This post highlights syntactic similarities and differences across R's `dplyr` and Python's `pandas` packages. Two key points emerge: (i) `dplyr` heavily relies on NSE to enable a syntax that refrains from using strings, something that is not possible in Python; (ii) the structure of inputs to `pandas` methods is inconsistent compared to `dplyr` (sometimes inputs are vectors of strings, sometimes just a single string, sometimes dictionaries, etc.). I want to close this post by emphasizing that both languages and packages have their own merits and supporters. I personally find it hard to remember the syntax of each `pandas` method, so I'm much more prone to on-the-fly coding errors than compared to `dplyr`.
+
+[^1]: See the unifying principles of the tidyverse: [https://design.tidyverse.org/unifying.html](https://design.tidyverse.org/unifying.html).
