@@ -142,7 +142,7 @@ penguins |>
 
 ## Mutate columns
 
-Transforming existing columns or creating new ones is an essential part of data analysis. `dplyr::mutate()` and `polars.with_columns()` are the work horses for these tasks. While `dplyr` starts with column names before the expressions that transform columns, `polars` uses the `polars.alias()` method to assign expressions to new columns.
+Transforming existing columns or creating new ones is an essential part of data analysis. `dplyr::mutate()` and `polars.with_columns()` are the work horses for these tasks. Both approaches have a very similar syntax. Note that you have to split up variable assignments if you want to refer to a newly created variable in `polars`, while you can refer to the new variables in the same mutate block in `dplyr`.
 
 ::: {.panel-tabset}
 ### R
@@ -156,9 +156,9 @@ penguins |>
 ### Python
 ```{python}
 (penguins 
-  .with_columns(pl.lit(1).alias("ones"),
-                (pl.col("bill_length_mm") / 10).alias("bill_length"))
-  .with_columns((pl.col("bill_length") ** 2).alias("bill_length_squared"))
+  .with_columns(ones = pl.lit(1),
+                bill_length = pl.col("bill_length_mm") / 10)
+  .with_columns(bill_length_squared = pl.col("bill_length") ** 2)
   .select(pl.col("ones"), pl.col("bill_length_mm"),  
           pl.col("bill_length"), pl.col("bill_length_squared"))
 )
@@ -206,7 +206,7 @@ penguins |>
 ```{python}
 (penguins
   .group_by("island")
-  .agg([pl.mean("bill_depth_mm").alias("bill_depth_mean")])
+  .agg(bill_depth_mean = pl.mean("bill_depth_mm"))
   .sort("island")
 )
 ```
@@ -230,17 +230,17 @@ penguins |>
 ### Python
 ```{python}
 (penguins
-  .with_columns((pl.when(pl.col("sex") == "female").then(1)
+  .with_columns(is_female = pl.when(pl.col("sex") == "female").then(1)
                   .when(pl.col("sex").is_null()).then(None)
-                  .otherwise(0)).alias("is_female"))
+                  .otherwise(0))
   .group_by("island")
-  .agg([
-    pl.count().alias("count"),
-    pl.mean("bill_depth_mm").alias("bill_depth_mean"),
-    pl.median("flipper_length_mm").alias("flipper_length_median"),
-    pl.std("body_mass_g").alias("body_mass_sd"),
-    pl.mean("is_female").alias("share_female")
-  ])
+  .agg(
+    count = pl.count(),
+    bill_depth_mean = pl.mean("bill_depth_mm"),
+    flipper_length_median = pl.median("flipper_length_mm"),
+    body_mass_sd = pl.std("body_mass_g"),
+    share_female = pl.mean("is_female")
+  )
   .sort("island")
 )
 ```
@@ -248,6 +248,6 @@ penguins |>
 
 ## Conclusion
 
-This post highlights syntactic similarities and differences across R's `dplyr` and Python's `polars` packages. Two key points emerge: (i) `dplyr` heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python; (ii) creating new variables in `dplyr` is read from left to right (the new variable name comes first, the definition later), while it is the other way around in `polars` (definition first, new variable name later). I want to close this post by emphasizing that both languages and packages have their own merits and I won't strictly recommend one over the other - maybe in another post :smile:
+This post highlights syntactic similarities and differences across R's `dplyr` and Python's `polars` packages. One key point emerges: `dplyr` heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python. I want to close this post by emphasizing that both languages and packages have their own merits and I won't strictly recommend one over the other - maybe in another post :smile:
 
 [^1]: See the unifying principles of the tidyverse: [https://design.tidyverse.org/unifying.html](https://design.tidyverse.org/unifying.html).

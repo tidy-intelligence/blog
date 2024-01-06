@@ -260,7 +260,7 @@ cookieconsent.run({
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>pl.Config(tbl_rows <span class="op">=</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;polars.config.Config object at 0x13fc72ec0&gt;</code></pre>
+<pre><code>&lt;polars.config.Config object at 0x16891aec0&gt;</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> load_penguins().pipe(pl.from_pandas)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1133,7 +1133,7 @@ cookieconsent.run({
 </section>
 <section id="mutate-columns" class="level2">
 <h2 class="anchored" data-anchor-id="mutate-columns">Mutate columns</h2>
-<p>Transforming existing columns or creating new ones is an essential part of data analysis. <code>dplyr::mutate()</code> and <code>polars.with_columns()</code> are the work horses for these tasks. While <code>dplyr</code> starts with column names before the expressions that transform columns, <code>polars</code> uses the <code>polars.alias()</code> method to assign expressions to new columns.</p>
+<p>Transforming existing columns or creating new ones is an essential part of data analysis. <code>dplyr::mutate()</code> and <code>polars.with_columns()</code> are the work horses for these tasks. Both approaches have a very similar syntax. Note that you have to split up variable assignments if you want to refer to a newly created variable in <code>polars</code>, while you can refer to the new variables in the same mutate block in <code>dplyr</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -1165,9 +1165,9 @@ cookieconsent.run({
 <div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>(penguins </span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  .with_columns(pl.lit(<span class="dv">1</span>).alias(<span class="st">"ones"</span>),</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                (pl.col(<span class="st">"bill_length_mm"</span>) <span class="op">/</span> <span class="dv">10</span>).alias(<span class="st">"bill_length"</span>))</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  .with_columns((pl.col(<span class="st">"bill_length"</span>) <span class="op">**</span> <span class="dv">2</span>).alias(<span class="st">"bill_length_squared"</span>))</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  .with_columns(ones <span class="op">=</span> pl.lit(<span class="dv">1</span>),</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                bill_length <span class="op">=</span> pl.col(<span class="st">"bill_length_mm"</span>) <span class="op">/</span> <span class="dv">10</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  .with_columns(bill_length_squared <span class="op">=</span> pl.col(<span class="st">"bill_length"</span>) <span class="op">**</span> <span class="dv">2</span>)</span>
 <span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  .select(pl.col(<span class="st">"ones"</span>), pl.col(<span class="st">"bill_length_mm"</span>),  </span>
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>          pl.col(<span class="st">"bill_length"</span>), pl.col(<span class="st">"bill_length_squared"</span>))</span>
 <span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1489,7 +1489,7 @@ cookieconsent.run({
 <div class="cell">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  .group_by(<span class="st">"island"</span>)</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  .agg([pl.mean(<span class="st">"bill_depth_mm"</span>).alias(<span class="st">"bill_depth_mean"</span>)])</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  .agg(bill_depth_mean <span class="op">=</span> pl.mean(<span class="st">"bill_depth_mm"</span>))</span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  .sort(<span class="st">"island"</span>)</span>
 <span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -1562,17 +1562,17 @@ cookieconsent.run({
 <div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  .with_columns((pl.when(pl.col(<span class="st">"sex"</span>) <span class="op">==</span> <span class="st">"female"</span>).then(<span class="dv">1</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  .with_columns(is_female <span class="op">=</span> pl.when(pl.col(<span class="st">"sex"</span>) <span class="op">==</span> <span class="st">"female"</span>).then(<span class="dv">1</span>)</span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>                  .when(pl.col(<span class="st">"sex"</span>).is_null()).then(<span class="va">None</span>)</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>                  .otherwise(<span class="dv">0</span>)).alias(<span class="st">"is_female"</span>))</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>                  .otherwise(<span class="dv">0</span>))</span>
 <span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  .group_by(<span class="st">"island"</span>)</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  .agg([</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    pl.count().alias(<span class="st">"count"</span>),</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    pl.mean(<span class="st">"bill_depth_mm"</span>).alias(<span class="st">"bill_depth_mean"</span>),</span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    pl.median(<span class="st">"flipper_length_mm"</span>).alias(<span class="st">"flipper_length_median"</span>),</span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    pl.std(<span class="st">"body_mass_g"</span>).alias(<span class="st">"body_mass_sd"</span>),</span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    pl.mean(<span class="st">"is_female"</span>).alias(<span class="st">"share_female"</span>)</span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  ])</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  .agg(</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    count <span class="op">=</span> pl.count(),</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    bill_depth_mean <span class="op">=</span> pl.mean(<span class="st">"bill_depth_mm"</span>),</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    flipper_length_median <span class="op">=</span> pl.median(<span class="st">"flipper_length_mm"</span>),</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    body_mass_sd <span class="op">=</span> pl.std(<span class="st">"body_mass_g"</span>),</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    share_female <span class="op">=</span> pl.mean(<span class="st">"is_female"</span>)</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  .sort(<span class="st">"island"</span>)</span>
 <span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -1639,7 +1639,7 @@ cookieconsent.run({
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>This post highlights syntactic similarities and differences across R’s <code>dplyr</code> and Python’s <code>polars</code> packages. Two key points emerge: (i) <code>dplyr</code> heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python; (ii) creating new variables in <code>dplyr</code> is read from left to right (the new variable name comes first, the definition later), while it is the other way around in <code>polars</code> (definition first, new variable name later). I want to close this post by emphasizing that both languages and packages have their own merits and I won’t strictly recommend one over the other - maybe in another post <span class="emoji" data-emoji="smile">😄</span></p>
+<p>This post highlights syntactic similarities and differences across R’s <code>dplyr</code> and Python’s <code>polars</code> packages. One key point emerges: <code>dplyr</code> heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python. I want to close this post by emphasizing that both languages and packages have their own merits and I won’t strictly recommend one over the other - maybe in another post <span class="emoji" data-emoji="smile">😄</span></p>
 
 
 </section>
