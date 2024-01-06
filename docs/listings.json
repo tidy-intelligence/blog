@@ -2,7 +2,6 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/dplyr-vs-pandas/index.html",
       "/posts/dplyr-vs-ibis/index.html",
       "/posts/dplyr-vs-polars/index.html",
       "/posts/dax-seasonality/index.html",
