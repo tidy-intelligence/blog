@@ -33,6 +33,18 @@ website:
         url: https://www.tidy-intelligence.com/coaching.html
       - text: "Swag"
         url: https://www.etsy.com/shop/tidyswag/?etsrc=sdt&utm_source=tidy-intelligence.com
+  comments:
+    giscus:
+      repo: "tidy-intelligence/blog"
+      repo-id: "R_kgDOKH1yOg"
+      category: "Announcements"
+      category-id: "DIC_kwDOKH1yOs4CcPjh"
+      mapping: url
+      reactions-enabled: true
+      loading: lazy
+      theme: "preferred_color_scheme"
+      language: "en"
+      input-position: "bottom"
 
 format:
   html:
