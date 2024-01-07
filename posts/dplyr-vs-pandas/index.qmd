@@ -7,7 +7,6 @@ author: "Christoph Scheuch"
 date: "2024-01-07" 
 image: thumbnail.png
 image-alt: A panda bear sitting calmly in a green bamboo forest. The panda has a curious expression as it looks at a red-handled plier placed on the ground in front of it. The plier is shiny and contrasts with the natural, lush environment. The background is filled with thick bamboo stalks and a variety of green plants, enhancing the natural habitat of the panda. The scene is peaceful, with soft, natural lighting highlighting the panda and the plier. Created with DALL-E 3.
-draft: true
 ---
 
 There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my other posts on [dplyr vs ibis](../dplyr-vs-ibis/index.qmd) and [dplyr vs polars](../dplyr-vs-polars/index.qmd)). However, if we want to do tidy data science in R, there is a clear forerunner: `dplyr`. In the world of Python, `pandas` is the most popular data analysis library. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks. 

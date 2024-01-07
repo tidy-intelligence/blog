@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://blog.tidy-intelligence.com/index.html</loc>
-    <lastmod>2024-01-06T19:20:55.997Z</lastmod>
+    <lastmod>2024-01-07T09:17:15.484Z</lastmod>
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/dax-seasonality/index.html</loc>
@@ -19,6 +19,10 @@
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-polars/index.html</loc>
     <lastmod>2024-01-06T22:38:53.014Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-pandas/index.html</loc>
+    <lastmod>2024-01-07T09:45:26.207Z</lastmod>
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html</loc>
