@@ -183,13 +183,13 @@ The recommended way to relocate columns in `ibis` is to use the `ibis.select()` 
 ### R
 ```{r}
 penguins |> 
-  relocate(c(species, bill_length_mm), .before = year)
+  relocate(c(species, bill_length_mm), .before = sex)
 ```
 ### Python
 ```{python}
 (penguins
-  .select(_.island, _.bill_depth_mm, _.flipper_length_mm, _.body_mass_g, _.sex, 
-          _.species, _.bill_length_mm, _.year)
+  .select(_.island, _.bill_depth_mm, _.flipper_length_mm, _.body_mass_g, 
+          _.species, _.bill_length_mm, _.sex)
 )
 ```
 :::

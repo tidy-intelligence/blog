@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.533">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Christoph Scheuch">
+<meta name="dcterms.date" content="2024-01-07">
+<meta name="description" content="A comparison of R’s dplyr and Julia’s TidierData data manipulation packages">
+
+<title>Tidy Data Manipulation: dplyr vs TidierData</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<link href="../../assets/img/favicon.ico" rel="icon">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-YQF6MZY01S"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-YQF6MZY01S', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"interstitial",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+<link rel="stylesheet" href="../../assets/css/styles-global.css">
+<link rel="stylesheet" href="../../assets/css/styles-blog.css">
+<meta property="og:title" content="Tidy Data Manipulation: dplyr vs TidierData">
+<meta property="og:description" content="A comparison of R’s dplyr and Julia’s TidierData data manipulation packages">
+<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/dplyr-vs-tidierdata/thumbnail.png">
+<meta property="og:site_name" content="Tidy Intelligence">
+<meta property="og:image:height" content="1024">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:alt" content="A standard plastic broom stands upright on a lush green lawn, with its long handle and bristles clearly visible. Beside it is a large pair of pliers, about half the size of the broom, with detailed rubber handles. The background shows a serene landscape, with a sparkling lake visible in the distance, surrounded by gentle hills and a clear blue sky. Created with DALL-E 3.">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="https://www.tidy-intelligence.com">
+    <span class="navbar-title">Tidy Intelligence</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.tidy-intelligence.com/coaching.html"> 
+<span class="menu-text">Coaching</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.etsy.com/shop/tidyswag/?etsrc=sdt&amp;utm_source=tidy-intelligence.com"> 
+<span class="menu-text">Swag</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages">Loading packages</a></li>
+  <li><a href="#work-with-rows" id="toc-work-with-rows" class="nav-link" data-scroll-target="#work-with-rows">Work with rows</a>
+  <ul class="collapse">
+  <li><a href="#filter-rows" id="toc-filter-rows" class="nav-link" data-scroll-target="#filter-rows">Filter rows</a></li>
+  <li><a href="#slice-rows" id="toc-slice-rows" class="nav-link" data-scroll-target="#slice-rows">Slice rows</a></li>
+  <li><a href="#arrange-rows" id="toc-arrange-rows" class="nav-link" data-scroll-target="#arrange-rows">Arrange rows</a></li>
+  </ul></li>
+  <li><a href="#work-with-columns" id="toc-work-with-columns" class="nav-link" data-scroll-target="#work-with-columns">Work with columns</a>
+  <ul class="collapse">
+  <li><a href="#select-columns" id="toc-select-columns" class="nav-link" data-scroll-target="#select-columns">Select columns</a></li>
+  <li><a href="#rename-columns" id="toc-rename-columns" class="nav-link" data-scroll-target="#rename-columns">Rename columns</a></li>
+  <li><a href="#mutate-columns" id="toc-mutate-columns" class="nav-link" data-scroll-target="#mutate-columns">Mutate columns</a></li>
+  <li><a href="#relocate-columns" id="toc-relocate-columns" class="nav-link" data-scroll-target="#relocate-columns">Relocate columns</a></li>
+  </ul></li>
+  <li><a href="#work-with-groups-of-rows" id="toc-work-with-groups-of-rows" class="nav-link" data-scroll-target="#work-with-groups-of-rows">Work with groups of rows</a>
+  <ul class="collapse">
+  <li><a href="#simple-summaries-by-group" id="toc-simple-summaries-by-group" class="nav-link" data-scroll-target="#simple-summaries-by-group">Simple summaries by group</a></li>
+  <li><a href="#more-complicated-summaries-by-group" id="toc-more-complicated-summaries-by-group" class="nav-link" data-scroll-target="#more-complicated-summaries-by-group">More complicated summaries by group</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Tidy Data Manipulation: dplyr vs TidierData</h1>
+</div>
+
+<div>
+  <div class="description">
+    A comparison of R’s dplyr and Julia’s TidierData data manipulation packages
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Christoph Scheuch </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 7, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>There are a myriad of options to perform essential data manipulation tasks in R and Julia. However, if we want to do tidy data science in R, there is a clear forerunner: <code>dplyr</code>. In the world of Julia, <code>TidierData</code> is a relatively new kid on the block that allows R users to dabble in Julia without learning a lot of new syntax. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks.</p>
+<p>Before we dive into the comparison, a short introduction to the packages: the <code>dplyr</code> package in R allows users to refer to columns without quotation marks due to its implementation of non-standard evaluation (NSE). NSE is a programming technique used in R that allows functions to capture the expressions passed to them as arguments, rather than just the values of those arguments. The primary goal of NSE in the context of <code>dplyr</code> is to create a more user-friendly and intuitive syntax. This makes data manipulation tasks more straightforward and aligns with the general philosophy of the <code>tidyverse</code> to make data science faster, easier, and more fun.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p><code>TidierData</code> is a 100% Julia implementation of the <code>dplyr</code> and <code>tidyr</code> R packages with three goals: (i) stick as closely to the <code>tidyverse</code> syntax as possible, so that R users find it easier to switch; (ii) make broadcasting mostly invisible, so that many functions are automatically vectorized for users; (iii) make scalars and tuples mostly interchangeable, so that users can provide a scalar or a tuple as arguments as they see fit. Check out the <a href="https://tidierorg.github.io/TidierData.jl/latest/">package website</a> for more information and peculiarities of Julia.</p>
+<section id="loading-packages" class="level1">
+<h1>Loading packages</h1>
+<p>We start by loading the main packages of interest and the popular <code>palmerpenguins</code> package that exists for both R and Julia. Note that packages in Julia follow a Pascal case convention, so we have <code>TidierData</code> and <code>PalmerPenguins</code>. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(palmerpenguins)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>penguins <span class="ot">&lt;-</span> palmerpenguins<span class="sc">::</span>penguins</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">TidierData</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">PalmerPenguins</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> <span class="fu">DataFrame</span>(PalmerPenguins.<span class="fu">load</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>344×7 DataFrame
+ Row │ species    island     bill_length_mm  bill_depth_mm  flipper_length_mm  ⋯
+     │ String15   String15   Float64?        Float64?       Int64?             ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ Adelie     Torgersen            39.1           18.7                181  ⋯
+   2 │ Adelie     Torgersen            39.5           17.4                186
+   3 │ Adelie     Torgersen            40.3           18.0                195
+   4 │ Adelie     Torgersen       missing        missing              missing
+   5 │ Adelie     Torgersen            36.7           19.3                193  ⋯
+   6 │ Adelie     Torgersen            39.3           20.6                190
+   7 │ Adelie     Torgersen            38.9           17.8                181
+   8 │ Adelie     Torgersen            39.2           19.6                195
+  ⋮  │     ⋮          ⋮            ⋮               ⋮                ⋮          ⋱
+ 338 │ Chinstrap  Dream                46.8           16.5                189  ⋯
+ 339 │ Chinstrap  Dream                45.7           17.0                195
+ 340 │ Chinstrap  Dream                55.8           19.8                207
+ 341 │ Chinstrap  Dream                43.5           18.1                202
+ 342 │ Chinstrap  Dream                49.6           18.2                193  ⋯
+ 343 │ Chinstrap  Dream                50.8           19.0                210
+ 344 │ Chinstrap  Dream                50.2           18.7                198
+                                                  2 columns and 329 rows omitted</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="work-with-rows" class="level1">
+<h1>Work with rows</h1>
+<section id="filter-rows" class="level2">
+<h2 class="anchored" data-anchor-id="filter-rows">Filter rows</h2>
+<p>Filtering rows with <code>dplyr</code> is based on NSE and the <code>dplyr::filter()</code> function. To replicate the same results with <code>TidierData</code>, you can use <code>TidierData.@filter()</code> method which accepts a remarkably similar notation to <code>dplyr</code> with the only exceptions that you need <code>&amp;&amp;</code> for a boolean ‘and’ and you can omit the percentage signs around <code>in</code>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Adelie"</span> <span class="sc">&amp;</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>           island <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Biscoe"</span>, <span class="st">"Dream"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 100 × 8
+   species island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;
+ 1 Adelie  Biscoe           37.8          18.3               174        3400
+ 2 Adelie  Biscoe           37.7          18.7               180        3600
+ 3 Adelie  Biscoe           35.9          19.2               189        3800
+ 4 Adelie  Biscoe           38.2          18.1               185        3950
+ 5 Adelie  Biscoe           38.8          17.2               180        3800
+ 6 Adelie  Biscoe           35.3          18.9               187        3800
+ 7 Adelie  Biscoe           40.6          18.6               183        3550
+ 8 Adelie  Biscoe           40.5          17.9               187        3200
+ 9 Adelie  Biscoe           37.9          18.6               172        3150
+10 Adelie  Biscoe           40.5          18.9               180        3950
+# ℹ 90 more rows
+# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@filter</span>(species <span class="op">==</span> <span class="st">"Adelie"</span> <span class="op">&amp;&amp;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>            island <span class="kw">in</span> (<span class="st">"Biscoe"</span>, <span class="st">"Dream"</span>))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>100×7 DataFrame
+ Row │ species   island    bill_length_mm  bill_depth_mm  flipper_length_mm  b ⋯
+     │ String15  String15  Float64?        Float64?       Int64?             I ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ Adelie    Biscoe              37.8           18.3                174    ⋯
+   2 │ Adelie    Biscoe              37.7           18.7                180
+   3 │ Adelie    Biscoe              35.9           19.2                189
+   4 │ Adelie    Biscoe              38.2           18.1                185
+   5 │ Adelie    Biscoe              38.8           17.2                180    ⋯
+   6 │ Adelie    Biscoe              35.3           18.9                187
+   7 │ Adelie    Biscoe              40.6           18.6                183
+   8 │ Adelie    Biscoe              40.5           17.9                187
+  ⋮  │    ⋮         ⋮            ⋮               ⋮                ⋮            ⋱
+  94 │ Adelie    Dream               39.0           18.7                185    ⋯
+  95 │ Adelie    Dream               39.2           18.6                190
+  96 │ Adelie    Dream               36.6           18.4                184
+  97 │ Adelie    Dream               36.0           17.8                195
+  98 │ Adelie    Dream               37.8           18.1                193    ⋯
+  99 │ Adelie    Dream               36.0           17.1                187
+ 100 │ Adelie    Dream               41.5           18.5                201
+                                                   2 columns and 85 rows omitted</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="slice-rows" class="level2">
+<h2 class="anchored" data-anchor-id="slice-rows">Slice rows</h2>
+<p><code>dplyr::slice()</code> takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. <code>TidierData.@slice()</code> does exactly the same.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">10</span><span class="sc">:</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 11 × 8
+   species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;
+ 1 Adelie  Torgersen           42            20.2               190        4250
+ 2 Adelie  Torgersen           37.8          17.1               186        3300
+ 3 Adelie  Torgersen           37.8          17.3               180        3700
+ 4 Adelie  Torgersen           41.1          17.6               182        3200
+ 5 Adelie  Torgersen           38.6          21.2               191        3800
+ 6 Adelie  Torgersen           34.6          21.1               198        4400
+ 7 Adelie  Torgersen           36.6          17.8               185        3700
+ 8 Adelie  Torgersen           38.7          19                 195        3450
+ 9 Adelie  Torgersen           42.5          20.7               197        4500
+10 Adelie  Torgersen           34.4          18.4               184        3325
+11 Adelie  Torgersen           46            21.5               194        4200
+# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@slice</span>(<span class="fl">10</span><span class="op">:</span><span class="fl">20</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>11×7 DataFrame
+ Row │ species   island     bill_length_mm  bill_depth_mm  flipper_length_mm   ⋯
+     │ String15  String15   Float64?        Float64?       Int64?              ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ Adelie    Torgersen            42.0           20.2                190   ⋯
+   2 │ Adelie    Torgersen            37.8           17.1                186
+   3 │ Adelie    Torgersen            37.8           17.3                180
+   4 │ Adelie    Torgersen            41.1           17.6                182
+   5 │ Adelie    Torgersen            38.6           21.2                191   ⋯
+   6 │ Adelie    Torgersen            34.6           21.1                198
+   7 │ Adelie    Torgersen            36.6           17.8                185
+   8 │ Adelie    Torgersen            38.7           19.0                195
+   9 │ Adelie    Torgersen            42.5           20.7                197   ⋯
+  10 │ Adelie    Torgersen            34.4           18.4                184
+  11 │ Adelie    Torgersen            46.0           21.5                194
+                                                               2 columns omitted</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="arrange-rows" class="level2">
+<h2 class="anchored" data-anchor-id="arrange-rows">Arrange rows</h2>
+<p>To orders the rows of a data frame by the values of selected columns, we have <code>dplyr::arrange()</code> and <code>TidierData.@arrange()</code>. Note that both approaches arrange rows in an an ascending order and puts missing values last as defaults.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(island, <span class="fu">desc</span>(bill_length_mm))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 344 × 8
+   species island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;
+ 1 Gentoo  Biscoe           59.6          17                 230        6050
+ 2 Gentoo  Biscoe           55.9          17                 228        5600
+ 3 Gentoo  Biscoe           55.1          16                 230        5850
+ 4 Gentoo  Biscoe           54.3          15.7               231        5650
+ 5 Gentoo  Biscoe           53.4          15.8               219        5500
+ 6 Gentoo  Biscoe           52.5          15.6               221        5450
+ 7 Gentoo  Biscoe           52.2          17.1               228        5400
+ 8 Gentoo  Biscoe           52.1          17                 230        5550
+ 9 Gentoo  Biscoe           51.5          16.3               230        5500
+10 Gentoo  Biscoe           51.3          14.2               218        5300
+# ℹ 334 more rows
+# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@arrange</span>(island, <span class="fu">desc</span>(bill_length_mm))</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>344×7 DataFrame
+ Row │ species   island     bill_length_mm  bill_depth_mm  flipper_length_mm   ⋯
+     │ String15  String15   Float64?        Float64?       Int64?              ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ Gentoo    Biscoe          missing        missing              missing   ⋯
+   2 │ Gentoo    Biscoe               59.6           17.0                230
+   3 │ Gentoo    Biscoe               55.9           17.0                228
+   4 │ Gentoo    Biscoe               55.1           16.0                230
+   5 │ Gentoo    Biscoe               54.3           15.7                231   ⋯
+   6 │ Gentoo    Biscoe               53.4           15.8                219
+   7 │ Gentoo    Biscoe               52.5           15.6                221
+   8 │ Gentoo    Biscoe               52.2           17.1                228
+  ⋮  │    ⋮          ⋮            ⋮               ⋮                ⋮           ⋱
+ 338 │ Adelie    Torgersen            35.2           15.9                186   ⋯
+ 339 │ Adelie    Torgersen            35.1           19.4                193
+ 340 │ Adelie    Torgersen            34.6           21.1                198
+ 341 │ Adelie    Torgersen            34.6           17.2                189
+ 342 │ Adelie    Torgersen            34.4           18.4                184   ⋯
+ 343 │ Adelie    Torgersen            34.1           18.1                193
+ 344 │ Adelie    Torgersen            33.5           19.0                190
+                                                  2 columns and 329 rows omitted</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="work-with-columns" class="level1">
+<h1>Work with columns</h1>
+<section id="select-columns" class="level2">
+<h2 class="anchored" data-anchor-id="select-columns">Select columns</h2>
+<p>Selecting a subset of columns works exactly the same with<code>dplyr::select()</code> and <code>TidierData.@select()</code>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(bill_length_mm, sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 344 × 2
+   bill_length_mm sex   
+            &lt;dbl&gt; &lt;fct&gt; 
+ 1           39.1 male  
+ 2           39.5 female
+ 3           40.3 female
+ 4           NA   &lt;NA&gt;  
+ 5           36.7 female
+ 6           39.3 male  
+ 7           38.9 female
+ 8           39.2 male  
+ 9           34.1 &lt;NA&gt;  
+10           42   &lt;NA&gt;  
+# ℹ 334 more rows</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@select</span>(bill_length_mm, sex)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>344×2 DataFrame
+ Row │ bill_length_mm  sex
+     │ Float64?        String7
+─────┼─────────────────────────
+   1 │           39.1  male
+   2 │           39.5  female
+   3 │           40.3  female
+   4 │      missing    missing
+   5 │           36.7  female
+   6 │           39.3  male
+   7 │           38.9  female
+   8 │           39.2  male
+  ⋮  │       ⋮            ⋮
+ 338 │           46.8  female
+ 339 │           45.7  female
+ 340 │           55.8  male
+ 341 │           43.5  female
+ 342 │           49.6  male
+ 343 │           50.8  male
+ 344 │           50.2  female
+               329 rows omitted</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="rename-columns" class="level2">
+<h2 class="anchored" data-anchor-id="rename-columns">Rename columns</h2>
+<p>Renaming columns also works exactly the same with <code>dplyr::rename()</code> and <code>TidierData.rename()</code>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">bill_length =</span> bill_length_mm,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_depth =</span> bill_depth_mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 344 × 8
+   species island    bill_length bill_depth flipper_length_mm body_mass_g sex   
+   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;      &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt; &lt;fct&gt; 
+ 1 Adelie  Torgersen        39.1       18.7               181        3750 male  
+ 2 Adelie  Torgersen        39.5       17.4               186        3800 female
+ 3 Adelie  Torgersen        40.3       18                 195        3250 female
+ 4 Adelie  Torgersen        NA         NA                  NA          NA &lt;NA&gt;  
+ 5 Adelie  Torgersen        36.7       19.3               193        3450 female
+ 6 Adelie  Torgersen        39.3       20.6               190        3650 male  
+ 7 Adelie  Torgersen        38.9       17.8               181        3625 female
+ 8 Adelie  Torgersen        39.2       19.6               195        4675 male  
+ 9 Adelie  Torgersen        34.1       18.1               193        3475 &lt;NA&gt;  
+10 Adelie  Torgersen        42         20.2               190        4250 &lt;NA&gt;  
+# ℹ 334 more rows
+# ℹ 1 more variable: year &lt;int&gt;</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@rename</span>(bill_length <span class="op">=</span> bill_length_mm,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>          bill_depth <span class="op">=</span> bill_depth_mm)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>344×7 DataFrame
+ Row │ species    island     bill_length  bill_depth  flipper_length_mm  body_ ⋯
+     │ String15   String15   Float64?     Float64?    Int64?             Int64 ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ Adelie     Torgersen         39.1        18.7                181        ⋯
+   2 │ Adelie     Torgersen         39.5        17.4                186
+   3 │ Adelie     Torgersen         40.3        18.0                195
+   4 │ Adelie     Torgersen    missing     missing              missing      m
+   5 │ Adelie     Torgersen         36.7        19.3                193        ⋯
+   6 │ Adelie     Torgersen         39.3        20.6                190
+   7 │ Adelie     Torgersen         38.9        17.8                181
+   8 │ Adelie     Torgersen         39.2        19.6                195
+  ⋮  │     ⋮          ⋮           ⋮           ⋮               ⋮                ⋱
+ 338 │ Chinstrap  Dream             46.8        16.5                189        ⋯
+ 339 │ Chinstrap  Dream             45.7        17.0                195
+ 340 │ Chinstrap  Dream             55.8        19.8                207
+ 341 │ Chinstrap  Dream             43.5        18.1                202
+ 342 │ Chinstrap  Dream             49.6        18.2                193        ⋯
+ 343 │ Chinstrap  Dream             50.8        19.0                210
+ 344 │ Chinstrap  Dream             50.2        18.7                198
+                                                  2 columns and 329 rows omitted</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="mutate-columns" class="level2">
+<h2 class="anchored" data-anchor-id="mutate-columns">Mutate columns</h2>
+<p>Transforming existing columns or creating new ones is an essential part of data analysis. <code>dplyr::mutate()</code> and <code>TidierData.@mutate()</code> are the work horses for these tasks. Note that you have to split up variable assignments if you want to refer to a newly created variable in <code>TidierData</code>, while you can refer to the new variables in the same mutate block in <code>dplyr</code>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ones =</span> <span class="dv">1</span>,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_length =</span> bill_length_mm <span class="sc">/</span> <span class="dv">10</span>,</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_length_squared =</span> bill_length<span class="sc">^</span><span class="dv">2</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ones, bill_length_mm, bill_length, bill_length_squared)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 344 × 4
+    ones bill_length_mm bill_length bill_length_squared
+   &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt;               &lt;dbl&gt;
+ 1     1           39.1        3.91                15.3
+ 2     1           39.5        3.95                15.6
+ 3     1           40.3        4.03                16.2
+ 4     1           NA         NA                   NA  
+ 5     1           36.7        3.67                13.5
+ 6     1           39.3        3.93                15.4
+ 7     1           38.9        3.89                15.1
+ 8     1           39.2        3.92                15.4
+ 9     1           34.1        3.41                11.6
+10     1           42          4.2                 17.6
+# ℹ 334 more rows</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@mutate</span>(ones <span class="op">=</span> <span class="fl">1</span>,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>          bill_length <span class="op">=</span> bill_length_mm <span class="op">/</span> <span class="fl">10</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@mutate</span>(bill_length_squared <span class="op">=</span> bill_length<span class="op">^</span><span class="fl">2</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@select</span>(ones, bill_length_mm, bill_length, bill_length_squared)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>344×4 DataFrame
+ Row │ ones   bill_length_mm  bill_length  bill_length_squared
+     │ Int64  Float64?        Float64?     Float64?
+─────┼─────────────────────────────────────────────────────────
+   1 │     1            39.1         3.91              15.2881
+   2 │     1            39.5         3.95              15.6025
+   3 │     1            40.3         4.03              16.2409
+   4 │     1       missing     missing            missing
+   5 │     1            36.7         3.67              13.4689
+   6 │     1            39.3         3.93              15.4449
+   7 │     1            38.9         3.89              15.1321
+   8 │     1            39.2         3.92              15.3664
+  ⋮  │   ⋮          ⋮              ⋮                ⋮
+ 338 │     1            46.8         4.68              21.9024
+ 339 │     1            45.7         4.57              20.8849
+ 340 │     1            55.8         5.58              31.1364
+ 341 │     1            43.5         4.35              18.9225
+ 342 │     1            49.6         4.96              24.6016
+ 343 │     1            50.8         5.08              25.8064
+ 344 │     1            50.2         5.02              25.2004
+                                               329 rows omitted</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="relocate-columns" class="level2">
+<h2 class="anchored" data-anchor-id="relocate-columns">Relocate columns</h2>
+<p><code>dplyr::relocate()</code> provides options to change the positions of columns in a data frame, using the same syntax as <code>dplyr::select()</code>. In addition, there are the options <code>.after</code> and <code>.before</code> to provide users with additional shortcuts.</p>
+<p>The recommended way to relocate columns in <code>TidierData</code> is to use the <code>TidierData.@select()</code> method, but there are no options as in <code>dplyr::relocate()</code>. In fact, the safest way to consistently get the correct order of columns is to explicitly specify them.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(<span class="fu">c</span>(species, bill_length_mm), <span class="at">.before =</span> sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 344 × 8
+   island    bill_depth_mm flipper_length_mm body_mass_g species bill_length_mm
+   &lt;fct&gt;             &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt; &lt;fct&gt;            &lt;dbl&gt;
+ 1 Torgersen          18.7               181        3750 Adelie            39.1
+ 2 Torgersen          17.4               186        3800 Adelie            39.5
+ 3 Torgersen          18                 195        3250 Adelie            40.3
+ 4 Torgersen          NA                  NA          NA Adelie            NA  
+ 5 Torgersen          19.3               193        3450 Adelie            36.7
+ 6 Torgersen          20.6               190        3650 Adelie            39.3
+ 7 Torgersen          17.8               181        3625 Adelie            38.9
+ 8 Torgersen          19.6               195        4675 Adelie            39.2
+ 9 Torgersen          18.1               193        3475 Adelie            34.1
+10 Torgersen          20.2               190        4250 Adelie            42  
+# ℹ 334 more rows
+# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@select</span>(island, bill_depth_mm, flipper_length_mm, body_mass_g, </span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>          species, bill_length_mm, sex)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>344×7 DataFrame
+ Row │ island     bill_depth_mm  flipper_length_mm  body_mass_g  species    bi ⋯
+     │ String15   Float64?       Int64?             Int64?       String15   Fl ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ Torgersen           18.7                181         3750  Adelie        ⋯
+   2 │ Torgersen           17.4                186         3800  Adelie
+   3 │ Torgersen           18.0                195         3250  Adelie
+   4 │ Torgersen      missing              missing      missing  Adelie
+   5 │ Torgersen           19.3                193         3450  Adelie        ⋯
+   6 │ Torgersen           20.6                190         3650  Adelie
+   7 │ Torgersen           17.8                181         3625  Adelie
+   8 │ Torgersen           19.6                195         4675  Adelie
+  ⋮  │     ⋮            ⋮                ⋮               ⋮           ⋮         ⋱
+ 338 │ Dream               16.5                189         3650  Chinstrap     ⋯
+ 339 │ Dream               17.0                195         3650  Chinstrap
+ 340 │ Dream               19.8                207         4000  Chinstrap
+ 341 │ Dream               18.1                202         3400  Chinstrap
+ 342 │ Dream               18.2                193         3775  Chinstrap     ⋯
+ 343 │ Dream               19.0                210         4100  Chinstrap
+ 344 │ Dream               18.7                198         3775  Chinstrap
+                                                  2 columns and 329 rows omitted</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="work-with-groups-of-rows" class="level1">
+<h1>Work with groups of rows</h1>
+<section id="simple-summaries-by-group" class="level2">
+<h2 class="anchored" data-anchor-id="simple-summaries-by-group">Simple summaries by group</h2>
+<p>Let’s suppose we want to compute summaries by groups such as means or medians. Both packages are virtually the same again: on the R side you have <code>dplyr::group_by()</code> and <code>dplyr::summarize()</code>, while on the Julia side you have <code>TidierData.@group_by()</code> and <code>TidierData.@summarize()</code>. Note that you have to include the <code>skipmissing()</code> wrapper in order to drop missing values in the <code>mean()</code> function.</p>
+<p>Moreover, <code>dplyr</code> also automatically arranges the results by the group, so the reproduce the results of <code>dplyr</code>, we need to add <code>TidierData.@arrange()</code> to the chain.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(island) <span class="sc">|&gt;</span> </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">bill_depth_mean =</span> <span class="fu">mean</span>(bill_depth_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  island    bill_depth_mean
+  &lt;fct&gt;               &lt;dbl&gt;
+1 Biscoe               15.9
+2 Dream                18.3
+3 Torgersen            18.4</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@group_by</span>(island) </span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@summarize</span>(bill_depth_mean <span class="op">=</span> <span class="fu">mean</span>(<span class="fu">skipmissing</span>(bill_depth_mm)))</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@arrange</span>(island)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3×2 DataFrame
+ Row │ island     bill_depth_mean
+     │ String15   Float64
+─────┼────────────────────────────
+   1 │ Biscoe             15.8749
+   2 │ Dream              18.3444
+   3 │ Torgersen          18.4294</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="more-complicated-summaries-by-group" class="level2">
+<h2 class="anchored" data-anchor-id="more-complicated-summaries-by-group">More complicated summaries by group</h2>
+<p>Typically, you want to create multiple different summaries by groups. <code>dplyr</code> provides a lot of flexibility to create new variables on the fly, as does <code>TidierData</code>. For instance, we can pass expressions to them mean functions in order to create the share of female penguins per island in the summary statement.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(island) <span class="sc">|&gt;</span> </span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">count =</span> <span class="fu">n</span>(),</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">bill_depth_mean =</span> <span class="fu">mean</span>(bill_depth_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">flipper_length_median =</span> <span class="fu">median</span>(flipper_length_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">body_mass_sd =</span> <span class="fu">sd</span>(body_mass_g, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">share_female =</span> <span class="fu">mean</span>(sex <span class="sc">==</span> <span class="st">"female"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 6
+  island   count bill_depth_mean flipper_length_median body_mass_sd share_female
+  &lt;fct&gt;    &lt;int&gt;           &lt;dbl&gt;                 &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
+1 Biscoe     168            15.9                   214         783.        0.491
+2 Dream      124            18.3                   193         417.        0.496
+3 Torgers…    52            18.4                   191         445.        0.511</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@group_by</span>(island) </span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@summarize</span>(count <span class="op">=</span> <span class="fu">n</span>(),</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>             bill_depth_mean <span class="op">=</span> <span class="fu">mean</span>(<span class="fu">skipmissing</span>(bill_depth_mm)),</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>             flipper_length_median <span class="op">=</span> <span class="fu">median</span>(<span class="fu">skipmissing</span>(flipper_length_mm)),</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>             body_mass_sd <span class="op">=</span> <span class="fu">std</span>(<span class="fu">skipmissing</span>(body_mass_g)),</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>             share_female <span class="op">=</span> <span class="fu">mean</span>(<span class="fu">skipmissing</span>(sex <span class="op">==</span> <span class="st">"female"</span>)))</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@arrange</span>(island)</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3×6 DataFrame
+ Row │ island     count  bill_depth_mean  flipper_length_median  body_mass_sd  ⋯
+     │ String15   Int64  Float64          Float64                Float64       ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ Biscoe       168          15.8749                  214.0       782.856  ⋯
+   2 │ Dream        124          18.3444                  193.0       416.644
+   3 │ Torgersen     52          18.4294                  191.0       445.108
+                                                                1 column omitted</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>This post highlights syntactic similarities and differences across R’s <code>dplyr</code> and Julia’s <code>TidierData</code> packages. The key difference is between pipes and chains: <code>dplyr</code> uses the pipe operator <code>|&gt;</code> to chain functions, while <code>TidierData</code> uses the <code>@chain df begin ... end</code> syntax for piping a value through a series of transformation expressions. Nonetheless, the similarities are remarkable and demonstrate the flexibility of Julia to seemingly replicate the NSE capabilities of R. If you want to play around with Julia or some of its packages, I can highly recommend to take a shortcut using <code>TidierData</code>.</p>
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>See the unifying principles of the tidyverse: <a href="https://design.tidyverse.org/unifying.html">https://design.tidyverse.org/unifying.html</a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="tidy-intelligence/blog" data-repo-id="R_kgDOKH1yOg" data-category="Announcements" data-category-id="DIC_kwDOKH1yOs4CcPjh" data-mapping="url" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="light" data-lang="en" crossorigin="anonymous" data-loading="lazy" async="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="light">
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+<div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

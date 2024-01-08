@@ -177,13 +177,13 @@ The recommended way to relocate columns in `pandas` is to use the `pandas.get()`
 ### R
 ```{r}
 penguins |> 
-  relocate(c(species, bill_length_mm), .before = year)
+  relocate(c(species, bill_length_mm), .before = sex)
 ```
 ### Python
 ```{python}
 (penguins
   .get(["island", "bill_depth_mm", "flipper_length_mm", "body_mass_g",
-        "sex", "species", "bill_length_mm","year"])
+        "species", "bill_length_mm", "sex"])
 )
 ```
 :::

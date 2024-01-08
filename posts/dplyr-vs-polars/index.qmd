@@ -175,14 +175,14 @@ The recommended way to relocate columns in `polars` is to use the `polars.select
 ### R
 ```{r}
 penguins |> 
-  relocate(c(species, bill_length_mm), .before = year)
+  relocate(c(species, bill_length_mm), .before = sex)
 ```
 ### Python
 ```{python}
 (penguins
   .select(pl.col("island"), pl.col("bill_depth_mm"), 
-          pl.col("flipper_length_mm"), pl.col("body_mass_g"), pl.col("sex"), 
-          pl.col("species"), pl.col("bill_length_mm"), pl.col("year"))
+          pl.col("flipper_length_mm"), pl.col("body_mass_g"), 
+          pl.col("species"), pl.col("bill_length_mm"), pl.col("sex"))
 )
 ```
 :::

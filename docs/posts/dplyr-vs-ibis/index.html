@@ -654,50 +654,50 @@ ibis vs ibis-framework
 <div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(<span class="fu">c</span>(species, bill_length_mm), <span class="at">.before =</span> year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(<span class="fu">c</span>(species, bill_length_mm), <span class="at">.before =</span> sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 344 × 8
-   island    bill_depth_mm flipper_length_mm body_mass_g sex    species
-   &lt;fct&gt;             &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt; &lt;fct&gt;  &lt;fct&gt;  
- 1 Torgersen          18.7               181        3750 male   Adelie 
- 2 Torgersen          17.4               186        3800 female Adelie 
- 3 Torgersen          18                 195        3250 female Adelie 
- 4 Torgersen          NA                  NA          NA &lt;NA&gt;   Adelie 
- 5 Torgersen          19.3               193        3450 female Adelie 
- 6 Torgersen          20.6               190        3650 male   Adelie 
- 7 Torgersen          17.8               181        3625 female Adelie 
- 8 Torgersen          19.6               195        4675 male   Adelie 
- 9 Torgersen          18.1               193        3475 &lt;NA&gt;   Adelie 
-10 Torgersen          20.2               190        4250 &lt;NA&gt;   Adelie 
+   island    bill_depth_mm flipper_length_mm body_mass_g species bill_length_mm
+   &lt;fct&gt;             &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt; &lt;fct&gt;            &lt;dbl&gt;
+ 1 Torgersen          18.7               181        3750 Adelie            39.1
+ 2 Torgersen          17.4               186        3800 Adelie            39.5
+ 3 Torgersen          18                 195        3250 Adelie            40.3
+ 4 Torgersen          NA                  NA          NA Adelie            NA  
+ 5 Torgersen          19.3               193        3450 Adelie            36.7
+ 6 Torgersen          20.6               190        3650 Adelie            39.3
+ 7 Torgersen          17.8               181        3625 Adelie            38.9
+ 8 Torgersen          19.6               195        4675 Adelie            39.2
+ 9 Torgersen          18.1               193        3475 Adelie            34.1
+10 Torgersen          20.2               190        4250 Adelie            42  
 # ℹ 334 more rows
-# ℹ 2 more variables: bill_length_mm &lt;dbl&gt;, year &lt;int&gt;</code></pre>
+# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;</code></pre>
 </div>
 </div>
 </div>
 <div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  .select(_.island, _.bill_depth_mm, _.flipper_length_mm, _.body_mass_g, _.sex, </span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>          _.species, _.bill_length_mm, _.year)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  .select(_.island, _.bill_depth_mm, _.flipper_length_mm, _.body_mass_g, </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>          _.species, _.bill_length_mm, _.sex)</span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━┳━━━┓
-┃ island    ┃ bill_depth_mm ┃ flipper_length_mm ┃ body_mass_g ┃ sex    ┃ … ┃
-┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━╇━━━┩
-│ string    │ float64       │ float64           │ float64     │ string │ … │
-├───────────┼───────────────┼───────────────────┼─────────────┼────────┼───┤
-│ Torgersen │          18.7 │             181.0 │      3750.0 │ male   │ … │
-│ Torgersen │          17.4 │             186.0 │      3800.0 │ female │ … │
-│ Torgersen │          18.0 │             195.0 │      3250.0 │ female │ … │
-│ Torgersen │          NULL │              NULL │        NULL │ NULL   │ … │
-│ Torgersen │          19.3 │             193.0 │      3450.0 │ female │ … │
-│ Torgersen │          20.6 │             190.0 │      3650.0 │ male   │ … │
-│ Torgersen │          17.8 │             181.0 │      3625.0 │ female │ … │
-│ Torgersen │          19.6 │             195.0 │      4675.0 │ male   │ … │
-│ Torgersen │          18.1 │             193.0 │      3475.0 │ NULL   │ … │
-│ Torgersen │          20.2 │             190.0 │      4250.0 │ NULL   │ … │
-│ …         │             … │                 … │           … │ …      │ … │
-└───────────┴───────────────┴───────────────────┴─────────────┴────────┴───┘</code></pre>
+<pre><code>┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━┳━━━┓
+┃ island    ┃ bill_depth_mm ┃ flipper_length_mm ┃ body_mass_g ┃ species ┃ … ┃
+┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━╇━━━┩
+│ string    │ float64       │ float64           │ float64     │ string  │ … │
+├───────────┼───────────────┼───────────────────┼─────────────┼─────────┼───┤
+│ Torgersen │          18.7 │             181.0 │      3750.0 │ Adelie  │ … │
+│ Torgersen │          17.4 │             186.0 │      3800.0 │ Adelie  │ … │
+│ Torgersen │          18.0 │             195.0 │      3250.0 │ Adelie  │ … │
+│ Torgersen │          NULL │              NULL │        NULL │ Adelie  │ … │
+│ Torgersen │          19.3 │             193.0 │      3450.0 │ Adelie  │ … │
+│ Torgersen │          20.6 │             190.0 │      3650.0 │ Adelie  │ … │
+│ Torgersen │          17.8 │             181.0 │      3625.0 │ Adelie  │ … │
+│ Torgersen │          19.6 │             195.0 │      4675.0 │ Adelie  │ … │
+│ Torgersen │          18.1 │             193.0 │      3475.0 │ Adelie  │ … │
+│ Torgersen │          20.2 │             190.0 │      4250.0 │ Adelie  │ … │
+│ …         │             … │                 … │           … │ …       │ … │
+└───────────┴───────────────┴───────────────────┴─────────────┴─────────┴───┘</code></pre>
 </div>
 </div>
 </div>

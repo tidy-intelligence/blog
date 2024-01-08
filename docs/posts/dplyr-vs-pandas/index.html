@@ -630,23 +630,23 @@ pandas syntax
 <div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(<span class="fu">c</span>(species, bill_length_mm), <span class="at">.before =</span> year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(<span class="fu">c</span>(species, bill_length_mm), <span class="at">.before =</span> sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 344 × 8
-   island    bill_depth_mm flipper_length_mm body_mass_g sex    species
-   &lt;fct&gt;             &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt; &lt;fct&gt;  &lt;fct&gt;  
- 1 Torgersen          18.7               181        3750 male   Adelie 
- 2 Torgersen          17.4               186        3800 female Adelie 
- 3 Torgersen          18                 195        3250 female Adelie 
- 4 Torgersen          NA                  NA          NA &lt;NA&gt;   Adelie 
- 5 Torgersen          19.3               193        3450 female Adelie 
- 6 Torgersen          20.6               190        3650 male   Adelie 
- 7 Torgersen          17.8               181        3625 female Adelie 
- 8 Torgersen          19.6               195        4675 male   Adelie 
- 9 Torgersen          18.1               193        3475 &lt;NA&gt;   Adelie 
-10 Torgersen          20.2               190        4250 &lt;NA&gt;   Adelie 
+   island    bill_depth_mm flipper_length_mm body_mass_g species bill_length_mm
+   &lt;fct&gt;             &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt; &lt;fct&gt;            &lt;dbl&gt;
+ 1 Torgersen          18.7               181        3750 Adelie            39.1
+ 2 Torgersen          17.4               186        3800 Adelie            39.5
+ 3 Torgersen          18                 195        3250 Adelie            40.3
+ 4 Torgersen          NA                  NA          NA Adelie            NA  
+ 5 Torgersen          19.3               193        3450 Adelie            36.7
+ 6 Torgersen          20.6               190        3650 Adelie            39.3
+ 7 Torgersen          17.8               181        3625 Adelie            38.9
+ 8 Torgersen          19.6               195        4675 Adelie            39.2
+ 9 Torgersen          18.1               193        3475 Adelie            34.1
+10 Torgersen          20.2               190        4250 Adelie            42  
 # ℹ 334 more rows
-# ℹ 2 more variables: bill_length_mm &lt;dbl&gt;, year &lt;int&gt;</code></pre>
+# ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -654,23 +654,23 @@ pandas syntax
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>(penguins</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  .get([<span class="st">"island"</span>, <span class="st">"bill_depth_mm"</span>, <span class="st">"flipper_length_mm"</span>, <span class="st">"body_mass_g"</span>,</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sex"</span>, <span class="st">"species"</span>, <span class="st">"bill_length_mm"</span>,<span class="st">"year"</span>])</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"species"</span>, <span class="st">"bill_length_mm"</span>, <span class="st">"sex"</span>])</span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>        island  bill_depth_mm  ...  bill_length_mm  year
-0    Torgersen           18.7  ...            39.1  2007
-1    Torgersen           17.4  ...            39.5  2007
-2    Torgersen           18.0  ...            40.3  2007
-3    Torgersen            NaN  ...             NaN  2007
-4    Torgersen           19.3  ...            36.7  2007
-..         ...            ...  ...             ...   ...
-339      Dream           19.8  ...            55.8  2009
-340      Dream           18.1  ...            43.5  2009
-341      Dream           18.2  ...            49.6  2009
-342      Dream           19.0  ...            50.8  2009
-343      Dream           18.7  ...            50.2  2009
+<pre><code>        island  bill_depth_mm  ...  bill_length_mm     sex
+0    Torgersen           18.7  ...            39.1    male
+1    Torgersen           17.4  ...            39.5  female
+2    Torgersen           18.0  ...            40.3  female
+3    Torgersen            NaN  ...             NaN     NaN
+4    Torgersen           19.3  ...            36.7  female
+..         ...            ...  ...             ...     ...
+339      Dream           19.8  ...            55.8    male
+340      Dream           18.1  ...            43.5  female
+341      Dream           18.2  ...            49.6    male
+342      Dream           19.0  ...            50.8    male
+343      Dream           18.7  ...            50.2  female
 
-[344 rows x 8 columns]</code></pre>
+[344 rows x 7 columns]</code></pre>
 </div>
 </div>
 </div>
