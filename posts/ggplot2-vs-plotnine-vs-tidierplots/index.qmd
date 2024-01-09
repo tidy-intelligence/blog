@@ -66,18 +66,30 @@ using TidierPlots
 using DataFrames
 using PalmerPenguins
 
-penguins = dropmissing(DataFrame(PalmerPenguins.load()))
+# Set the backend
+using Plots
+gr()
 
-@ggplot(penguins,
-        aes(x = bill_length_mm, y = bill_depth_mm,
-            color = species, shape = species)) +
-  @geom_point() +
-  @geom_smooth(method = "lm") +
-  @labs(x = "Bill length (mm)", y = "Bill Width (mm)",
-        title = "Bill Length vs. Bill Width",
-        subtitle = "Using geom_point and geom_smooth",
-        color = "Species", shape = "Species") +
+# Set plotting options
+TidierPlots_set("plot_show", false)
+TidierPlots_set("plot_log", false)
+
+penguins = dropmissing(DataFrame(PalmerPenguins.load()))
+```
+
+```{julia}
+penguins_plot = ggplot(penguins,
+      aes(x = "bill_length_mm", y = "bill_depth_mm",
+          color = "species", shape = "species")) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(x = "Bill length (mm)", y = "Bill Width (mm)",
+       title = "Bill Length vs. Bill Width",
+       subtitle = "Using geom_point and geom_smooth",
+       color = "Species", shape = "Species") +
   theme_minimal()
+
+draw_ggplot(penguins_plot)
 ```
 ::: 
 
