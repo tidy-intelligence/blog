@@ -238,10 +238,10 @@ cookieconsent.run({
 
 <p>There are a myriad of options to perform essential data manipulation tasks in R and Julia. However, if we want to do tidy data science in R, there is a clear forerunner: <code>dplyr</code>. In the world of Julia, <code>TidierData</code> is a relatively new kid on the block that allows R users to dabble in Julia without learning a lot of new syntax. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks.</p>
 <p>Before we dive into the comparison, a short introduction to the packages: the <code>dplyr</code> package in R allows users to refer to columns without quotation marks due to its implementation of non-standard evaluation (NSE). NSE is a programming technique used in R that allows functions to capture the expressions passed to them as arguments, rather than just the values of those arguments. The primary goal of NSE in the context of <code>dplyr</code> is to create a more user-friendly and intuitive syntax. This makes data manipulation tasks more straightforward and aligns with the general philosophy of the <code>tidyverse</code> to make data science faster, easier, and more fun.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<p><code>TidierData</code> is a 100% Julia implementation of the <code>dplyr</code> and <code>tidyr</code> R packages with three goals: (i) stick as closely to the <code>tidyverse</code> syntax as possible, so that R users find it easier to switch; (ii) make broadcasting mostly invisible, so that many functions are automatically vectorized for users; (iii) make scalars and tuples mostly interchangeable, so that users can provide a scalar or a tuple as arguments as they see fit. Check out the <a href="https://tidierorg.github.io/TidierData.jl/latest/">package website</a> for more information and peculiarities of Julia.</p>
+<p><code>TidierData</code> is a 100% Julia implementation of the <code>dplyr</code> and <code>tidyr</code> R packages with three goals: (i) stick as closely to the <code>tidyverse</code> syntax as possible, so that R users find it easier to switch; (ii) make broadcasting<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> mostly invisible, so that many functions are automatically vectorized for users; (iii) make scalars and tuples mostly interchangeable, so that users can provide a scalar or a tuple as arguments as they see fit. Check out the <a href="https://tidierorg.github.io/TidierData.jl/latest/">package website</a> for more information, in particular with respect to the features of Julia.</p>
 <section id="loading-packages" class="level1">
 <h1>Loading packages</h1>
-<p>We start by loading the main packages of interest and the popular <code>palmerpenguins</code> package that exists for both R and Julia. Note that packages in Julia follow a Pascal case convention, so we have <code>TidierData</code> and <code>PalmerPenguins</code>. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below.</p>
+<p>We start by loading the main packages of interest and the popular <code>palmerpenguins</code> package that exists for both R and Julia. Note that packages in Julia follow a Pascal case convention, so we have <code>TidierData</code> and <code>PalmerPenguins</code>. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below. Note that <code>ENV["LINES"] = 19</code> sets the print output of Julia data frames to show only 10 rows.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Julia</a></li></ul>
 <div class="tab-content">
@@ -258,30 +258,8 @@ cookieconsent.run({
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">TidierData</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">PalmerPenguins</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> <span class="fu">DataFrame</span>(PalmerPenguins.<span class="fu">load</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>344×7 DataFrame
- Row │ species    island     bill_length_mm  bill_depth_mm  flipper_length_mm  ⋯
-     │ String15   String15   Float64?        Float64?       Int64?             ⋯
-─────┼──────────────────────────────────────────────────────────────────────────
-   1 │ Adelie     Torgersen            39.1           18.7                181  ⋯
-   2 │ Adelie     Torgersen            39.5           17.4                186
-   3 │ Adelie     Torgersen            40.3           18.0                195
-   4 │ Adelie     Torgersen       missing        missing              missing
-   5 │ Adelie     Torgersen            36.7           19.3                193  ⋯
-   6 │ Adelie     Torgersen            39.3           20.6                190
-   7 │ Adelie     Torgersen            38.9           17.8                181
-   8 │ Adelie     Torgersen            39.2           19.6                195
-  ⋮  │     ⋮          ⋮            ⋮               ⋮                ⋮          ⋱
- 338 │ Chinstrap  Dream                46.8           16.5                189  ⋯
- 339 │ Chinstrap  Dream                45.7           17.0                195
- 340 │ Chinstrap  Dream                55.8           19.8                207
- 341 │ Chinstrap  Dream                43.5           18.1                202
- 342 │ Chinstrap  Dream                49.6           18.2                193  ⋯
- 343 │ Chinstrap  Dream                50.8           19.0                210
- 344 │ Chinstrap  Dream                50.2           18.7                198
-                                                  2 columns and 329 rows omitted</code></pre>
-</div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> <span class="fu">DataFrame</span>(PalmerPenguins.<span class="fu">load</span>())</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="cn">ENV</span>[<span class="st">"LINES"</span>] <span class="op">=</span> <span class="fl">19</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -291,15 +269,15 @@ cookieconsent.run({
 <h1>Work with rows</h1>
 <section id="filter-rows" class="level2">
 <h2 class="anchored" data-anchor-id="filter-rows">Filter rows</h2>
-<p>Filtering rows with <code>dplyr</code> is based on NSE and the <code>dplyr::filter()</code> function. To replicate the same results with <code>TidierData</code>, you can use <code>TidierData.@filter()</code> method which accepts a remarkably similar notation to <code>dplyr</code> with the only exceptions that you need <code>&amp;&amp;</code> for a boolean ‘and’ and you can omit the percentage signs around <code>in</code>.</p>
+<p>Filtering rows with <code>dplyr</code> is based on NSE and the <code>dplyr::filter()</code> function. To replicate the same results with <code>TidierData</code>, you can use <code>TidierData.@filter()</code> method which accepts a remarkably similar notation to <code>dplyr</code> with the only exceptions that you need <code>&amp;&amp;</code> or <code>||</code> for boolean operators and that you can omit the percentage signs around <code>in</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Julia</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Adelie"</span> <span class="sc">&amp;</span> </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>           island <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Biscoe"</span>, <span class="st">"Dream"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Adelie"</span> <span class="sc">&amp;</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>           island <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Biscoe"</span>, <span class="st">"Dream"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 100 × 8
    species island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
@@ -321,10 +299,10 @@ cookieconsent.run({
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@filter</span>(species <span class="op">==</span> <span class="st">"Adelie"</span> <span class="op">&amp;&amp;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>            island <span class="kw">in</span> (<span class="st">"Biscoe"</span>, <span class="st">"Dream"</span>))</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@filter</span>(species <span class="op">==</span> <span class="st">"Adelie"</span> <span class="op">&amp;&amp;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>            island <span class="kw">in</span> (<span class="st">"Biscoe"</span>, <span class="st">"Dream"</span>))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>100×7 DataFrame
  Row │ species   island    bill_length_mm  bill_depth_mm  flipper_length_mm  b ⋯
@@ -335,18 +313,13 @@ cookieconsent.run({
    3 │ Adelie    Biscoe              35.9           19.2                189
    4 │ Adelie    Biscoe              38.2           18.1                185
    5 │ Adelie    Biscoe              38.8           17.2                180    ⋯
-   6 │ Adelie    Biscoe              35.3           18.9                187
-   7 │ Adelie    Biscoe              40.6           18.6                183
-   8 │ Adelie    Biscoe              40.5           17.9                187
   ⋮  │    ⋮         ⋮            ⋮               ⋮                ⋮            ⋱
-  94 │ Adelie    Dream               39.0           18.7                185    ⋯
-  95 │ Adelie    Dream               39.2           18.6                190
   96 │ Adelie    Dream               36.6           18.4                184
   97 │ Adelie    Dream               36.0           17.8                195
-  98 │ Adelie    Dream               37.8           18.1                193    ⋯
-  99 │ Adelie    Dream               36.0           17.1                187
+  98 │ Adelie    Dream               37.8           18.1                193
+  99 │ Adelie    Dream               36.0           17.1                187    ⋯
  100 │ Adelie    Dream               41.5           18.5                201
-                                                   2 columns and 85 rows omitted</code></pre>
+                                                   2 columns and 90 rows omitted</code></pre>
 </div>
 </div>
 </div>
@@ -361,8 +334,8 @@ cookieconsent.run({
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">10</span><span class="sc">:</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">10</span><span class="sc">:</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 11 × 8
    species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
@@ -384,9 +357,9 @@ cookieconsent.run({
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@slice</span>(<span class="fl">10</span><span class="op">:</span><span class="fl">20</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@slice</span>(<span class="fl">10</span><span class="op">:</span><span class="fl">20</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>11×7 DataFrame
  Row │ species   island     bill_length_mm  bill_depth_mm  flipper_length_mm   ⋯
@@ -418,8 +391,8 @@ cookieconsent.run({
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(island, <span class="fu">desc</span>(bill_length_mm))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(island, <span class="fu">desc</span>(bill_length_mm))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 344 × 8
    species island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
@@ -441,9 +414,9 @@ cookieconsent.run({
 </div>
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@arrange</span>(island, <span class="fu">desc</span>(bill_length_mm))</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@arrange</span>(island, <span class="fu">desc</span>(bill_length_mm))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>344×7 DataFrame
  Row │ species   island     bill_length_mm  bill_depth_mm  flipper_length_mm   ⋯
@@ -454,18 +427,13 @@ cookieconsent.run({
    3 │ Gentoo    Biscoe               55.9           17.0                228
    4 │ Gentoo    Biscoe               55.1           16.0                230
    5 │ Gentoo    Biscoe               54.3           15.7                231   ⋯
-   6 │ Gentoo    Biscoe               53.4           15.8                219
-   7 │ Gentoo    Biscoe               52.5           15.6                221
-   8 │ Gentoo    Biscoe               52.2           17.1                228
   ⋮  │    ⋮          ⋮            ⋮               ⋮                ⋮           ⋱
- 338 │ Adelie    Torgersen            35.2           15.9                186   ⋯
- 339 │ Adelie    Torgersen            35.1           19.4                193
  340 │ Adelie    Torgersen            34.6           21.1                198
  341 │ Adelie    Torgersen            34.6           17.2                189
- 342 │ Adelie    Torgersen            34.4           18.4                184   ⋯
- 343 │ Adelie    Torgersen            34.1           18.1                193
+ 342 │ Adelie    Torgersen            34.4           18.4                184
+ 343 │ Adelie    Torgersen            34.1           18.1                193   ⋯
  344 │ Adelie    Torgersen            33.5           19.0                190
-                                                  2 columns and 329 rows omitted</code></pre>
+                                                  2 columns and 334 rows omitted</code></pre>
 </div>
 </div>
 </div>
@@ -483,8 +451,8 @@ cookieconsent.run({
 <div class="tab-content">
 <div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(bill_length_mm, sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(bill_length_mm, sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 344 × 2
    bill_length_mm sex   
@@ -505,9 +473,9 @@ cookieconsent.run({
 </div>
 <div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@select</span>(bill_length_mm, sex)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@select</span>(bill_length_mm, sex)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>344×2 DataFrame
  Row │ bill_length_mm  sex
@@ -518,18 +486,13 @@ cookieconsent.run({
    3 │           40.3  female
    4 │      missing    missing
    5 │           36.7  female
-   6 │           39.3  male
-   7 │           38.9  female
-   8 │           39.2  male
   ⋮  │       ⋮            ⋮
- 338 │           46.8  female
- 339 │           45.7  female
  340 │           55.8  male
  341 │           43.5  female
  342 │           49.6  male
  343 │           50.8  male
  344 │           50.2  female
-               329 rows omitted</code></pre>
+               334 rows omitted</code></pre>
 </div>
 </div>
 </div>
@@ -544,9 +507,9 @@ cookieconsent.run({
 <div class="tab-content">
 <div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">bill_length =</span> bill_length_mm,</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_depth =</span> bill_depth_mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">bill_length =</span> bill_length_mm,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_depth =</span> bill_depth_mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 344 × 8
    species island    bill_length bill_depth flipper_length_mm body_mass_g sex   
@@ -568,10 +531,10 @@ cookieconsent.run({
 </div>
 <div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@rename</span>(bill_length <span class="op">=</span> bill_length_mm,</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>          bill_depth <span class="op">=</span> bill_depth_mm)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@rename</span>(bill_length <span class="op">=</span> bill_length_mm,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>          bill_depth <span class="op">=</span> bill_depth_mm)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>344×7 DataFrame
  Row │ species    island     bill_length  bill_depth  flipper_length_mm  body_ ⋯
@@ -582,18 +545,13 @@ cookieconsent.run({
    3 │ Adelie     Torgersen         40.3        18.0                195
    4 │ Adelie     Torgersen    missing     missing              missing      m
    5 │ Adelie     Torgersen         36.7        19.3                193        ⋯
-   6 │ Adelie     Torgersen         39.3        20.6                190
-   7 │ Adelie     Torgersen         38.9        17.8                181
-   8 │ Adelie     Torgersen         39.2        19.6                195
   ⋮  │     ⋮          ⋮           ⋮           ⋮               ⋮                ⋱
- 338 │ Chinstrap  Dream             46.8        16.5                189        ⋯
- 339 │ Chinstrap  Dream             45.7        17.0                195
  340 │ Chinstrap  Dream             55.8        19.8                207
  341 │ Chinstrap  Dream             43.5        18.1                202
- 342 │ Chinstrap  Dream             49.6        18.2                193        ⋯
- 343 │ Chinstrap  Dream             50.8        19.0                210
+ 342 │ Chinstrap  Dream             49.6        18.2                193
+ 343 │ Chinstrap  Dream             50.8        19.0                210        ⋯
  344 │ Chinstrap  Dream             50.2        18.7                198
-                                                  2 columns and 329 rows omitted</code></pre>
+                                                  2 columns and 334 rows omitted</code></pre>
 </div>
 </div>
 </div>
@@ -608,11 +566,11 @@ cookieconsent.run({
 <div class="tab-content">
 <div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ones =</span> <span class="dv">1</span>,</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_length =</span> bill_length_mm <span class="sc">/</span> <span class="dv">10</span>,</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_length_squared =</span> bill_length<span class="sc">^</span><span class="dv">2</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ones, bill_length_mm, bill_length, bill_length_squared)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ones =</span> <span class="dv">1</span>,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_length =</span> bill_length_mm <span class="sc">/</span> <span class="dv">10</span>,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">bill_length_squared =</span> bill_length<span class="sc">^</span><span class="dv">2</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ones, bill_length_mm, bill_length, bill_length_squared)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 344 × 4
     ones bill_length_mm bill_length bill_length_squared
@@ -633,12 +591,12 @@ cookieconsent.run({
 </div>
 <div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@mutate</span>(ones <span class="op">=</span> <span class="fl">1</span>,</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>          bill_length <span class="op">=</span> bill_length_mm <span class="op">/</span> <span class="fl">10</span>)</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@mutate</span>(bill_length_squared <span class="op">=</span> bill_length<span class="op">^</span><span class="fl">2</span>)</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@select</span>(ones, bill_length_mm, bill_length, bill_length_squared)</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@mutate</span>(ones <span class="op">=</span> <span class="fl">1</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>          bill_length <span class="op">=</span> bill_length_mm <span class="op">/</span> <span class="fl">10</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@mutate</span>(bill_length_squared <span class="op">=</span> bill_length<span class="op">^</span><span class="fl">2</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@select</span>(ones, bill_length_mm, bill_length, bill_length_squared)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>344×4 DataFrame
  Row │ ones   bill_length_mm  bill_length  bill_length_squared
@@ -649,18 +607,13 @@ cookieconsent.run({
    3 │     1            40.3         4.03              16.2409
    4 │     1       missing     missing            missing
    5 │     1            36.7         3.67              13.4689
-   6 │     1            39.3         3.93              15.4449
-   7 │     1            38.9         3.89              15.1321
-   8 │     1            39.2         3.92              15.3664
   ⋮  │   ⋮          ⋮              ⋮                ⋮
- 338 │     1            46.8         4.68              21.9024
- 339 │     1            45.7         4.57              20.8849
  340 │     1            55.8         5.58              31.1364
  341 │     1            43.5         4.35              18.9225
  342 │     1            49.6         4.96              24.6016
  343 │     1            50.8         5.08              25.8064
  344 │     1            50.2         5.02              25.2004
-                                               329 rows omitted</code></pre>
+                                               334 rows omitted</code></pre>
 </div>
 </div>
 </div>
@@ -676,8 +629,8 @@ cookieconsent.run({
 <div class="tab-content">
 <div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(<span class="fu">c</span>(species, bill_length_mm), <span class="at">.before =</span> sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(<span class="fu">c</span>(species, bill_length_mm), <span class="at">.before =</span> sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 344 × 8
    island    bill_depth_mm flipper_length_mm body_mass_g species bill_length_mm
@@ -699,10 +652,10 @@ cookieconsent.run({
 </div>
 <div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@select</span>(island, bill_depth_mm, flipper_length_mm, body_mass_g, </span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>          species, bill_length_mm, sex)</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@select</span>(island, bill_depth_mm, flipper_length_mm, body_mass_g, </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>          species, bill_length_mm, sex)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>344×7 DataFrame
  Row │ island     bill_depth_mm  flipper_length_mm  body_mass_g  species    bi ⋯
@@ -713,18 +666,13 @@ cookieconsent.run({
    3 │ Torgersen           18.0                195         3250  Adelie
    4 │ Torgersen      missing              missing      missing  Adelie
    5 │ Torgersen           19.3                193         3450  Adelie        ⋯
-   6 │ Torgersen           20.6                190         3650  Adelie
-   7 │ Torgersen           17.8                181         3625  Adelie
-   8 │ Torgersen           19.6                195         4675  Adelie
   ⋮  │     ⋮            ⋮                ⋮               ⋮           ⋮         ⋱
- 338 │ Dream               16.5                189         3650  Chinstrap     ⋯
- 339 │ Dream               17.0                195         3650  Chinstrap
  340 │ Dream               19.8                207         4000  Chinstrap
  341 │ Dream               18.1                202         3400  Chinstrap
- 342 │ Dream               18.2                193         3775  Chinstrap     ⋯
- 343 │ Dream               19.0                210         4100  Chinstrap
+ 342 │ Dream               18.2                193         3775  Chinstrap
+ 343 │ Dream               19.0                210         4100  Chinstrap     ⋯
  344 │ Dream               18.7                198         3775  Chinstrap
-                                                  2 columns and 329 rows omitted</code></pre>
+                                                  2 columns and 334 rows omitted</code></pre>
 </div>
 </div>
 </div>
@@ -743,9 +691,9 @@ cookieconsent.run({
 <div class="tab-content">
 <div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(island) <span class="sc">|&gt;</span> </span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">bill_depth_mean =</span> <span class="fu">mean</span>(bill_depth_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(island) <span class="sc">|&gt;</span> </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">bill_depth_mean =</span> <span class="fu">mean</span>(bill_depth_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 2
   island    bill_depth_mean
@@ -758,11 +706,11 @@ cookieconsent.run({
 </div>
 <div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@group_by</span>(island) </span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@summarize</span>(bill_depth_mean <span class="op">=</span> <span class="fu">mean</span>(<span class="fu">skipmissing</span>(bill_depth_mm)))</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@arrange</span>(island)</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@group_by</span>(island) </span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@summarize</span>(bill_depth_mean <span class="op">=</span> <span class="fu">mean</span>(<span class="fu">skipmissing</span>(bill_depth_mm)))</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@arrange</span>(island)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>3×2 DataFrame
  Row │ island     bill_depth_mean
@@ -785,13 +733,13 @@ cookieconsent.run({
 <div class="tab-content">
 <div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(island) <span class="sc">|&gt;</span> </span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">count =</span> <span class="fu">n</span>(),</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">bill_depth_mean =</span> <span class="fu">mean</span>(bill_depth_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">flipper_length_median =</span> <span class="fu">median</span>(flipper_length_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">body_mass_sd =</span> <span class="fu">sd</span>(body_mass_g, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">share_female =</span> <span class="fu">mean</span>(sex <span class="sc">==</span> <span class="st">"female"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">|&gt;</span> </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(island) <span class="sc">|&gt;</span> </span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">count =</span> <span class="fu">n</span>(),</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">bill_depth_mean =</span> <span class="fu">mean</span>(bill_depth_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">flipper_length_median =</span> <span class="fu">median</span>(flipper_length_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">body_mass_sd =</span> <span class="fu">sd</span>(body_mass_g, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">share_female =</span> <span class="fu">mean</span>(sex <span class="sc">==</span> <span class="st">"female"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 6
   island   count bill_depth_mean flipper_length_median body_mass_sd share_female
@@ -804,15 +752,15 @@ cookieconsent.run({
 </div>
 <div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@group_by</span>(island) </span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@summarize</span>(count <span class="op">=</span> <span class="fu">n</span>(),</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>             bill_depth_mean <span class="op">=</span> <span class="fu">mean</span>(<span class="fu">skipmissing</span>(bill_depth_mm)),</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>             flipper_length_median <span class="op">=</span> <span class="fu">median</span>(<span class="fu">skipmissing</span>(flipper_length_mm)),</span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>             body_mass_sd <span class="op">=</span> <span class="fu">std</span>(<span class="fu">skipmissing</span>(body_mass_g)),</span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>             share_female <span class="op">=</span> <span class="fu">mean</span>(<span class="fu">skipmissing</span>(sex <span class="op">==</span> <span class="st">"female"</span>)))</span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@arrange</span>(island)</span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@chain</span> penguins <span class="cf">begin</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@group_by</span>(island) </span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@summarize</span>(count <span class="op">=</span> <span class="fu">n</span>(),</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>             bill_depth_mean <span class="op">=</span> <span class="fu">mean</span>(<span class="fu">skipmissing</span>(bill_depth_mm)),</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>             flipper_length_median <span class="op">=</span> <span class="fu">median</span>(<span class="fu">skipmissing</span>(flipper_length_mm)),</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>             body_mass_sd <span class="op">=</span> <span class="fu">std</span>(<span class="fu">skipmissing</span>(body_mass_g)),</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>             share_female <span class="op">=</span> <span class="fu">mean</span>(<span class="fu">skipmissing</span>(sex <span class="op">==</span> <span class="st">"female"</span>)))</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@arrange</span>(island)</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>3×6 DataFrame
  Row │ island     count  bill_depth_mean  flipper_length_median  body_mass_sd  ⋯
@@ -841,6 +789,8 @@ cookieconsent.run({
 
 <ol>
 <li id="fn1"><p>See the unifying principles of the tidyverse: <a href="https://design.tidyverse.org/unifying.html">https://design.tidyverse.org/unifying.html</a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Broadcasting expands singleton dimensions in array arguments to match the corresponding dimension in the other array without using extra memory.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>In Julia, setting the number of rows to display for all DataFrames globally isn’t straightforward as there isn’t a direct global setting for this in the <code>DataFrame</code> package. <code>ENV["COLUMNS"]</code> or <code>ENV["LINES"]</code> control the display based on the size of your terminal.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

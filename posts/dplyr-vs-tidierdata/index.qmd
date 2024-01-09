@@ -7,7 +7,6 @@ author: "Christoph Scheuch"
 date: "2024-01-07" 
 image: thumbnail.png
 image-alt: A standard plastic broom stands upright on a lush green lawn, with its long handle and bristles clearly visible. Beside it is a large pair of pliers, about half the size of the broom, with detailed rubber handles. The background shows a serene landscape, with a sparkling lake visible in the distance, surrounded by gentle hills and a clear blue sky. Created with DALL-E 3.
-draft: true
 ---
 
 ```{r}
@@ -19,13 +18,14 @@ JuliaCall::julia_setup("/Applications/Julia-1.9.app/Contents/Resources/julia/bin
 
 There are a myriad of options to perform essential data manipulation tasks in R and Julia. However, if we want to do tidy data science in R, there is a clear forerunner: `dplyr`. In the world of Julia, `TidierData` is a relatively new kid on the block that allows R users to dabble in Julia without learning a lot of new syntax. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks. 
 
-Before we dive into the comparison, a short introduction to the packages: the `dplyr` package in R allows users to refer to columns without quotation marks due to its implementation of non-standard evaluation (NSE). NSE is a programming technique used in R that allows functions to capture the expressions passed to them as arguments, rather than just the values of those arguments. The primary goal of NSE in the context of `dplyr` is to create a more user-friendly and intuitive syntax. This makes data manipulation tasks more straightforward and aligns with the general philosophy of the `tidyverse` to make data science faster, easier, and more fun.[^1]
+Before we dive into the comparison, a short introduction to the packages: the `dplyr` package in R allows users to refer to columns without quotation marks due to its implementation of non-standard evaluation (NSE). NSE is a programming technique used in R that allows functions to capture the expressions passed to them as arguments, rather than just the values of those arguments. The primary goal of NSE in the context of `dplyr` is to create a more user-friendly and intuitive syntax. This makes data manipulation tasks more straightforward and aligns with the general philosophy of the `tidyverse` to make data science faster, easier, and more fun.^[See the unifying principles of the tidyverse: [https://design.tidyverse.org/unifying.html](https://design.tidyverse.org/unifying.html).]
 
-`TidierData` is a 100% Julia implementation of the `dplyr` and `tidyr` R packages with three goals: (i) stick as closely to the `tidyverse` syntax as possible, so that R users find it easier to switch; (ii) make broadcasting mostly invisible, so that many functions are automatically vectorized for users; (iii) make scalars and tuples mostly interchangeable, so that users can provide a scalar or a tuple as arguments as they see fit. Check out the [package website](https://tidierorg.github.io/TidierData.jl/latest/) for more information and peculiarities of Julia.
+`TidierData` is a 100% Julia implementation of the `dplyr` and `tidyr` R packages with three goals: (i) stick as closely to the `tidyverse` syntax as possible, so that R users find it easier to switch; (ii) make broadcasting^[Broadcasting expands singleton dimensions in array arguments to match the corresponding dimension in the other array without using extra memory.] mostly invisible, so that many functions are automatically vectorized for users; (iii) make scalars and tuples mostly interchangeable, so that users can provide a scalar or a tuple as arguments as they see fit. Check out the [package website](https://tidierorg.github.io/TidierData.jl/latest/) for more information, in particular with respect to the features of Julia.
 
 # Loading packages
 
-We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Julia. Note that packages in Julia follow a Pascal case convention, so we have `TidierData` and `PalmerPenguins`. We then use the `penguins` data frame as the data to compare all functions and methods below. 
+We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Julia. Note that packages in Julia follow a Pascal case convention, so we have `TidierData` and `PalmerPenguins`. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that `ENV["LINES"] = 19` sets the print output of Julia data frames to show only 10 rows.^[In Julia, setting the number of rows to display for all DataFrames globally isn't straightforward as there isn't a direct global setting for this in the 
+`DataFrame` package. `ENV["COLUMNS"]` or `ENV["LINES"]` control the display based on the size of your terminal.]
  
 ::: {.panel-tabset}
 ### R
@@ -38,10 +38,12 @@ penguins <- palmerpenguins::penguins
 ```
 ### Julia
 ```{julia}
+#| output: false
 using TidierData
 using PalmerPenguins
 
 penguins = DataFrame(PalmerPenguins.load())
+ENV["LINES"] = 19
 ```
 :::
 
@@ -49,7 +51,7 @@ penguins = DataFrame(PalmerPenguins.load())
 
 ## Filter rows
 
-Filtering rows with `dplyr` is based on NSE and the `dplyr::filter()` function. To replicate the same results with `TidierData`, you can use `TidierData.@filter()` method which accepts a remarkably similar notation to `dplyr` with the only exceptions that you need `&&` for a boolean 'and' and you can omit the percentage signs around `in`. 
+Filtering rows with `dplyr` is based on NSE and the `dplyr::filter()` function. To replicate the same results with `TidierData`, you can use `TidierData.@filter()` method which accepts a remarkably similar notation to `dplyr` with the only exceptions that you need `&&` or `||` for boolean operators and that you can omit the percentage signs around `in`. 
 
 ::: {.panel-tabset}
 ### R
@@ -245,5 +247,3 @@ end
 ## Conclusion
 
 This post highlights syntactic similarities and differences across R's `dplyr` and Julia's `TidierData` packages. The key difference is between pipes and chains: `dplyr` uses the pipe operator `|>` to chain functions, while `TidierData` uses the `@chain df begin ... end` syntax for piping a value through a series of transformation expressions. Nonetheless, the similarities are remarkable and demonstrate the flexibility of Julia to seemingly replicate the NSE capabilities of R. If you want to play around with Julia or some of its packages, I can highly recommend to take a shortcut using `TidierData`.
-
-[^1]: See the unifying principles of the tidyverse: [https://design.tidyverse.org/unifying.html](https://design.tidyverse.org/unifying.html).

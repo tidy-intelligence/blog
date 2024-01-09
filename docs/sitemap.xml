@@ -18,11 +18,11 @@
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-pandas/index.html</loc>
-    <lastmod>2024-01-08T13:13:19.252Z</lastmod>
+    <lastmod>2024-01-09T09:57:47.609Z</lastmod>
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-polars/index.html</loc>
-    <lastmod>2024-01-08T13:13:39.024Z</lastmod>
+    <lastmod>2024-01-09T09:57:23.295Z</lastmod>
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/clustering-binary-data/index.html</loc>
@@ -35,5 +35,9 @@
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/dax-seasonality/index.html</loc>
     <lastmod>2023-11-28T11:46:51.575Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-tidierdata/index.html</loc>
+    <lastmod>2024-01-09T09:57:24.668Z</lastmod>
   </url>
 </urlset>

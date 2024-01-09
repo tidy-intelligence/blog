@@ -92,7 +92,7 @@ To orders the rows of a data frame by the values of selected columns, we have `d
 ### R
 ```{r}
 penguins |> 
-  arrange(island, -bill_length_mm)
+  arrange(island, desc(bill_length_mm))
 ```
 ### Python
 ```{python}
