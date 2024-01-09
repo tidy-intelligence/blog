@@ -61,19 +61,20 @@ penguins = load_penguins().dropna()
 ```
 ### Julia
 ```{julia}
+#| output: false
 using TidierPlots
 using DataFrames
 using PalmerPenguins
 
 penguins = dropmissing(DataFrame(PalmerPenguins.load()))
 
-@ggplot(penguins, 
-        aes(x = bill_length_mm, y = bill_depth_mm, 
-            color = species, shape = species)) + 
-  @geom_point() + 
+@ggplot(penguins,
+        aes(x = bill_length_mm, y = bill_depth_mm,
+            color = species, shape = species)) +
+  @geom_point() +
   @geom_smooth(method = "lm") +
-  @labs(x = "Bill length (mm)", y = "Bill Width (mm)", 
-        title = "Bill Length vs. Bill Width", 
+  @labs(x = "Bill length (mm)", y = "Bill Width (mm)",
+        title = "Bill Length vs. Bill Width",
         subtitle = "Using geom_point and geom_smooth",
         color = "Species", shape = "Species") +
   theme_minimal()
