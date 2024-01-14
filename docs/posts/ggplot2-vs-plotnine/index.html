@@ -2,15 +2,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.533">
+<meta name="generator" content="quarto-1.4.538">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Christoph Scheuch">
-<meta name="dcterms.date" content="2024-01-11">
-<meta name="description" content="A comparison of implementations of the grammar of graphics in R, Python, and Julia.">
+<meta name="dcterms.date" content="2024-01-14">
+<meta name="description" content="A comparison of implementations of the grammar of graphics in R and Python.">
 
-<title>Tidy Data Visualization: ggplot2 vs plotnine vs TidierPlots</title>
+<title>Tidy Data Visualization: ggplot2 vs plotnine</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -124,13 +124,13 @@ cookieconsent.run({
 
 <link rel="stylesheet" href="../../assets/css/styles-global.css">
 <link rel="stylesheet" href="../../assets/css/styles-blog.css">
-<meta property="og:title" content="Tidy Data Visualization: ggplot2 vs plotnine vs TidierPlots">
-<meta property="og:description" content="A comparison of implementations of the grammar of graphics in R, Python, and Julia.">
-<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/ggplot2-vs-plotnine-vs-tidierplots/thumbnail.png">
+<meta property="og:title" content="Tidy Data Visualization: ggplot2 vs plotnine">
+<meta property="og:description" content="A comparison of implementations of the grammar of graphics in R and Python.">
+<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/ggplot2-vs-plotnine/thumbnail.png">
 <meta property="og:site_name" content="Tidy Intelligence">
 <meta property="og:image:height" content="1024">
 <meta property="og:image:width" content="1024">
-<meta property="og:image:alt" content="An image of a calm office setting with three equally sized screens placed centrally. Each screen displays a simple line chart without any text or numbers. The office is well-lit, tidy, and features a minimalist design. The screens are aligned side by side on a sleek, modern desk, occupying the center of the image. The line charts are clear and straightforward. The office has a professional ambiance, with soft, ambient lighting and a few minimal decorative elements, emphasizing the symmetry and equal size of the screens. Created with DALL-E 3.">
+<meta property="og:image:alt" content="An image of a bright and friendly office setting with two equally sized screens placed centrally. Each screen displays a simple line chart without any text or numbers. The office is very well-lit, giving a warm and inviting ambiance. The decor is colorful and cheerful, with a minimalist design. The two screens are on a sleek, modern desk in the center of the image. The line charts are clear and straightforward. The overall atmosphere of the office is lively and welcoming, with vibrant colors and ample natural light. Created with DALL-E 3.">
 </head>
 
 <body class="nav-fixed">
@@ -199,12 +199,12 @@ cookieconsent.run({
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Tidy Data Visualization: ggplot2 vs plotnine vs TidierPlots</h1>
+<h1 class="title">Tidy Data Visualization: ggplot2 vs plotnine</h1>
 </div>
 
 <div>
   <div class="description">
-    A comparison of implementations of the grammar of graphics in R, Python, and Julia.
+    A comparison of implementations of the grammar of graphics in R and Python.
   </div>
 </div>
 
@@ -221,7 +221,7 @@ cookieconsent.run({
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 11, 2024</p>
+      <p class="date">January 14, 2024</p>
     </div>
   </div>
   
@@ -233,10 +233,11 @@ cookieconsent.run({
 </header>
 
 
-<p>Both <code>ggplot2</code> and <code>plotnine</code> are based on Leland Wilkinson’s Grammar of Graphics, a set of principles for creating consistent and effective statistical graphics. This means they both use similar syntax and logic for constructing plots, making it relatively easy for users to transition between them. <code>ggplot2</code>, developed by Hadley Wickham, is a cornerstone of the R community and integrates seamlessly with other <code>tidyverse</code> packages. <code>plotnine</code>, on the other hand, is a Python package that attempts to bring <code>ggplot2</code> functionality and philosophy to Python users, but it is not part of a larger ecosytem (although it works well with <code>pandas</code>, Python’s most popular data manipulation package).</p>
-<p>The types of plots that I chose for the comparison heavily draw on the examples given in <a href="https://r4ds.hadley.nz/data-visualize">R for Data Science</a>.</p>
+<p>Both <code>ggplot2</code> and <code>plotnine</code> are based on Leland Wilkinson’s Grammar of Graphics, a set of principles for creating consistent and effective statistical graphics. This means they both use similar syntax and logic for constructing plots, making it relatively easy for users to transition between them. <code>ggplot2</code>, developed by Hadley Wickham, is a cornerstone of the R community and integrates seamlessly with other <code>tidyverse</code> packages. <code>plotnine</code>, on the other hand, is a Python package that attempts to bring <code>ggplot2</code> functionality and philosophy to Python users, but it is not part of a larger ecosystem (although it works well with <code>pandas</code>, Python’s most popular data manipulation package).</p>
+<p>Both packages use a layer-based approach, where a plot is built up by adding components like axes, geoms, stats, and scales. However, <code>ggplot2</code> benefits from R’s native support for data frames and its formula notation, which can make its syntax more concise. <code>plotnine</code> has to adhere to Python’s syntax rules, in particular referring to columns via strings, which can occasionally lead to more verbose code.</p>
+<p>The types of plots that I chose for the comparison heavily draw on the examples given in <a href="https://r4ds.hadley.nz/data-visualize">R for Data Science</a> (an amazin resource if you want to get started with data visualization).</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Julia</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
@@ -249,19 +250,16 @@ cookieconsent.run({
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">y =</span> bill_depth_mm, </span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">color =</span> species, <span class="at">shape =</span> species)) <span class="sc">+</span> </span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> <span class="st">'y ~ x'</span>) <span class="sc">+</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Bill length (mm)"</span>, <span class="at">y =</span> <span class="st">"Bill Width (mm)"</span>, </span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Bill Length vs. Bill Width"</span>, </span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Using geom_point and geom_smooth"</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Using geom_point and geom_smooth of the ggplot2 package"</span>,</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Species"</span>, <span class="at">shape =</span> <span class="st">"Species"</span>) <span class="sc">+</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
-</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><a href="index_files/figure-html/unnamed-chunk-2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="2100"></a></p>
+<p><a href="index_files/figure-html/unnamed-chunk-1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="2100"></a></p>
 </figure>
 </div>
 </div>
@@ -269,63 +267,32 @@ cookieconsent.run({
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> palmerpenguins <span class="im">import</span> load_penguins</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> load_penguins().dropna()</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>(ggplot(penguins, </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        aes(x <span class="op">=</span> <span class="st">"bill_length_mm"</span>, y <span class="op">=</span> <span class="st">"bill_depth_mm"</span>, </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            color <span class="op">=</span> <span class="st">"species"</span>, shape <span class="op">=</span> <span class="st">"species"</span>))</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> geom_point()</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> geom_smooth(method <span class="op">=</span> <span class="st">"lm"</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> labs(x <span class="op">=</span> <span class="st">"Bill Length (mm)"</span>, y <span class="op">=</span> <span class="st">"Bill Width (mm)"</span>, </span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>         title <span class="op">=</span> <span class="st">"Bill Length vs. Bill Width"</span>, </span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>         subtitle <span class="op">=</span> <span class="st">"Using geom_point and geom_smooth"</span>,</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>         color <span class="op">=</span> <span class="st">"Species"</span>, shape <span class="op">=</span> <span class="st">"Species"</span>)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> theme_minimal()</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> palmerpenguins <span class="im">import</span> load_penguins</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> load_penguins().dropna()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>(ggplot(penguins, </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        aes(x <span class="op">=</span> <span class="st">"bill_length_mm"</span>, y <span class="op">=</span> <span class="st">"bill_depth_mm"</span>, </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            color <span class="op">=</span> <span class="st">"species"</span>, shape <span class="op">=</span> <span class="st">"species"</span>))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> geom_point()</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> geom_smooth(method <span class="op">=</span> <span class="st">"lm"</span>, formula <span class="op">=</span> <span class="st">'y ~ x'</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> labs(x <span class="op">=</span> <span class="st">"Bill Length (mm)"</span>, y <span class="op">=</span> <span class="st">"Bill Width (mm)"</span>, </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>         title <span class="op">=</span> <span class="st">"Bill Length vs. Bill Width"</span>, </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>         subtitle <span class="op">=</span> <span class="st">"Using geom_point and geom_smooth of the plotnine package"</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>         color <span class="op">=</span> <span class="st">"Species"</span>, shape <span class="op">=</span> <span class="st">"Species"</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> theme_minimal()</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;Figure Size: (640 x 480)&gt;</code></pre>
+<pre><code>&lt;Figure Size: (1280 x 960)&gt;</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><a href="index_files/figure-html/unnamed-chunk-3-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="614"></a></p>
+<p><a href="index_files/figure-html/unnamed-chunk-2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="614"></a></p>
 </figure>
 </div>
 </div>
-</div>
-</div>
-<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">TidierPlots</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">DataFrames</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">PalmerPenguins</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the backend</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Plots</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">gr</span>()</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Set plotting options</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">TidierPlots_set</span>(<span class="st">"plot_show"</span>, <span class="cn">false</span>)</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">TidierPlots_set</span>(<span class="st">"plot_log"</span>, <span class="cn">false</span>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> <span class="fu">dropmissing</span>(<span class="fu">DataFrame</span>(PalmerPenguins.<span class="fu">load</span>()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>penguins_plot <span class="op">=</span> <span class="fu">ggplot</span>(penguins,</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>      <span class="fu">aes</span>(x <span class="op">=</span> <span class="st">"bill_length_mm"</span>, y <span class="op">=</span> <span class="st">"bill_depth_mm"</span>,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>            color <span class="op">=</span> <span class="st">"species"</span>, shape <span class="op">=</span> <span class="st">"species"</span>)) <span class="op">+</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="op">+</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(method <span class="op">=</span> <span class="st">"lm"</span>) <span class="op">+</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(x <span class="op">=</span> <span class="st">"Bill length (mm)"</span>, y <span class="op">=</span> <span class="st">"Bill Width (mm)"</span>,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>       title <span class="op">=</span> <span class="st">"Bill Length vs. Bill Width"</span>,</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>       subtitle <span class="op">=</span> <span class="st">"Using geom_point and geom_smooth"</span>,</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>       color <span class="op">=</span> <span class="st">"Species"</span>, shape <span class="op">=</span> <span class="st">"Species"</span>) <span class="op">+</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_ggplot</span>(penguins_plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -359,8 +326,11 @@ cookieconsent.run({
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p><code>+</code> has tom come at the end of the line R, not at the start. In Python, it makes more sense to have it at the start because you can comment out code better.</p>
-<p>In terms of syntax, <code>ggplot2</code> and <code>plotnine</code> are remarkably similar, with minor differences primarily due to the differences between R and Python. Both use a layer-based approach, where a plot is built up by adding components like axes, geoms, stats, and scales. However, <code>ggplot2</code> benefits from R’s native support for data frames and its formula notation, which can make its syntax more concise. <code>plotnine</code> has to adhere to Python’s syntax rules, in particular referring to columns via strings, which can occasionally lead to more verbose code.</p>
+<p>In terms of syntax, <code>ggplot2</code> and <code>plotnine</code> are remarkably similar, with minor differences primarily due to the differences between R and Python:</p>
+<ul>
+<li>Column references are implemented via strings in Python, while you can use unquoted column names in R due to its support of non-standard evaluation.</li>
+<li><code>+</code> has to come at the end of the line R, not at the start. In Python, it makes more sense to have it at the start because you can comment out code better, but in principle also at the line end is possible.</li>
+</ul>
 
 
 </section>
@@ -766,7 +736,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","descPosition":"bottom","openEffect":"zoom","loop":false,"closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"openEffect":"zoom","selector":".lightbox","closeEffect":"zoom","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

@@ -1,0 +1,83 @@
+---
+title: "Tidy Data Visualization: ggplot2 vs plotnine"
+description: "A comparison of implementations of the grammar of graphics in R and Python."
+metadata:
+  pagetitle: "Tidy Data Visualization: ggplot2 vs plotnine"
+author: "Christoph Scheuch"
+date: "2024-01-14" 
+image: thumbnail.png
+image-alt: An image of a bright and friendly office setting with two equally sized screens placed centrally. Each screen displays a simple line chart without any text or numbers. The office is very well-lit, giving a warm and inviting ambiance. The decor is colorful and cheerful, with a minimalist design. The two screens are on a sleek, modern desk in the center of the image. The line charts are clear and straightforward. The overall atmosphere of the office is lively and welcoming, with vibrant colors and ample natural light. Created with DALL-E 3.
+draft: true
+---
+
+Both `ggplot2` and `plotnine` are based on Leland Wilkinson's Grammar of Graphics, a set of principles for creating consistent and effective statistical graphics. This means they both use similar syntax and logic for constructing plots, making it relatively easy for users to transition between them. `ggplot2`, developed by Hadley Wickham, is a cornerstone of the R community and integrates seamlessly with other `tidyverse` packages. `plotnine`, on the other hand, is a Python package that attempts to bring `ggplot2` functionality and philosophy to Python users, but it is not part of a larger ecosystem (although it works well with `pandas`, Python's most popular data manipulation package).
+
+Both packages use a layer-based approach, where a plot is built up by adding components like axes, geoms, stats, and scales. However, `ggplot2` benefits from R’s native support for data frames and its formula notation, which can make its syntax more concise. `plotnine` has to adhere to Python’s syntax rules, in particular referring to columns via strings, which can occasionally lead to more verbose code.
+
+The types of plots that I chose for the comparison heavily draw on the examples given in [R for Data Science](https://r4ds.hadley.nz/data-visualize) (an amazin resource if you want to get started with data visualization).
+
+::: {.panel-tabset}
+### R
+```{r}
+library(ggplot2)
+library(palmerpenguins)
+
+penguins <- na.omit(palmerpenguins::penguins)
+
+ggplot(penguins, 
+       aes(x = bill_length_mm, y = bill_depth_mm, 
+           color = species, shape = species)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", formula = 'y ~ x') +
+  labs(x = "Bill length (mm)", y = "Bill Width (mm)", 
+       title = "Bill Length vs. Bill Width", 
+       subtitle = "Using geom_point and geom_smooth of the ggplot2 package",
+       color = "Species", shape = "Species") +
+  theme_minimal()
+```
+### Python
+```{python}
+#| message: false
+from plotnine import *
+from palmerpenguins import load_penguins
+
+penguins = load_penguins().dropna()
+
+(ggplot(penguins, 
+        aes(x = "bill_length_mm", y = "bill_depth_mm", 
+            color = "species", shape = "species"))
+  + geom_point()
+  + geom_smooth(method = "lm", formula = 'y ~ x')
+  + labs(x = "Bill Length (mm)", y = "Bill Width (mm)", 
+         title = "Bill Length vs. Bill Width", 
+         subtitle = "Using geom_point and geom_smooth of the plotnine package",
+         color = "Species", shape = "Species")
+  + theme_minimal()
+)
+```
+::: 
+
+## Visualizing Distributions
+
+### A categorical variable
+
+### A numerical variable
+
+## Visualizing Relationships
+
+### A numerical and a categorical variable
+
+### Two categorical variables
+
+### Two numerical variables
+
+### Three or more variables
+
+## Saving Plots
+
+## Conclusion
+
+In terms of syntax, `ggplot2` and `plotnine` are remarkably similar, with minor differences primarily due to the differences between R and Python:
+
+- Column references are implemented via strings in Python, while you can use unquoted column names in R due to its support of non-standard evaluation. 
+- `+` has to come at the end of the line R, not at the start. In Python, it makes more sense to have it at the start because you can comment out code better, but in principle also at the line end is possible. 
