@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/ggplot2-vs-plotnine/index.html",
       "/posts/dplyr-vs-tidierdata/index.html",
       "/posts/dplyr-vs-pandas/index.html",
       "/posts/dplyr-vs-ibis/index.html",
