@@ -4,3 +4,5 @@
 data/
 .RData
 .Rhistory
+posts/.DS_Store
+.Rhistory
