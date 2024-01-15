@@ -49,7 +49,7 @@ ggplot(penguins,
   geom_point() + 
   geom_smooth(method = "lm", formula = "y ~ x") +
   labs(x = "Bill length (mm)", y = "Bill Width (mm)", 
-       title = "Bill Length vs. Bill Width", 
+       title = "Bill length vs. bill width", 
        subtitle = "Using geom_point and geom_smooth of the ggplot2 package",
        color = "Species", shape = "Species") +
   theme_minimal()
@@ -61,8 +61,8 @@ ggplot(penguins,
             color = "species", shape = "species"))
   + geom_point()
   + geom_smooth(method = "lm", formula = "y ~ x")
-  + labs(x = "Bill Length (mm)", y = "Bill Width (mm)", 
-         title = "Bill Length vs. Bill Width", 
+  + labs(x = "Bill length (mm)", y = "Bill width (mm)", 
+         title = "Bill length vs. bill width", 
          subtitle = "Using geom_point and geom_smooth of the plotnine package",
          color = "Species", shape = "Species")
   + theme_minimal()
@@ -236,4 +236,4 @@ In terms of syntax, `ggplot2` and `plotnine` are remarkably similar, with minor 
 
 The strongest argument in favor of `ggplot2`, however, is its large ecosystem of extension packages (see, for instance, [this repo](https://github.com/erikgahner/awesome-ggplot2) for a collection of links). 
 
-If you want to learn more about, follow [Cédric Scherer](https://www.cedricscherer.com/) and check out his content. For instance, you can find his data visualization workshop notes from `posit::conf(2022)`  [here](https://www.cedricscherer.com/2022/08/09/2-day-workshop-on-graphic-design-with-ggplot2-at-rstudioconf-2022/). [Thomas Lin Pedersen](https://thomaslinpedersen.art/) also does fantastic things with `ggplot2` among them creating generative art with code. 
+If you want to learn more about the power of the grammar of graphics, follow [Cédric Scherer](https://www.cedricscherer.com/) and check out his content. For instance, you can find his data visualization workshop notes from `posit::conf(2022)`  [here](https://www.cedricscherer.com/2022/08/09/2-day-workshop-on-graphic-design-with-ggplot2-at-rstudioconf-2022/). [Thomas Lin Pedersen](https://thomaslinpedersen.art/) also does fantastic things with `ggplot2` among them creating generative art with code. 

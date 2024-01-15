@@ -4,20 +4,21 @@ description: "A comparison of implementations of the grammar of graphics in R an
 metadata:
   pagetitle: "Tidy Data Visualization: ggplot2 vs seaborn"
 author: "Christoph Scheuch"
-date: "2024-01-14" 
+date: "2024-01-16" 
 image: thumbnail.png
-image-alt: An image of a bright and friendly office setting with two equally sized screens placed centrally. Each screen displays a simple line chart without any text or numbers. The office is very well-lit, giving a warm and inviting ambiance. The decor is colorful and cheerful, with a minimalist design. The two screens are on a sleek, modern desk in the center of the image. The line charts are clear and straightforward. The overall atmosphere of the office is lively and welcoming, with vibrant colors and ample natural light. Created with DALL-E 3.
+image-alt: A bright and friendly office setting with two equally sized screens placed centrally on a desk. Each screen displays a simple line chart without any text or numbers. The desk is placed directly on a beach, with no walls or windows, allowing an unobstructed view of the sea and some seagulls in the background. The scene conveys a peaceful and productive atmosphere, with natural beach scenery surrounding the workspace. Created with DALL-E 3.
+draft: true
 ---
 
-Both `ggplot2` and `seaborn` are based on Leland Wilkinson's Grammar of Graphics, a set of principles for creating consistent and effective statistical graphics. This means they both use similar syntax and logic for constructing plots, making it relatively easy for users to transition between them. `ggplot2`, developed by Hadley Wickham, is a cornerstone of the R community and integrates seamlessly with other `tidyverse` packages. `seaborn`, on the other hand, is a Python package that attempts to bring `ggplot2` functionality and philosophy to Python users, but it is not part of a larger ecosystem (although it works well with `pandas`, Python's most popular data manipulation package).
+`ggplot2` is based on Leland Wilkinson"s Grammar of Graphics, a set of principles for creating consistent and effective statistical graphics, and was developed by Hadley Wickham. The package is a cornerstone of the R community and integrates seamlessly with other `tidyverse` packages. 
 
-Both packages use a layer-based approach, where a plot is built up by adding components like axes, geoms, stats, and scales. However, `ggplot2` benefits from R’s native support for data frames and its formula notation, which can make its syntax more concise. `seaborn` has to adhere to Python’s syntax rules, in particular referring to columns via strings, which can occasionally lead to more verbose code. As you can see in the examples below, the syntactic differences are miniscule. 
+`seaborn`, on the other hand, is a Python package that ...
 
 The types of plots that I chose for the comparison heavily draw on the examples given in [R for Data Science](https://r4ds.hadley.nz/data-visualize) - an amazing resource if you want to get started with data visualization. 
 
 ## Loading packages and data
 
-We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Python. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don't want to get into related messages in this post. 
+We start by loading the main packages of interest and the popular `penguins` data that comes with `seaborn` and exists as an R package. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don't want to get into related messages in this post. 
 
 ::: {.panel-tabset}
 ### R
@@ -39,7 +40,7 @@ sns.set_theme(style="whitegrid")
 
 ## A full-blown example
 
-Let's start with an advancved example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. Except for the quotation of column names, `seaborn` has exactly the same syntax as `ggplot2` - this is remarkable!
+Let"s start with an advancved example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. Except for the quotation of column names, `seaborn` has exactly the same syntax as `ggplot2` - this is remarkable!
 
 ::: {.panel-tabset}
 ### R
@@ -49,15 +50,24 @@ ggplot(penguins,
            color = species, shape = species)) + 
   geom_point() + 
   geom_smooth(method = "lm", formula = "y ~ x") +
-  labs(x = "Bill length (mm)", y = "Bill Width (mm)", 
-       title = "Bill Length vs. Bill Width", 
+  labs(x = "Bill length (mm)", y = "Bill width (mm)", 
+       title = "Bill length vs. bill width", 
        subtitle = "Using geom_point and geom_smooth of the ggplot2 package",
        color = "Species", shape = "Species") +
   theme_minimal()
 ```
 ### Python
 ```{python}
-
+# TODO: add legend title?
+# TODO: check " replacements that happened by mistake
+(sns.lmplot(
+    data = penguins,
+    x = "bill_length_mm", y = "bill_depth_mm", 
+    hue = "species", markers = ["o", "s", "^"], fit_reg = True, scatter_kws = {"s": 50}
+  )
+  .set_axis_labels("Bill length (mm)", "Bill width (mm)")
+  .fig.suptitle("Bill length vs. bill width")
+)
 ```
 ::: 
 
@@ -65,7 +75,7 @@ ggplot(penguins,
 
 ### A categorical variable
 
-Let's break down the similarity in smaller steps by focussing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then `geom_bar()` is your friend. 
+Let"s break down the similarity in smaller steps by focussing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then `geom_bar()` is your friend. 
 
 ::: {.panel-tabset}
 ### R
@@ -76,10 +86,11 @@ ggplot(penguins,
 ```
 ### Python
 ```{python}
-penguins_bar = sns.countplot(
-  data=penguins, x="island", 
-  order="island")
-penguins_bar.figure.show()
+sns.countplot(
+  data=penguins, 
+  x="island",
+  order=penguins["island"].value_counts().index
+)
 ```
 ::: 
 
@@ -96,11 +107,15 @@ ggplot(penguins,
 ```
 ### Python
 ```{python}
-
+sns.histplot(
+  data = penguins, 
+  x = "bill_length_mm", 
+  binwidth = 2
+)
 ```
 ::: 
 
-Both packages also support the `geom_density()` geom to plot density curves, but I personally wouldn't recommend to start with densities because they are estimated curves that might obscure underlying data features. 
+Both packages also support the `geom_density()` geom to plot density curves, but I personally wouldn"t recommend to start with densities because they are estimated curves that might obscure underlying data features. 
 
 ## Visualizing Relationships
 
@@ -119,7 +134,12 @@ ggplot(penguins,
 ```
 ### Python
 ```{python}
-
+sns.kdeplot(
+  data = penguins, 
+  x = "body_mass_g", 
+  hue = "species", 
+  fill = True, common_norm = False, alpha = 0.5, linewidth = 0.75
+)
 ```
 :::
 
@@ -135,7 +155,11 @@ ggplot(penguins, aes(x = species, fill = island)) +
 ```
 ### Python
 ```{python}
-
+sns.histplot(
+  data = penguins, 
+  x = "species", 
+  hue = "island", multiple = "fill", stat = "percent", shrink = .8
+)
 ```
 ::: 
 
@@ -152,7 +176,11 @@ ggplot(penguins,
 ```
 ### Python
 ```{python}
-
+sns.scatterplot(
+  data = penguins, 
+  x = "bill_length_mm", y = "flipper_length_mm", 
+  s = 50
+)
 ```
 ::: 
 
@@ -170,7 +198,10 @@ ggplot(penguins,
 ```
 ### Python
 ```{python}
-
+(sns.FacetGrid(data = penguins, col="island", hue="species", margin_titles=True)
+  .map(sns.scatterplot, "bill_length_mm", "flipper_length_mm", alpha = .7)
+  .add_legend()
+)
 ```
 ::: 
 
@@ -192,17 +223,27 @@ ggsave(penguins_figure, filename = "penguins-figure.png",
 ### Python
 ```{python}
 #| eval: false
-
+penguins_figure = sns.scatterplot(
+  data = penguins, 
+  x = "bill_length_mm", y = "flipper_length_mm"
+)
+penguins_figure.figure.set_size_inches(7, 5)
+penguins_figure.figure.savefig("penguins-figure.png", dpi = 300)
 ```
 ::: 
 
 ## Conclusion
 
-In terms of syntax, `ggplot2` and `seaborn` are remarkably similar, with minor differences primarily due to the differences between R and Python:
+In terms of syntax, `ggplot2` and `seaborn` are considerably different. `ggplot2` follows the basic syntax of 
+```markdown
+ggplot(data = <DATA>, aes(x = <X-VAR>, y = <Y-VAR>)) +
+  geom_<PLOT-TYPE>() +
+  other_layers
+```
+and `seaborn` follows the syntax
+```markdown
+sns.<PLOT-FUNCTION>(data = <DATA>, x = "<X-VAR>", y = "<Y-VAR>", other_parameters).
+```
+I think this difference comes from different philosophies. `ggplot2` focuses on layering and mapping data to aesthetics, whereas `seaborn` is more about providing a variety of complex plot types easily. Moreover, `ggplot2` is designed to work considerably well with tidy data (see my [blog post on tidy data](../tidy-data-a-recipe-for-efficient-data-analysis/index.qmd)), whereas `seaborn` is more flexible with data formats.
 
-- Column references are implemented via strings in Python, while you can use unquoted column names in R due to its support of non-standard evaluation. 
-- The layer connector `+` has to come at the end of the line R, not at the start. In Python, it makes more sense to have it at the start because you can comment out code better, but in principle also at the line end is possible. 
-
-The strongest argument in favor of `ggplot2`, however, is its large ecosystem of extension packages (see, for instance, [this repo](https://github.com/erikgahner/awesome-ggplot2) for a collection of links). 
-
-If you want to learn more about, follow [Cédric Scherer](https://www.cedricscherer.com/) and check out his content. For instance, you can find his data visualization workshop notes from `posit::conf(2022)`  [here](https://www.cedricscherer.com/2022/08/09/2-day-workshop-on-graphic-design-with-ggplot2-at-rstudioconf-2022/). [Thomas Lin Pedersen](https://thomaslinpedersen.art/) also does fantastic things with `ggplot2` among them creating generative art with code. 
+Both offer extensive customization options, but they are implemented differently. `ggplot2` uses additional layers and scales and hence allows for a large ecosystem(see, for instance, [this repo](https://github.com/erikgahner/awesome-ggplot2) for a collection of links), while `seaborn` relies on the customization options of `matplotlib` and its own parameters. I think both approaches are powerful and have their unique advantages, and the choice between them often depends on your programming language preference and specific requirements of the data visualization task.
