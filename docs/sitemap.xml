@@ -22,7 +22,7 @@
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/index.html</loc>
-    <lastmod>2024-01-15T14:10:34.908Z</lastmod>
+    <lastmod>2024-01-07T09:17:15.484Z</lastmod>
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/clustering-binary-data/index.html</loc>
@@ -38,10 +38,14 @@
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/ggplot2-vs-plotnine/index.html</loc>
-    <lastmod>2024-01-15T15:33:13.198Z</lastmod>
+    <lastmod>2024-01-16T09:14:25.988Z</lastmod>
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/tidy-collaborative-filtering/index.html</loc>
     <lastmod>2023-11-30T10:17:00.109Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.tidy-intelligence.com/posts/ggplot2-vs-seaborn/index.html</loc>
+    <lastmod>2024-01-16T09:53:02.074Z</lastmod>
   </url>
 </urlset>

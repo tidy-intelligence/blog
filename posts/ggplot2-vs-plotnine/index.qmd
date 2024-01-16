@@ -3,6 +3,7 @@ title: "Tidy Data Visualization: ggplot2 vs plotnine"
 description: "A comparison of implementations of the grammar of graphics in R and Python."
 metadata:
   pagetitle: "Tidy Data Visualization: ggplot2 vs plotnine"
+  
 author: "Christoph Scheuch"
 date: "2024-01-14" 
 image: thumbnail.png
@@ -20,14 +21,14 @@ The types of plots that I chose for the comparison heavily draw on the examples 
 We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Python. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don't want to get into related messages in this post. 
 
 ::: {.panel-tabset}
-### R
+### ggplot2
 ```{r}
 library(ggplot2)
 library(palmerpenguins)
 
 penguins <- na.omit(palmerpenguins::penguins)
 ```
-### Python
+### plotnine
 ```{python}
 from plotnine import *
 from palmerpenguins import load_penguins
@@ -41,7 +42,7 @@ penguins = load_penguins().dropna()
 Let's start with an advancved example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. Except for the quotation of column names, `plotnine` has exactly the same syntax as `ggplot2` - this is remarkable!
 
 ::: {.panel-tabset}
-### R
+### ggplot2
 ```{r}
 ggplot(penguins, 
        aes(x = bill_length_mm, y = bill_depth_mm, 
@@ -54,7 +55,7 @@ ggplot(penguins,
        color = "Species", shape = "Species") +
   theme_minimal()
 ```
-### Python
+### plotnine
 ```{python}
 (ggplot(penguins, 
         aes(x = "bill_length_mm", y = "bill_depth_mm", 
@@ -74,16 +75,16 @@ ggplot(penguins,
 
 ### A categorical variable
 
-Let's break down the similarity in smaller steps by focussing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then `geom_bar()` is your friend. 
+Let's break down the similarity in smaller steps by focusing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then `geom_bar()` is your friend. 
 
 ::: {.panel-tabset}
-### R
+### ggplot2
 ```{r}
 ggplot(penguins, 
        aes(x = island)) +
   geom_bar()
 ```
-### Python
+### plotnine
 ```{python}
 (ggplot(penguins, 
        aes(x = "island"))
@@ -97,13 +98,13 @@ ggplot(penguins,
 If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. `geom_histogram()` with options to control bin widths or number of bins is the aesthetic for this task.
 
 ::: {.panel-tabset}
-### R
+### ggplot2
 ```{r}
 ggplot(penguins, 
        aes(x = bill_length_mm)) +
   geom_histogram(binwidth = 2)
 ```
-### Python
+### plotnine
 ```{python}
 (ggplot(penguins, 
        aes(x = "bill_length_mm"))
@@ -112,7 +113,7 @@ ggplot(penguins,
 ```
 ::: 
 
-Both packages also support the `geom_density()` geom to plot density curves, but I personally wouldn't recommend to start with densities because they are estimated curves that might obscure underlying data features. 
+Both packages also support the `geom_density()` geom to plot density curves, but I personally wouldn't recommend to start with densities because they are estimated curves that might obscure underlying data features. However, we look at densities in the next section. 
 
 ## Visualizing Relationships
 
@@ -123,13 +124,13 @@ To visualize relationships, you need to have at least two columns. If you have a
 Note that `plotnine` still uses the historical `size` option and not the new `linewidth` wording (see this [blog post](https://www.tidyverse.org/blog/2022/11/ggplot2-3-4-0/) here). Maybe this will change in the future, so keep an eye on [this issue](https://github.com/has2k1/plotnine/issues/742) to stay up to date.
 
 ::: {.panel-tabset}
-### R
+### ggplot2
 ```{r}
 ggplot(penguins, 
        aes(x = body_mass_g, color = species, fill = species)) +
   geom_density(linewidth = 0.75, alpha = 0.5)
 ```
-### Python
+### plotnine
 ```{python}
 (ggplot(penguins, 
        aes(x = "body_mass_g", color = "species", fill = "species"))
@@ -143,12 +144,12 @@ ggplot(penguins,
 Stacked bar plots are a good way to display the relationship between two categorical columns. `geom_bar()` with the `position` argument is your aesthetic of choice for this task. Note that you can easily switch to counts by using `position = "identity"` instead of relative frequencies as in the example below. 
 
 ::: {.panel-tabset}
-### R
+### ggplot2
 ```{r}
 ggplot(penguins, aes(x = species, fill = island)) +
   geom_bar(position = "fill")
 ```
-### Python
+### plotnine
 ```{python}
 (ggplot(penguins, aes(x = "species", fill = "island"))
   + geom_bar(position = "fill")
@@ -161,13 +162,13 @@ ggplot(penguins, aes(x = species, fill = island)) +
 Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns. Here, the `size` parameter controls the size of the shapes that you use for the data points. See the first visualization example if you want to see again how to add a regression line.   
 
 ::: {.panel-tabset}
-### R
+### ggplot2
 ```{r}
 ggplot(penguins, 
        aes(x = bill_length_mm, y = flipper_length_mm)) +
   geom_point(size = 2)
 ```
-### Python
+### plotnine
 ```{python}
 (ggplot(penguins, 
         aes(x = "bill_length_mm", y = "flipper_length_mm"))
@@ -181,14 +182,14 @@ ggplot(penguins,
 You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data. 
 
 ::: {.panel-tabset}
-### R
+### ggplot2
 ```{r}
 ggplot(penguins, 
        aes(x = bill_length_mm, y = flipper_length_mm)) +
   geom_point(aes(color = species, shape = species)) +
   facet_wrap(~island)
 ```
-### Python
+### plotnine
 ```{python}
 (ggplot(penguins, 
        aes(x = "bill_length_mm", y = "flipper_length_mm"))
@@ -203,7 +204,7 @@ ggplot(penguins,
 As a final comparison, let us look at saving plots. Again, the implementations are virtually the same across both packages with the same function name and corresponding options. 
 
 ::: {.panel-tabset}
-### R
+### ggplot2
 ```{r}
 #| eval: false
 penguins_figure <- penguins |> 
@@ -213,7 +214,7 @@ penguins_figure <- penguins |>
 ggsave(penguins_figure, filename = "penguins-figure.png",
        width = 7, height = 5, dpi = 300)
 ```
-### Python
+### plotnine
 ```{python}
 #| eval: false
 penguins_figure = (

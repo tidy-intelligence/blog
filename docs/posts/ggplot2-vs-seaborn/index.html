@@ -235,14 +235,14 @@ cookieconsent.run({
 </header>
 
 
-<p><code>ggplot2</code> is based on Leland Wilkinson”s Grammar of Graphics, a set of principles for creating consistent and effective statistical graphics, and was developed by Hadley Wickham. The package is a cornerstone of the R community and integrates seamlessly with other <code>tidyverse</code> packages.</p>
-<p><code>seaborn</code>, on the other hand, is a Python package that …</p>
+<p><code>ggplot2</code> is based on Leland Wilkinson”s Grammar of Graphics, a set of principles for creating consistent and effective statistical graphics, and was developed by Hadley Wickham. The package is a cornerstone of the R community and integrates seamlessly with other <code>tidyverse</code> packages. One of the key strengths of <code>ggplot2</code> is its use of a consistent syntax, making it relatively easy to learn and enabling users to create a wide range of graphics with a common set of functions. The package is also highly customizable, allowing detailed adjustments to almost every element of a plot.</p>
+<p><code>seaborn</code> is a Python data visualization library based on <code>matplotlib</code>. It provides a high-level interface for drawing attractive and informative statistical graphics. Key features of <code>seaborn</code> include its ability to work well with <code>pandas</code> data frames, built-in themes for styling <code>matplotlib</code> graphics, and functions for visualizing distributions.</p>
 <p>The types of plots that I chose for the comparison heavily draw on the examples given in <a href="https://r4ds.hadley.nz/data-visualize">R for Data Science</a> - an amazing resource if you want to get started with data visualization.</p>
 <section id="loading-packages-and-data" class="level2">
 <h2 class="anchored" data-anchor-id="loading-packages-and-data">Loading packages and data</h2>
-<p>We start by loading the main packages of interest and the popular <code>penguins</code> data that comes with <code>seaborn</code> and exists as an R package. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don”t want to get into related messages in this post.</p>
+<p>We start by loading the main packages of interest and the popular <code>penguins</code> data that comes with <code>seaborn</code> and exists as an R package. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don’t want to get into related messages in this post.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">seaborn</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
@@ -258,7 +258,7 @@ cookieconsent.run({
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> sns.load_dataset(<span class="st">"penguins"</span>)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>sns.set_theme(style<span class="op">=</span><span class="st">"whitegrid"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>sns.set_theme(style <span class="op">=</span> <span class="st">"whitegrid"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -266,16 +266,16 @@ cookieconsent.run({
 </section>
 <section id="a-full-blown-example" class="level2">
 <h2 class="anchored" data-anchor-id="a-full-blown-example">A full-blown example</h2>
-<p>Let”s start with an advancved example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. Except for the quotation of column names, <code>seaborn</code> has exactly the same syntax as <code>ggplot2</code> - this is remarkable!</p>
+<p>Let”s start with an advancved example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. As you can see in this example already, <code>ggplot2</code> and <code>seaborn</code> have a fundamentally different syntactic approach. While <code>ggplot2</code> works with layers, <code>seaborn</code> uses a specific function with a few parameter and additional methods.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">seaborn</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(penguins, </span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">y =</span> bill_depth_mm, </span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">color =</span> species, <span class="at">shape =</span> species)) <span class="sc">+</span> </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span> </span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> <span class="st">"y ~ x"</span>) <span class="sc">+</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Bill length (mm)"</span>, <span class="at">y =</span> <span class="st">"Bill width (mm)"</span>, </span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Bill length vs. bill width"</span>, </span>
@@ -293,19 +293,20 @@ cookieconsent.run({
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: add legend title?</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>(sns.lmplot(</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>penguins,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="st">"bill_length_mm"</span>, y <span class="op">=</span> <span class="st">"bill_depth_mm"</span>, </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    hue <span class="op">=</span> <span class="st">"species"</span>, markers <span class="op">=</span> [<span class="st">"o"</span>, <span class="st">"s"</span>, <span class="st">"^"</span>], fit_reg <span class="op">=</span> <span class="va">True</span>, scatter_kws <span class="op">=</span> {<span class="st">"s"</span>: <span class="dv">50</span>}</span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>(sns.lmplot(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> penguins,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="st">"bill_length_mm"</span>, y <span class="op">=</span> <span class="st">"bill_depth_mm"</span>, </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    hue <span class="op">=</span> <span class="st">"species"</span>, markers <span class="op">=</span> [<span class="st">"o"</span>, <span class="st">"s"</span>, <span class="st">"^"</span>], fit_reg <span class="op">=</span> <span class="va">True</span>, </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    scatter_kws <span class="op">=</span> {<span class="st">"s"</span>: <span class="dv">50</span>}, legend <span class="op">=</span> <span class="va">False</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  .set_axis_labels(<span class="st">"Bill length (mm)"</span>, <span class="st">"Bill width (mm)"</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  .fig.suptitle(<span class="st">"Bill length vs. bill width"</span>)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  .add_legend(title <span class="op">=</span> <span class="st">"Species"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  .fig.suptitle(<span class="st">"Bill length vs. bill width"</span>, y <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><a href="index_files/figure-html/unnamed-chunk-4-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="596"></a></p>
+<p><a href="index_files/figure-html/unnamed-chunk-4-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="595"></a></p>
 </figure>
 </div>
 </div>
@@ -318,9 +319,9 @@ cookieconsent.run({
 <h2 class="anchored" data-anchor-id="visualizing-distributions">Visualizing Distributions</h2>
 <section id="a-categorical-variable" class="level3">
 <h3 class="anchored" data-anchor-id="a-categorical-variable">A categorical variable</h3>
-<p>Let”s break down the similarity in smaller steps by focussing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then <code>geom_bar()</code> is your friend.</p>
+<p>Let’s break down the differences in smaller steps by focusing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then <code>ggplot2::geom_bar()</code> and <code>seaborn.countplot()</code> are your friends. I manually specify the order in the <code>seaborn</code> figure to mimic the automatic behavior of <code>ggplot2</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">seaborn</a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <div class="cell">
@@ -339,9 +340,9 @@ cookieconsent.run({
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>sns.countplot(</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  data<span class="op">=</span>penguins, </span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  x<span class="op">=</span><span class="st">"island"</span>,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  order<span class="op">=</span>penguins[<span class="st">"island"</span>].value_counts().index</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  data <span class="op">=</span> penguins, </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  x <span class="op">=</span> <span class="st">"island"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  order <span class="op">=</span> <span class="bu">sorted</span>(penguins[<span class="st">"island"</span>].unique())</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
@@ -357,9 +358,9 @@ cookieconsent.run({
 </section>
 <section id="a-numerical-variable" class="level3">
 <h3 class="anchored" data-anchor-id="a-numerical-variable">A numerical variable</h3>
-<p>If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. <code>geom_histogram()</code> with options to control bin widths or number of bins is the aesthetic for this task.</p>
+<p>If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. <code>ggplot2::geom_histogram()</code> and <code>seaborn.histplot</code> with options to control bin widths or number of bins are the functions for this task.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">seaborn</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="cell">
@@ -393,17 +394,16 @@ cookieconsent.run({
 </div>
 </div>
 </div>
-<p>Both packages also support the <code>geom_density()</code> geom to plot density curves, but I personally wouldn”t recommend to start with densities because they are estimated curves that might obscure underlying data features.</p>
+<p>Both packages also support density curves, but I personally wouldn”t recommend to start with densities because they are estimated curves that might obscure underlying data features. However, we look at densities in the next section.</p>
 </section>
 </section>
 <section id="visualizing-relationships" class="level2">
 <h2 class="anchored" data-anchor-id="visualizing-relationships">Visualizing Relationships</h2>
 <section id="a-numerical-and-a-categorical-variable" class="level3">
 <h3 class="anchored" data-anchor-id="a-numerical-and-a-categorical-variable">A numerical and a categorical variable</h3>
-<p>To visualize relationships, you need to have at least two columns. If you have a numerical and a categorical variable, then histograms or densities with groups are a good starting point. The next example illustrates the use of <code>geom_density()</code>.</p>
-<p>Note that <code>seaborn</code> still uses the historical <code>size</code> option and not the new <code>linewidth</code> wording (see this <a href="https://www.tidyverse.org/blog/2022/11/ggplot2-3-4-0/">blog post</a> here). Maybe this will change in the future, so keep an eye on <a href="https://github.com/has2k1/seaborn/issues/742">this issue</a> to stay up to date.</p>
+<p>To visualize relationships, you need to have at least two columns. If you have a numerical and a categorical variable, then histograms or densities with groups are a good starting point. The next example illustrates the use of density curves via <code>ggplot2::geom_density()</code> and <code>seaborn.kdeplot()</code> with similar options to control the appearance.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">seaborn</a></li></ul>
 <div class="tab-content">
 <div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
 <div class="cell">
@@ -441,9 +441,9 @@ cookieconsent.run({
 </section>
 <section id="two-categorical-columns" class="level3">
 <h3 class="anchored" data-anchor-id="two-categorical-columns">Two categorical columns</h3>
-<p>Stacked bar plots are a good way to display the relationship between two categorical columns. <code>geom_bar()</code> with the <code>position</code> argument is your aesthetic of choice for this task. Note that you can easily switch to counts by using <code>position = "identity"</code> instead of relative frequencies as in the example below.</p>
+<p>Stacked bar plots are a good way to display the relationship between two categorical columns. <code>geom_bar()</code> with the <code>position</code> argument and <code>seaborn.histplot()</code> with <code>stat</code> are your aesthetics of choice for this task. Note that you can easily switch to counts by using <code>position = "identity"</code> and <code>stat = "count"</code>, respectively, instead of relative frequencies as in the example below. Note that I use <code>shrink = 0.8</code> to get some spacing between columns in the <code>seaborn</code> plot.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">seaborn</a></li></ul>
 <div class="tab-content">
 <div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
 <div class="cell">
@@ -463,7 +463,7 @@ cookieconsent.run({
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sns.histplot(</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  data <span class="op">=</span> penguins, </span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  x <span class="op">=</span> <span class="st">"species"</span>, </span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  hue <span class="op">=</span> <span class="st">"island"</span>, multiple <span class="op">=</span> <span class="st">"fill"</span>, stat <span class="op">=</span> <span class="st">"percent"</span>, shrink <span class="op">=</span> <span class="fl">.8</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  hue <span class="op">=</span> <span class="st">"island"</span>, multiple <span class="op">=</span> <span class="st">"fill"</span>, stat <span class="op">=</span> <span class="st">"percent"</span>, shrink <span class="op">=</span> <span class="fl">0.8</span></span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
@@ -479,9 +479,9 @@ cookieconsent.run({
 </section>
 <section id="two-numerical-columns" class="level3">
 <h3 class="anchored" data-anchor-id="two-numerical-columns">Two numerical columns</h3>
-<p>Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns. Here, the <code>size</code> parameter controls the size of the shapes that you use for the data points. See the first visualization example if you want to see again how to add a regression line.</p>
+<p>Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns and we focus on scatter plots for this example (see the first visualization example if you want to see again how to add a regression line). Here, the <code>size</code> parameter controls the size of the shapes that you use for the data points in <code>ggplot2::geom_point()</code> relative to the base size (i.e., it is not tied to any unit of measurement like pixels). For <code>seaborn.scatterplot()</code> you have the <code>s</code> parameter to control point sizes manually, where size is typically given in squared points (where a point is a unit of measure in typography, equal to 1/72 of an inch).</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">seaborn</a></li></ul>
 <div class="tab-content">
 <div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
 <div class="cell">
@@ -502,7 +502,7 @@ cookieconsent.run({
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  data <span class="op">=</span> penguins, </span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  x <span class="op">=</span> <span class="st">"bill_length_mm"</span>, y <span class="op">=</span> <span class="st">"flipper_length_mm"</span>, </span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  size <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  s <span class="op">=</span> <span class="dv">50</span></span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
@@ -519,8 +519,9 @@ cookieconsent.run({
 <section id="three-or-more-columns" class="level3">
 <h3 class="anchored" data-anchor-id="three-or-more-columns">Three or more columns</h3>
 <p>You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data.</p>
+<p>In <code>ggplot2</code> you add the facet layer at the end, whereas in <code>seaborn</code> you have to start with the facet grid at the beginning and map scatter plots across facets. Note that I use variable assignment to <code>penguins_facet</code> in order to prevent <code>seaborn</code> from printing the figure twice while rendering this post (no idea why though).</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">seaborn</a></li></ul>
 <div class="tab-content">
 <div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
 <div class="cell">
@@ -539,21 +540,17 @@ cookieconsent.run({
 </div>
 <div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>(sns.FacetGrid(data <span class="op">=</span> penguins, col<span class="op">=</span><span class="st">"island"</span>, hue<span class="op">=</span><span class="st">"species"</span>, margin_titles<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  .<span class="bu">map</span>(sns.scatterplot, <span class="st">"bill_length_mm"</span>, <span class="st">"flipper_length_mm"</span>, alpha <span class="op">=</span> <span class="fl">.7</span>)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  .add_legend()</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>penguins_facet <span class="op">=</span> (sns.FacetGrid(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> penguins, col<span class="op">=</span><span class="st">"island"</span>, col_order <span class="op">=</span> <span class="bu">sorted</span>(penguins[<span class="st">"island"</span>].unique()),</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    hue<span class="op">=</span><span class="st">"species"</span>, margin_titles <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  .<span class="bu">map</span>(sns.scatterplot, <span class="st">"bill_length_mm"</span>, <span class="st">"flipper_length_mm"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  .add_legend()</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><a href="index_files/figure-html/unnamed-chunk-16-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14"><img src="index_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="161"></a></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><a href="index_files/figure-html/unnamed-chunk-16-2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15"><img src="index_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid figure-img" width="980"></a></p>
+<p><a href="index_files/figure-html/unnamed-chunk-16-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14"><img src="index_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="979"></a></p>
 </figure>
 </div>
 </div>
@@ -565,9 +562,9 @@ cookieconsent.run({
 </section>
 <section id="saving-plots" class="level2">
 <h2 class="anchored" data-anchor-id="saving-plots">Saving Plots</h2>
-<p>As a final comparison, let us look at saving plots. Again, the implementations are virtually the same across both packages with the same function name and corresponding options.</p>
+<p>As a final comparison, let us look at saving plots. <code>ggplot2::ggsave()</code> provides the most important options as function paramters. In <code>seaborn</code>, you have to, for instance, tweak the figure size before can save the figure.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">seaborn</a></li></ul>
 <div class="tab-content">
 <div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
 <div class="cell">
@@ -585,8 +582,9 @@ cookieconsent.run({
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  data <span class="op">=</span> penguins, </span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  x <span class="op">=</span> <span class="st">"bill_length_mm"</span>, y <span class="op">=</span> <span class="st">"flipper_length_mm"</span></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>penguins_figure.figure.set_size_inches(<span class="dv">7</span>, <span class="dv">5</span>)</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>penguins_figure.figure.savefig(<span class="st">"penguins-figure.png"</span>, dpi <span class="op">=</span> <span class="dv">300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>penguins_figure.figure.set_size_inches(<span class="dv">7</span>, <span class="dv">5</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>penguins_figure.figure.savefig(<span class="st">"penguins-figure.png"</span>, dpi <span class="op">=</span> <span class="dv">300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -600,8 +598,8 @@ cookieconsent.run({
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  other_layers</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>and <code>seaborn</code> follows the syntax</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>sns.&lt;PLOT-FUNCTION&gt;(data = &lt;DATA&gt;, x = "&lt;X-VAR&gt;", y = "&lt;Y-VAR&gt;", other_parameters).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>I think this difference comes from different philosophies. <code>ggplot2</code> focuses on layering and mapping data to aesthetics, whereas <code>seaborn</code> is more about providing a variety of complex plot types easily. Moreover, <code>ggplot2</code> is designed to work considerably well with tidy data (see my <a href=".../tidy-data-a-recipe-for-efficient-data-analysis/index.qmd">blog post on tidy data</a>), whereas <code>seaborn</code> is more flexible with data formats.</p>
-<p>Both offer extensive customization options, but they are implemented differently. <code>ggplot2</code> uses additional layers and scales and hence allows for a large ecosystem(see, for instance, <a href="https://github.com/erikgahner/awesome-ggplot2">this repo</a> for a collection of links), while <code>seaborn</code> relies on the customization options of <code>matplotlib</code> and its own parameters. I think both approaches are powerful and have their unique advantages, and the choice between them often depends on your programming language preference and specific requirements of the data visualization task.</p>
+<p>I think this difference comes from different philosophies. <code>ggplot2</code> focuses on layering and mapping data to aesthetics, whereas <code>seaborn</code> is more about providing a variety of complex plot types easily. Moreover, <code>ggplot2</code> is designed to work considerably well with tidy data (see my <a href="../../posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html">blog post on tidy data</a>), while <code>seaborn</code> is more flexible with input data formats.</p>
+<p>Both offer extensive customization options, but they are implemented differently. <code>ggplot2</code> uses additional layers and scales and hence allows for a large ecosystem (see, for instance, <a href="https://github.com/erikgahner/awesome-ggplot2">this repo</a> for a collection of links), while <code>seaborn</code> relies on the customization options of <code>matplotlib</code> and its own parameters. I think both approaches are powerful and have their unique advantages, and the choice between them often depends on your programming language preference and specific requirements of the data visualization task.</p>
 
 
 </section>
@@ -1007,7 +1005,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","openEffect":"zoom","descPosition":"bottom","selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"openEffect":"zoom","selector":".lightbox","descPosition":"bottom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
