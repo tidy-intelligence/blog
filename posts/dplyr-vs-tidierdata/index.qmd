@@ -22,13 +22,13 @@ Before we dive into the comparison, a short introduction to the packages: the `d
 
 `TidierData` is a 100% Julia implementation of the `dplyr` and `tidyr` R packages with three goals: (i) stick as closely to the `tidyverse` syntax as possible, so that R users find it easier to switch; (ii) make broadcasting^[Broadcasting expands singleton dimensions in array arguments to match the corresponding dimension in the other array without using extra memory.] mostly invisible, so that many functions are automatically vectorized for users; (iii) make scalars and tuples mostly interchangeable, so that users can provide a scalar or a tuple as arguments as they see fit. Check out the [package website](https://tidierorg.github.io/TidierData.jl/latest/) for more information, in particular with respect to the features of Julia.
 
-# Loading packages
+# Loading packages and data
 
 We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Julia. Note that packages in Julia follow a Pascal case convention, so we have `TidierData` and `PalmerPenguins`. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that `ENV["LINES"] = 19` sets the print output of Julia data frames to show only 10 rows.^[In Julia, setting the number of rows to display for all DataFrames globally isn't straightforward as there isn't a direct global setting for this in the 
 `DataFrame` package. `ENV["COLUMNS"]` or `ENV["LINES"]` control the display based on the size of your terminal.]
  
 ::: {.panel-tabset}
-### R
+### dplyr
 ```{r}
 #| message: false
 library(dplyr)
@@ -36,7 +36,7 @@ library(palmerpenguins)
 
 penguins <- palmerpenguins::penguins
 ```
-### Julia
+### TidierData
 ```{julia}
 #| output: false
 using TidierData
@@ -54,13 +54,13 @@ ENV["LINES"] = 19
 Filtering rows with `dplyr` is based on NSE and the `dplyr::filter()` function. To replicate the same results with `TidierData`, you can use `TidierData.@filter()` method which accepts a remarkably similar notation to `dplyr` with the only exceptions that you need `&&` or `||` for boolean operators and that you can omit the percentage signs around `in`. 
 
 ::: {.panel-tabset}
-### R
+### dplyr
 ```{r}
 penguins |> 
   filter(species == "Adelie" & 
            island %in% c("Biscoe", "Dream"))
 ```
-### Julia
+### TidierData
 ```{julia}
 @chain penguins begin
   @filter(species == "Adelie" &&
@@ -74,12 +74,12 @@ end
 `dplyr::slice()` takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. `TidierData.@slice()` does exactly the same. 
 
 ::: {.panel-tabset}
-### R
+### dplyr
 ```{r}
 penguins |> 
   slice(10:20)
 ```
-### Julia
+### TidierData
 ```{julia}
 @chain penguins begin
   @slice(10:20)
@@ -92,12 +92,12 @@ end
 To orders the rows of a data frame by the values of selected columns, we have `dplyr::arrange()` and `TidierData.@arrange()`. Note that both approaches arrange rows in an an ascending order and puts missing values last as defaults. 
 
 ::: {.panel-tabset}
-### R
+### dplyr
 ```{r}
 penguins |> 
   arrange(island, desc(bill_length_mm))
 ```
-### Julia
+### TidierData
 ```{julia}
 @chain penguins begin
   @arrange(island, desc(bill_length_mm))
@@ -112,12 +112,12 @@ end
 Selecting a subset of columns works exactly the same with`dplyr::select()` and `TidierData.@select()`.
 
 ::: {.panel-tabset}
-### R
+### dplyr
 ```{r}
 penguins |> 
   select(bill_length_mm, sex)
 ```
-### Julia
+### TidierData
 ```{julia}
 @chain penguins begin
   @select(bill_length_mm, sex)
@@ -130,13 +130,13 @@ end
 Renaming columns also works exactly the same with `dplyr::rename()` and `TidierData.rename()`.
 
 ::: {.panel-tabset}
-### R
+### dplyr
 ```{r}
 penguins |> 
   rename(bill_length = bill_length_mm,
          bill_depth = bill_depth_mm)
 ```
-### Julia
+### TidierData
 ```{julia}
 @chain penguins begin
   @rename(bill_length = bill_length_mm,
@@ -150,7 +150,7 @@ end
 Transforming existing columns or creating new ones is an essential part of data analysis. `dplyr::mutate()` and `TidierData.@mutate()` are the work horses for these tasks. Note that you have to split up variable assignments if you want to refer to a newly created variable in `TidierData`, while you can refer to the new variables in the same mutate block in `dplyr`.
 
 ::: {.panel-tabset}
-### R
+### dplyr
 ```{r}
 penguins |> 
   mutate(ones = 1,
@@ -158,7 +158,7 @@ penguins |>
          bill_length_squared = bill_length^2) |> 
   select(ones, bill_length_mm, bill_length, bill_length_squared)
 ```
-### Julia
+### TidierData
 ```{julia}
 @chain penguins begin
   @mutate(ones = 1,
@@ -176,12 +176,12 @@ end
 The recommended way to relocate columns in `TidierData` is to use the `TidierData.@select()` method, but there are no options as in `dplyr::relocate()`. In fact, the safest way to consistently get the correct order of columns is to explicitly specify them. 
 
 ::: {.panel-tabset}
-### R
+### dplyr
 ```{r}
 penguins |> 
   relocate(c(species, bill_length_mm), .before = sex)
 ```
-### Julia
+### TidierData
 ```{julia}
 @chain penguins begin
   @select(island, bill_depth_mm, flipper_length_mm, body_mass_g, 
@@ -199,13 +199,13 @@ Let's suppose we want to compute summaries by groups such as means or medians. B
 Moreover, `dplyr` also automatically arranges the results by the group, so the reproduce the results of `dplyr`, we need to add `TidierData.@arrange()` to the chain. 
 
 ::: {.panel-tabset}
-### R
+### dplyr
 ```{r}
 penguins |> 
   group_by(island) |> 
   summarize(bill_depth_mean = mean(bill_depth_mm, na.rm = TRUE))
 ```
-### Julia
+### TidierData
 ```{julia}
 @chain penguins begin
   @group_by(island) 
@@ -220,7 +220,7 @@ end
 Typically, you want to create multiple different summaries by groups. `dplyr` provides a lot of flexibility to create new variables on the fly, as does `TidierData`. For instance, we can pass expressions to them mean functions in order to create the share of female penguins per island in the summary statement.
 
 ::: {.panel-tabset}
-### R
+### dplyr
 ```{r}
 penguins |> 
   group_by(island) |> 
@@ -230,7 +230,7 @@ penguins |>
             body_mass_sd = sd(body_mass_g, na.rm = TRUE),
             share_female = mean(sex == "female", na.rm = TRUE))
 ```
-### Julia
+### TidierData
 ```{julia}
 @chain penguins begin
   @group_by(island) 

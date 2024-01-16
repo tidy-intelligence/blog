@@ -43,6 +43,20 @@
       ],
       "Hash": "7a29697b75e027767a53fde6c903eca7"
     },
+    "JuliaCall": {
+      "Package": "JuliaCall",
+      "Version": "0.17.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "knitr",
+        "rjson",
+        "utils"
+      ],
+      "Hash": "3fc7235465a350731873abfe58fed1b9"
+    },
     "KernSmooth": {
       "Package": "KernSmooth",
       "Version": "2.23-22",
@@ -2190,6 +2204,16 @@
         "vctrs"
       ],
       "Hash": "a6b991ccde367ee08f18d0fe66751cfb"
+    },
+    "rjson": {
+      "Package": "rjson",
+      "Version": "0.2.21",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "f9da75e6444e95a1baf8ca24909d63b9"
     },
     "rlang": {
       "Package": "rlang",

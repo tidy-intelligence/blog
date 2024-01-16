@@ -174,7 +174,7 @@ cookieconsent.run({
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages">Loading packages</a></li>
+  <li><a href="#loading-packages-and-data" id="toc-loading-packages-and-data" class="nav-link active" data-scroll-target="#loading-packages-and-data">Loading packages and data</a></li>
   <li><a href="#work-with-rows" id="toc-work-with-rows" class="nav-link" data-scroll-target="#work-with-rows">Work with rows</a>
   <ul class="collapse">
   <li><a href="#filter-rows" id="toc-filter-rows" class="nav-link" data-scroll-target="#filter-rows">Filter rows</a></li>
@@ -183,17 +183,21 @@ cookieconsent.run({
   </ul></li>
   <li><a href="#work-with-columns" id="toc-work-with-columns" class="nav-link" data-scroll-target="#work-with-columns">Work with columns</a>
   <ul class="collapse">
-  <li><a href="#select-columns" id="toc-select-columns" class="nav-link" data-scroll-target="#select-columns">Select columns</a></li>
-  <li><a href="#rename-columns" id="toc-rename-columns" class="nav-link" data-scroll-target="#rename-columns">Rename columns</a></li>
-  <li><a href="#mutate-columns" id="toc-mutate-columns" class="nav-link" data-scroll-target="#mutate-columns">Mutate columns</a></li>
-  <li><a href="#relocate-columns" id="toc-relocate-columns" class="nav-link" data-scroll-target="#relocate-columns">Relocate columns</a></li>
+  <li><a href="#select-columns" id="toc-select-columns" class="nav-link" data-scroll-target="#select-columns">Select columns</a>
+  <ul class="collapse">
+  <li><a href="#dplyrename-columns" id="toc-dplyrename-columns" class="nav-link" data-scroll-target="#dplyrename-columns">dplyrename columns</a></li>
+  </ul></li>
+  <li><a href="#mutate-columns" id="toc-mutate-columns" class="nav-link" data-scroll-target="#mutate-columns">Mutate columns</a>
+  <ul class="collapse">
+  <li><a href="#dplyrelocate-columns" id="toc-dplyrelocate-columns" class="nav-link" data-scroll-target="#dplyrelocate-columns">dplyrelocate columns</a></li>
+  </ul></li>
   </ul></li>
   <li><a href="#work-with-groups-of-rows" id="toc-work-with-groups-of-rows" class="nav-link" data-scroll-target="#work-with-groups-of-rows">Work with groups of rows</a>
   <ul class="collapse">
   <li><a href="#simple-summaries-by-group" id="toc-simple-summaries-by-group" class="nav-link" data-scroll-target="#simple-summaries-by-group">Simple summaries by group</a></li>
   <li><a href="#more-complicated-summaries-by-group" id="toc-more-complicated-summaries-by-group" class="nav-link" data-scroll-target="#more-complicated-summaries-by-group">More complicated summaries by group</a></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
     </div>
@@ -239,11 +243,11 @@ cookieconsent.run({
 <p>There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my other posts on <a href="../../posts/dplyr-vs-ibis/index.html">dplyr vs ibis</a> and <a href="../../posts/dplyr-vs-pandas/index.html">dplyr vs pandas</a>). However, if we want to do tidy data science in R, there is a clear forerunner: <code>dplyr</code>. In the world of Python, <code>polars</code> is a relatively new kid on the block that shares a lot of semantic with <code>dplyr</code>. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks.</p>
 <p>Before we dive into the comparison, a short introduction to the packages: the <code>dplyr</code> package in R allows users to refer to columns without quotation marks due to its implementation of non-standard evaluation (NSE). NSE is a programming technique used in R that allows functions to capture the expressions passed to them as arguments, rather than just the values of those arguments. The primary goal of NSE in the context of <code>dplyr</code> is to create a more user-friendly and intuitive syntax. This makes data manipulation tasks more straightforward and aligns with the general philosophy of the <code>tidyverse</code> to make data science faster, easier, and more fun.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <p><code>polars</code> is also designed for data manipulation and heavily optimized for performance, but there are significant differences in their approach, especially in how they handle column referencing and expression evaluation. Python generally relies on standard evaluation, meaning expressions are evaluated to their values before being passed to a function. In <code>polars</code>, column references typically need to be explicitly stated, often using quoted names or through methods attached to data frame objects.</p>
-<section id="loading-packages" class="level1">
-<h1>Loading packages</h1>
+<section id="loading-packages-and-data" class="level1">
+<h1>Loading packages and data</h1>
 <p>We start by loading the main packages of interest and the popular <code>palmerpenguins</code> package that exists for both R and Python. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below. Note that we also limit the print output of <code>polars</code> data frames to 10 rows to prevent this post being flooded by excessively long tables.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">polars</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
@@ -260,7 +264,7 @@ cookieconsent.run({
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>pl.Config(tbl_rows <span class="op">=</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;polars.config.Config object at 0x1446b8160&gt;</code></pre>
+<pre><code>&lt;polars.config.Config object at 0x16ebc8040&gt;</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> load_penguins().pipe(pl.from_pandas)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -275,7 +279,7 @@ cookieconsent.run({
 <h2 class="anchored" data-anchor-id="filter-rows">Filter rows</h2>
 <p>Filtering rows works very similarly for both packages, they even have the same function names: <code>dplyr::filter()</code> and <code>polars.filter()</code>. To select columns in <code>polars</code>, you need the <code>polars.col()</code> selector.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">polars</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
@@ -464,7 +468,7 @@ cookieconsent.run({
 <h2 class="anchored" data-anchor-id="slice-rows">Slice rows</h2>
 <p><code>dplyr::slice()</code> takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. <code>polars.slice()</code> only takes the start index and the length of the slice as inputs. For instance, to the the same result of slicing rows 10 to 20, the code looks as follows (note that indexing starts at 0 in Python, while it starts at 1 in R):</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">polars</a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <div class="cell">
@@ -650,7 +654,7 @@ cookieconsent.run({
 <h2 class="anchored" data-anchor-id="arrange-rows">Arrange rows</h2>
 <p>To orders the rows of a data frame by the values of selected columns, we have <code>dplyr::arrange()</code> and <code>polars.sort()</code>. Note that <code>dplyr::arrange()</code> arranges rows in an an ascending order and puts <code>NA</code> values last. <code>polars.sort()</code>, on the other hand, arranges rows in an ascending order and starts with <code>null</code> as default. Note that there are options to control these defaults.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">polars</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="cell">
@@ -840,7 +844,7 @@ cookieconsent.run({
 <h2 class="anchored" data-anchor-id="select-columns">Select columns</h2>
 <p>Selecting a subset of columns works essentially the same for both and <code>dplyr::select()</code> and <code>polars.select()</code> even have the same name. Note that you don’t have to use <code>polars.col()</code> but can just pass strings in the <code>polars.select()</code> method.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">polars</a></li></ul>
 <div class="tab-content">
 <div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
 <div class="cell">
@@ -942,12 +946,11 @@ cookieconsent.run({
 </div>
 </div>
 </div>
-</section>
-<section id="rename-columns" class="level2">
-<h2 class="anchored" data-anchor-id="rename-columns">Rename columns</h2>
+<section id="dplyrename-columns" class="level3">
+<h3 class="anchored" data-anchor-id="dplyrename-columns">dplyrename columns</h3>
 <p>Renaming columns also works very similarly with the major difference that <code>polars.rename()</code> takes a dictionary with mappings of old to new names as input, while <code>dplyr::rename()</code> takes variable names via the usual NSE.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">polars</a></li></ul>
 <div class="tab-content">
 <div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
 <div class="cell">
@@ -1131,11 +1134,12 @@ cookieconsent.run({
 </div>
 </div>
 </section>
+</section>
 <section id="mutate-columns" class="level2">
 <h2 class="anchored" data-anchor-id="mutate-columns">Mutate columns</h2>
 <p>Transforming existing columns or creating new ones is an essential part of data analysis. <code>dplyr::mutate()</code> and <code>polars.with_columns()</code> are the work horses for these tasks. Both approaches have a very similar syntax. Note that you have to split up variable assignments if you want to refer to a newly created variable in <code>polars</code>, while you can refer to the new variables in the same mutate block in <code>dplyr</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">polars</a></li></ul>
 <div class="tab-content">
 <div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
 <div class="cell">
@@ -1270,13 +1274,12 @@ cookieconsent.run({
 </div>
 </div>
 </div>
-</section>
-<section id="relocate-columns" class="level2">
-<h2 class="anchored" data-anchor-id="relocate-columns">Relocate columns</h2>
+<section id="dplyrelocate-columns" class="level3">
+<h3 class="anchored" data-anchor-id="dplyrelocate-columns">dplyrelocate columns</h3>
 <p><code>dplyr::relocate()</code> provides options to change the positions of columns in a data frame, using the same syntax as <code>dplyr::select()</code>. In addition, there are the options <code>.after</code> and <code>.before</code> to provide users with additional shortcuts.</p>
 <p>The recommended way to relocate columns in <code>polars</code> is to use the <code>polars.select()</code> method, but there are no options as in <code>dplyr::relocate()</code>. In fact, the safest way to consistently get the correct order of columns is to explicitly specify them.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">polars</a></li></ul>
 <div class="tab-content">
 <div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
 <div class="cell">
@@ -1448,6 +1451,7 @@ cookieconsent.run({
 </div>
 </section>
 </section>
+</section>
 <section id="work-with-groups-of-rows" class="level1">
 <h1>Work with groups of rows</h1>
 <section id="simple-summaries-by-group" class="level2">
@@ -1455,7 +1459,7 @@ cookieconsent.run({
 <p>Let’s suppose we want to compute summaries by groups such as means or medians. Both packages are very similar again: on the R side you have <code>dplyr::group_by()</code> and <code>dplyr::summarize()</code>, while on the Python side you have <code>polars.group_by()</code> and <code>polars.agg()</code>.</p>
 <p>Note that <code>dplyr::group_by()</code> also automatically arranges the results by the group, so the reproduce the results of <code>dplyr</code>, we need to add <code>polars.sort()</code> to the chain.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">polars</a></li></ul>
 <div class="tab-content">
 <div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
 <div class="cell">
@@ -1525,7 +1529,7 @@ cookieconsent.run({
 <h2 class="anchored" data-anchor-id="more-complicated-summaries-by-group">More complicated summaries by group</h2>
 <p>Typically, you want to create multiple different summaries by groups. <code>dplyr</code> provides a lot of flexibility to create new variables on the fly, while <code>polars</code> seems to be a bit more restrictive. For instance, to compute the share of female penguins by group, it makes more sense to create an <code>ìs_female</code> indicator column using <code>polars</code> because <code>polars.mean()</code> does not accept expressions as inputs.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">polars</a></li></ul>
 <div class="tab-content">
 <div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
 <div class="cell">
@@ -1624,12 +1628,12 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
 <p>This post highlights syntactic similarities and differences across R’s <code>dplyr</code> and Python’s <code>polars</code> packages. One key point emerges: <code>dplyr</code> heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python. I want to close this post by emphasizing that both languages and packages have their own merits and I won’t strictly recommend one over the other - maybe in another post <span class="emoji" data-emoji="smile">😄</span></p>
 
 
-</section>
 </section>
 
 

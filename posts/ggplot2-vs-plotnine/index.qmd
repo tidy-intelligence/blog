@@ -16,7 +16,7 @@ Both packages use a layer-based approach, where a plot is built up by adding com
 
 The types of plots that I chose for the comparison heavily draw on the examples given in [R for Data Science](https://r4ds.hadley.nz/data-visualize) - an amazing resource if you want to get started with data visualization. 
 
-## Loading packages and data
+# Loading packages and data
 
 We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Python. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don't want to get into related messages in this post. 
 
@@ -37,7 +37,7 @@ penguins = load_penguins().dropna()
 ```
 ::: 
 
-## A full-blown example
+# A full-blown example
 
 Let's start with an advancved example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. Except for the quotation of column names, `plotnine` has exactly the same syntax as `ggplot2` - this is remarkable!
 
@@ -71,9 +71,9 @@ ggplot(penguins,
 ```
 ::: 
 
-## Visualizing Distributions
+# Visualizing distributions
 
-### A categorical variable
+## A categorical variable
 
 Let's break down the similarity in smaller steps by focusing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then `geom_bar()` is your friend. 
 
@@ -93,7 +93,7 @@ ggplot(penguins,
 ```
 ::: 
 
-### A numerical variable
+## A numerical variable
 
 If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. `geom_histogram()` with options to control bin widths or number of bins is the aesthetic for this task.
 
@@ -115,9 +115,9 @@ ggplot(penguins,
 
 Both packages also support the `geom_density()` geom to plot density curves, but I personally wouldn't recommend to start with densities because they are estimated curves that might obscure underlying data features. However, we look at densities in the next section. 
 
-## Visualizing Relationships
+# Visualizing relationships
 
-### A numerical and a categorical variable
+## A numerical and a categorical variable
 
 To visualize relationships, you need to have at least two columns. If you have a numerical and a categorical variable, then histograms or densities with groups are a good starting point. The next example illustrates the use of `geom_density()`. 
 
@@ -139,7 +139,7 @@ ggplot(penguins,
 ```
 :::
 
-### Two categorical columns
+## Two categorical columns
 
 Stacked bar plots are a good way to display the relationship between two categorical columns. `geom_bar()` with the `position` argument is your aesthetic of choice for this task. Note that you can easily switch to counts by using `position = "identity"` instead of relative frequencies as in the example below. 
 
@@ -157,7 +157,7 @@ ggplot(penguins, aes(x = species, fill = island)) +
 ```
 ::: 
 
-### Two numerical columns
+## Two numerical columns
 
 Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns. Here, the `size` parameter controls the size of the shapes that you use for the data points. See the first visualization example if you want to see again how to add a regression line.   
 
@@ -177,7 +177,7 @@ ggplot(penguins,
 ```
 ::: 
 
-### Three or more columns
+## Three or more columns
 
 You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data. 
 
@@ -199,7 +199,7 @@ ggplot(penguins,
 ```
 ::: 
 
-## Saving Plots
+# Saving plots
 
 As a final comparison, let us look at saving plots. Again, the implementations are virtually the same across both packages with the same function name and corresponding options. 
 
@@ -228,7 +228,7 @@ ggsave(penguins_figure, filename = "penguins-figure.png",
 ```
 ::: 
 
-## Conclusion
+# Conclusion
 
 In terms of syntax, `ggplot2` and `plotnine` are remarkably similar, with minor differences primarily due to the differences between R and Python:
 

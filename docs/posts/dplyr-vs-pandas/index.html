@@ -174,7 +174,7 @@ cookieconsent.run({
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages">Loading packages</a></li>
+  <li><a href="#loading-packages-and-data" id="toc-loading-packages-and-data" class="nav-link active" data-scroll-target="#loading-packages-and-data">Loading packages and data</a></li>
   <li><a href="#work-with-rows" id="toc-work-with-rows" class="nav-link" data-scroll-target="#work-with-rows">Work with rows</a>
   <ul class="collapse">
   <li><a href="#filter-rows" id="toc-filter-rows" class="nav-link" data-scroll-target="#filter-rows">Filter rows</a></li>
@@ -183,17 +183,21 @@ cookieconsent.run({
   </ul></li>
   <li><a href="#work-with-columns" id="toc-work-with-columns" class="nav-link" data-scroll-target="#work-with-columns">Work with columns</a>
   <ul class="collapse">
-  <li><a href="#select-columns" id="toc-select-columns" class="nav-link" data-scroll-target="#select-columns">Select columns</a></li>
-  <li><a href="#rename-columns" id="toc-rename-columns" class="nav-link" data-scroll-target="#rename-columns">Rename columns</a></li>
-  <li><a href="#mutate-columns" id="toc-mutate-columns" class="nav-link" data-scroll-target="#mutate-columns">Mutate columns</a></li>
-  <li><a href="#relocate-columns" id="toc-relocate-columns" class="nav-link" data-scroll-target="#relocate-columns">Relocate columns</a></li>
+  <li><a href="#select-columns" id="toc-select-columns" class="nav-link" data-scroll-target="#select-columns">Select columns</a>
+  <ul class="collapse">
+  <li><a href="#dplyrename-columns" id="toc-dplyrename-columns" class="nav-link" data-scroll-target="#dplyrename-columns">dplyrename columns</a></li>
+  </ul></li>
+  <li><a href="#mutate-columns" id="toc-mutate-columns" class="nav-link" data-scroll-target="#mutate-columns">Mutate columns</a>
+  <ul class="collapse">
+  <li><a href="#dplyrelocate-columns" id="toc-dplyrelocate-columns" class="nav-link" data-scroll-target="#dplyrelocate-columns">dplyrelocate columns</a></li>
+  </ul></li>
   </ul></li>
   <li><a href="#work-with-groups-of-rows" id="toc-work-with-groups-of-rows" class="nav-link" data-scroll-target="#work-with-groups-of-rows">Work with groups of rows</a>
   <ul class="collapse">
   <li><a href="#simple-summaries-by-group" id="toc-simple-summaries-by-group" class="nav-link" data-scroll-target="#simple-summaries-by-group">Simple summaries by group</a></li>
   <li><a href="#more-complicated-summaries-by-group" id="toc-more-complicated-summaries-by-group" class="nav-link" data-scroll-target="#more-complicated-summaries-by-group">More complicated summaries by group</a></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
     </div>
@@ -252,11 +256,11 @@ pandas syntax
 <p>If you are a seasoned <code>pandas</code> user, you might find my approach non-Pythonic for at least two deliberate choices that I made: (i) I prefer to have chainable methods over using verbose expressions over multiple lines; and (ii) I prefer to have whitespace around all equal signs, not just for variable assignments. In my view, these two choices improve the compliance of <code>pandas</code> with tidy coding principles by increasing the readability of code.</p>
 </div>
 </div>
-<section id="loading-packages" class="level1">
-<h1>Loading packages</h1>
+<section id="loading-packages-and-data" class="level1">
+<h1>Loading packages and data</h1>
 <p>We start by loading the main packages of interest and the popular <code>palmerpenguins</code> package that exists for both R and Python. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">pandas</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
@@ -283,7 +287,7 @@ pandas syntax
 <h2 class="anchored" data-anchor-id="filter-rows">Filter rows</h2>
 <p>Filtering rows with <code>dplyr</code> is based on NSE and the <code>dplyr::filter()</code> function. To replicate the same results with <code>pandas</code>, you can use <code>pandas.query()</code> method which accepts a string with the filter conditions as input.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">pandas</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
@@ -339,7 +343,7 @@ pandas syntax
 <h2 class="anchored" data-anchor-id="slice-rows">Slice rows</h2>
 <p><code>dplyr::slice()</code> takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. <code>pandas.iloc[]</code> also provides a function for integer-location based indexing (note that indexing starts at 0 in Python, while it starts at 1 in R). Note that <code>pandas.iloc[]</code> requires square brackets instead of parentheses.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">pandas</a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <div class="cell">
@@ -394,7 +398,7 @@ pandas syntax
 <h2 class="anchored" data-anchor-id="arrange-rows">Arrange rows</h2>
 <p>To orders the rows of a data frame by the values of selected columns, we have <code>dplyr::arrange()</code> and <code>pandas.sort_values()</code>. Note that both approaches arrange rows in an an ascending order and puts missing values last as defaults.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">pandas</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="cell">
@@ -453,7 +457,7 @@ pandas syntax
 <h2 class="anchored" data-anchor-id="select-columns">Select columns</h2>
 <p>Selecting a subset of columns works very similarly with<code>dplyr::select()</code> and <code>pandas.get()</code>. The former accepts column names using NSE (or vectors of charaters), while the latter requires a vector of strings with column names as inputs.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">pandas</a></li></ul>
 <div class="tab-content">
 <div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
 <div class="cell">
@@ -502,12 +506,11 @@ pandas syntax
 </div>
 </div>
 </div>
-</section>
-<section id="rename-columns" class="level2">
-<h2 class="anchored" data-anchor-id="rename-columns">Rename columns</h2>
+<section id="dplyrename-columns" class="level3">
+<h3 class="anchored" data-anchor-id="dplyrename-columns">dplyrename columns</h3>
 <p>Renaming columns also works very similarly with the major difference that <code>pandas.rename()</code> takes a dictionary with mappings of old to new names as input, while <code>dplyr::rename()</code> takes variable names via the usual NSE.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">pandas</a></li></ul>
 <div class="tab-content">
 <div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
 <div class="cell">
@@ -560,11 +563,12 @@ pandas syntax
 </div>
 </div>
 </section>
+</section>
 <section id="mutate-columns" class="level2">
 <h2 class="anchored" data-anchor-id="mutate-columns">Mutate columns</h2>
 <p>Transforming existing columns or creating new ones is an essential part of data analysis. <code>dplyr::mutate()</code> and <code>pandas.assign()</code> are the work horses for these tasks. While <code>dplyr</code> starts with column names before the expressions that transform columns, <code>pandas</code> uses the <code>lambda</code> function to assign expressions to new columns. Note that you have to split up variable assignments if you want to refer to a newly created variable in <code>pandas</code>, while you can refer to the new variables in the same mutate block in <code>dplyr</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">pandas</a></li></ul>
 <div class="tab-content">
 <div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
 <div class="cell">
@@ -619,13 +623,12 @@ pandas syntax
 </div>
 </div>
 </div>
-</section>
-<section id="relocate-columns" class="level2">
-<h2 class="anchored" data-anchor-id="relocate-columns">Relocate columns</h2>
+<section id="dplyrelocate-columns" class="level3">
+<h3 class="anchored" data-anchor-id="dplyrelocate-columns">dplyrelocate columns</h3>
 <p><code>dplyr::relocate()</code> provides options to change the positions of columns in a data frame, using the same syntax as <code>dplyr::select()</code>. In addition, there are the options <code>.after</code> and <code>.before</code> to provide users with additional shortcuts.</p>
 <p>The recommended way to relocate columns in <code>pandas</code> is to use the <code>pandas.get()</code> method, but there are no options as in <code>dplyr::relocate()</code>. In fact, the safest way to consistently get the correct order of columns is to explicitly specify them.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">pandas</a></li></ul>
 <div class="tab-content">
 <div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
 <div class="cell">
@@ -678,6 +681,7 @@ pandas syntax
 </div>
 </section>
 </section>
+</section>
 <section id="work-with-groups-of-rows" class="level1">
 <h1>Work with groups of rows</h1>
 <section id="simple-summaries-by-group" class="level2">
@@ -685,7 +689,7 @@ pandas syntax
 <p>Let’s suppose we want to compute summaries by groups such as means or medians. Both packages are very similar again: on the R side you have <code>dplyr::group_by()</code> and <code>dplyr::summarize()</code>, while on the Python side you have <code>pandas.groupby()</code> and <code>pandas.agg()</code>.</p>
 <p>Note that <code>dplyr::groupby()</code> also automatically arranges the results by the group, so the reproduce the results of <code>dplyr</code>, we need to add <code>pandas.sort()</code> to the chain.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">pandas</a></li></ul>
 <div class="tab-content">
 <div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
 <div class="cell">
@@ -724,7 +728,7 @@ Torgersen        18.429412</code></pre>
 <h2 class="anchored" data-anchor-id="more-complicated-summaries-by-group">More complicated summaries by group</h2>
 <p>Typically, you want to create multiple different summaries by groups. <code>dplyr</code> provides a lot of flexibility to create new variables on the fly, as does <code>pandas</code>. For instance, we can pass expressions to them mean functions in order to create the share of female penguins per island in the summary statement. Note that you again have to use <code>lambda</code> functions in <code>pandas</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">pandas</a></li></ul>
 <div class="tab-content">
 <div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
 <div class="cell">
@@ -769,12 +773,12 @@ Torgersen     52  ...  &lt;bound method Series.mean of 0      False\n1  ...
 </div>
 </div>
 </section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
 <p>This post highlights syntactic similarities and differences across R’s <code>dplyr</code> and Python’s <code>pandas</code> packages. Two key points emerge: (i) <code>dplyr</code> heavily relies on NSE to enable a syntax that refrains from using strings, something that is not possible in Python; (ii) the structure of inputs to <code>pandas</code> methods is inconsistent compared to <code>dplyr</code> (sometimes inputs are vectors of strings, sometimes just a single string, sometimes dictionaries, etc.). I want to close this post by emphasizing that both languages and packages have their own merits and supporters. I personally find it hard to remember the syntax of each <code>pandas</code> method, so I’m much more prone to on-the-fly coding errors than compared to <code>dplyr</code>.</p>
 
 
-</section>
 </section>
 
 

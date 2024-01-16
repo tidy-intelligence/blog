@@ -15,12 +15,12 @@ Before we dive into the comparison, a short introduction to the packages: the `d
 
 `polars` is also designed for data manipulation and heavily optimized for performance, but there are significant differences in their approach, especially in how they handle column referencing and expression evaluation. Python generally relies on standard evaluation, meaning expressions are evaluated to their values before being passed to a function. In `polars`, column references typically need to be explicitly stated, often using quoted names or through methods attached to data frame objects.
 
-# Loading packages
+# Loading packages and data
 
 We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Python. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that we also limit the print output of `polars` data frames to 10 rows to prevent this post being flooded by excessively long tables. 
 
 ::: {.panel-tabset}
-## R
+### dplyr
 ```{r}
 #| message: false
 library(dplyr)
@@ -28,7 +28,7 @@ library(palmerpenguins)
 
 penguins <- palmerpenguins::penguins
 ```
-## Python
+### polars
 ```{python}
 #| message: false
 import polars as pl
@@ -47,13 +47,13 @@ penguins = load_penguins().pipe(pl.from_pandas)
 Filtering rows works very similarly for both packages, they even have the same function names: `dplyr::filter()` and `polars.filter()`. To select columns in `polars`, you need the `polars.col()` selector. 
 
 ::: {.panel-tabset}
-### R
+#### dplyr
 ```{r}
 penguins |> 
   filter(species == "Adelie" & 
            island %in% c("Biscoe", "Dream"))
 ```
-### Python
+#### polars
 ```{python}
 (penguins
   .filter(
@@ -68,12 +68,12 @@ penguins |>
 `dplyr::slice()` takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. `polars.slice()` only takes the start index and the length of the slice as inputs. For instance, to the the same result of slicing rows 10 to 20, the code looks as follows (note that indexing starts at 0 in Python, while it starts at 1 in R):
 
 ::: {.panel-tabset}
-### R
+#### dplyr
 ```{r}
 penguins |> 
   slice(10:20)
 ```
-### Python
+#### polars
 ```{python}
 (penguins
   .slice(9, 11)  
@@ -86,12 +86,12 @@ penguins |>
 To orders the rows of a data frame by the values of selected columns, we have `dplyr::arrange()` and `polars.sort()`. Note that `dplyr::arrange()` arranges rows in an an ascending order and puts `NA` values last. `polars.sort()`, on the other hand, arranges rows in an ascending order and starts with `null` as default. Note that there are options to control these defaults. 
 
 ::: {.panel-tabset}
-### R
+#### dplyr
 ```{r}
 penguins |> 
   arrange(island, desc(bill_length_mm))
 ```
-### Python
+#### polars
 ```{python}
 (penguins
   .sort(["island", "bill_length_mm"], 
@@ -107,12 +107,12 @@ penguins |>
 Selecting a subset of columns works essentially the same for both and `dplyr::select()` and `polars.select()` even have the same name. Note that you don't have to use `polars.col()` but can just pass strings in the `polars.select()` method. 
 
 ::: {.panel-tabset}
-### R
+#### dplyr
 ```{r}
 penguins |> 
   select(bill_length_mm, sex)
 ```
-### Python
+#### polars
 ```{python}
 (penguins
   .select(pl.col("bill_length_mm"), pl.col("sex"))
@@ -120,18 +120,18 @@ penguins |>
 ```
 :::
 
-## Rename columns
+### dplyrename columns
 
 Renaming columns also works very similarly with the major difference that `polars.rename()` takes a dictionary with mappings of old to new names as input, while `dplyr::rename()` takes variable names via the usual NSE.
 
 ::: {.panel-tabset}
-### R
+#### dplyr
 ```{r}
 penguins |> 
   rename(bill_length = bill_length_mm,
          bill_depth = bill_depth_mm)
 ```
-### Python
+#### polars
 ```{python}
 (penguins
   .rename({"bill_length_mm": "bill_length",
@@ -145,7 +145,7 @@ penguins |>
 Transforming existing columns or creating new ones is an essential part of data analysis. `dplyr::mutate()` and `polars.with_columns()` are the work horses for these tasks. Both approaches have a very similar syntax. Note that you have to split up variable assignments if you want to refer to a newly created variable in `polars`, while you can refer to the new variables in the same mutate block in `dplyr`.
 
 ::: {.panel-tabset}
-### R
+#### dplyr
 ```{r}
 penguins |> 
   mutate(ones = 1,
@@ -153,7 +153,7 @@ penguins |>
          bill_length_squared = bill_length^2) |> 
   select(ones, bill_length_mm, bill_length, bill_length_squared)
 ```
-### Python
+#### polars
 ```{python}
 (penguins 
   .with_columns(ones = pl.lit(1),
@@ -165,19 +165,19 @@ penguins |>
 ```
 :::
 
-## Relocate columns
+### dplyrelocate columns
 
 `dplyr::relocate()` provides options to change the positions of columns in a data frame, using the same syntax as `dplyr::select()`. In addition, there are the options `.after` and `.before` to provide users with additional shortcuts. 
 
 The recommended way to relocate columns in `polars` is to use the `polars.select()` method, but there are no options as in `dplyr::relocate()`. In fact, the safest way to consistently get the correct order of columns is to explicitly specify them. 
 
 ::: {.panel-tabset}
-### R
+#### dplyr
 ```{r}
 penguins |> 
   relocate(c(species, bill_length_mm), .before = sex)
 ```
-### Python
+#### polars
 ```{python}
 (penguins
   .select(pl.col("island"), pl.col("bill_depth_mm"), 
@@ -196,13 +196,13 @@ Let's suppose we want to compute summaries by groups such as means or medians. B
 Note that `dplyr::group_by()` also automatically arranges the results by the group, so the reproduce the results of `dplyr`, we need to add `polars.sort()` to the chain. 
 
 ::: {.panel-tabset}
-### R
+#### dplyr
 ```{r}
 penguins |> 
   group_by(island) |> 
   summarize(bill_depth_mean = mean(bill_depth_mm, na.rm = TRUE))
 ```
-### Python
+#### polars
 ```{python}
 (penguins
   .group_by("island")
@@ -217,7 +217,7 @@ penguins |>
 Typically, you want to create multiple different summaries by groups. `dplyr` provides a lot of flexibility to create new variables on the fly, while `polars` seems to be a bit more restrictive. For instance, to compute the share of female penguins by group, it makes more sense to create an `ìs_female` indicator column using `polars` because `polars.mean()` does not accept expressions as inputs. 
 
 ::: {.panel-tabset}
-### R
+#### dplyr
 ```{r}
 penguins |> 
   group_by(island) |> 
@@ -227,7 +227,7 @@ penguins |>
             body_mass_sd = sd(body_mass_g, na.rm = TRUE),
             share_female = mean(sex == "female", na.rm = TRUE))
 ```
-### Python
+#### polars
 ```{python}
 (penguins
   .with_columns(is_female = pl.when(pl.col("sex") == "female").then(1)
@@ -246,7 +246,7 @@ penguins |>
 ```
 :::
 
-## Conclusion
+# Conclusion
 
 This post highlights syntactic similarities and differences across R's `dplyr` and Python's `polars` packages. One key point emerges: `dplyr` heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python. I want to close this post by emphasizing that both languages and packages have their own merits and I won't strictly recommend one over the other - maybe in another post :smile:
 

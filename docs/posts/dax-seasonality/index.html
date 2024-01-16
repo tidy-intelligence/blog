@@ -290,12 +290,12 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><a href="index_files/figure-html/unnamed-chunk-5-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="2100"></a></p>
+<p><a href="index_files/figure-html/unnamed-chunk-5-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" alt="Adjusted DAX index price between 1988 and 2023." width="2100"></a></p>
 </figure>
 </div>
 </div>
 </div>
-<p>The main idea of Seasonalcharts is to implement the strategy proposed by <a href="https://www.jstor.org/stable/3083268?seq=1#metadata_info_tab_contents">Jacobsen and Bouman (2002)</a> and <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2154873">Jacobsen and Zhan (2018)</a> which they label ‘The Halloween Indicator’ (or ‘Sell in May Effect’). The main finding of these papers is that stock indices returns seem significantly lower during the May-October period than during the remainder of the year. The corresponding trading strategy holds an index during the months November-April, but holds the risk-free asset in the May-October period.</p>
+<p>The main idea of Seasonalcharts is to implement the strategy proposed by Jacobsen and Bouman (2002)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and Jacobsen and Zhan (2018)<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> which they label ‘The Halloween Indicator’ (or ‘Sell in May Effect’). The main finding of these papers is that stock indices returns seem significantly lower during the May-October period than during the remainder of the year. The corresponding trading strategy holds an index during the months November-April, but holds the risk-free asset in the May-October period.</p>
 <p>To replicate their approach (and avoid noise in the daily data), we focus on monthly returns from now on.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dax_monthly <span class="ot">&lt;-</span> dax <span class="sc">|&gt;</span></span>
@@ -344,7 +344,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><a href="index_files/figure-html/unnamed-chunk-8-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="2100"></a></p>
+<p><a href="index_files/figure-html/unnamed-chunk-8-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" alt="Average monthly DAX returns between 1988 and 2023." width="2100"></a></p>
 </figure>
 </div>
 </div>
@@ -374,7 +374,7 @@ window.Quarto = {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><a href="index_files/figure-html/unnamed-chunk-9-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="2100"></a></p>
+<p><a href="index_files/figure-html/unnamed-chunk-9-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" alt="Distributions of monthly DAX returns between 1988 and 2023." width="2100"></a></p>
 </figure>
 </div>
 </div>
@@ -408,7 +408,7 @@ window.Quarto = {
  7 7      0.0131  0.0598 -0.0658 0.0902         1.29 
  8 8     -0.0235  0.0622 -0.168  0.0347        -2.27 
  9 9     -0.0244  0.0730 -0.176  0.0613        -2.01 
-10 10     0.0206  0.0658 -0.0964 0.122          1.85 
+10 10     0.0186  0.0660 -0.0960 0.122          1.70 
 11 11     0.0228  0.0483 -0.0455 0.0862         2.79 
 12 12     0.0195  0.0554 -0.0586 0.108          2.08 </code></pre>
 </div>
@@ -421,27 +421,28 @@ window.Quarto = {
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> dax_monthly,</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">vcov =</span> <span class="st">"hetero"</span></span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_monthly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_monthly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>OLS estimation, Dep. Var.: ret_excess
-Observations: 422 
+Observations: 423 
 Standard-errors: Heteroskedasticity-robust 
              Estimate Std. Error   t value Pr(&gt;|t|)    
-(Intercept)  0.006214   0.009332  0.665913 0.505841    
-month2      -0.004210   0.013064 -0.322287 0.747400    
-month3      -0.001355   0.013046 -0.103898 0.917301    
-month4       0.019820   0.013763  1.440120 0.150597    
-month5      -0.001516   0.011534 -0.131452 0.895482    
-month6      -0.009744   0.012318 -0.791021 0.429389    
-month7       0.006857   0.013752  0.498587 0.618337    
-month8      -0.029730   0.013951 -2.131045 0.033680 *  
-month9      -0.030625   0.015334 -1.997154 0.046469 *  
-month10      0.014389   0.014524  0.990694 0.322419    
-month11      0.016551   0.012399  1.334841 0.182669    
-month12      0.013261   0.013225  1.002767 0.316565    
+(Intercept)  0.006214   0.009331  0.665936 0.505825    
+month2      -0.004210   0.013064 -0.322298 0.747391    
+month3      -0.001355   0.013045 -0.103901 0.917298    
+month4       0.019820   0.013762  1.440170 0.150581    
+month5      -0.001516   0.011533 -0.131456 0.895479    
+month6      -0.009744   0.012318 -0.791049 0.429372    
+month7       0.006857   0.013752  0.498605 0.618325    
+month8      -0.029730   0.013951 -2.131118 0.033672 *  
+month9      -0.030625   0.015334 -1.997223 0.046460 *  
+month10      0.012424   0.014422  0.861410 0.389514    
+month11      0.016551   0.012399  1.334888 0.182652    
+month12      0.013261   0.013224  1.002802 0.316547    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-RMSE: 0.056141   Adj. R2: 0.050201</code></pre>
+RMSE: 0.056177   Adj. R2: 0.048833</code></pre>
 </div>
 </div>
 <p>Seems like August and September have on average indeed lower returns than January (which is the omitted reference point in this regression). Note that the size of the coefficients from the regression are the same as in the table above (i.e., constant plus coefficient), but the t-statistics are different because we are estimating a joint model now.</p>
@@ -467,18 +468,18 @@ month2          -0.0042 (-0.3223) -0.0042 (-0.3222)
 month3          -0.0014 (-0.1039) -0.0014 (-0.1039)
 month4             0.0198 (1.440)   0.0099 (0.8135)
 month5          -0.0015 (-0.1315) -0.0015 (-0.1314)
-month6          -0.0097 (-0.7910) -0.0097 (-0.7907)
+month6          -0.0097 (-0.7910) -0.0097 (-0.7908)
 month7            0.0069 (0.4986)   0.0024 (0.1805)
 month8          -0.0297* (-2.131)  -0.0201 (-1.602)
 month9          -0.0306* (-1.997)  -0.0142 (-1.127)
-month10           0.0144 (0.9907)   0.0144 (0.9903)
+month10           0.0124 (0.8614)   0.0124 (0.8611)
 month11            0.0165 (1.335)    0.0128 (1.071)
 month12            0.0133 (1.003)   0.0087 (0.6897)
 _______________ _________________ _________________
 VCOV type       Heteroskeda.-rob. Heteroskeda.-rob.
-Observations                  422               412
-R2                        0.07502           0.03994
-Adj. R2                   0.05020           0.01354
+Observations                  423               413
+R2                        0.07363           0.03824
+Adj. R2                   0.04883           0.01186
 ---
 Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
@@ -513,13 +514,13 @@ Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <pre><code>                  model_halloween model_hallowe..
 Dependent Var.:        ret_excess      ret_excess
                                                  
-Constant        -0.0024 (-0.5698) 0.0016 (0.4271)
-halloween        0.0159** (2.827) 0.0088. (1.754)
+Constant        -0.0026 (-0.6254) 0.0013 (0.3592)
+halloween        0.0162** (2.872) 0.0091. (1.806)
 _______________ _________________ _______________
 VCOV type       Heteroskeda.-rob. Heteroske.-rob.
-Observations                  422             412
-R2                        0.01865         0.00745
-Adj. R2                   0.01632         0.00503
+Observations                  423             413
+R2                        0.01919         0.00787
+Adj. R2                   0.01685         0.00546
 ---
 Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
@@ -561,8 +562,8 @@ Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <pre><code># A tibble: 2 × 4
   Data    `Buy and Hold` Halloween `Halloween-Short`
   &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;             &lt;dbl&gt;
-1 Full             0.465     0.597             0.473
-2 Trimmed          0.403     0.503             0.298</code></pre>
+1 Full             0.458     0.596             0.479
+2 Trimmed          0.394     0.502             0.305</code></pre>
 </div>
 </div>
 <p>The Sharpe ratio suggests that the Halloween strategy is a better investment opportunity than the other strategies for both the full and the trimmed sample. Shorting the market in the Halloween season even leads to worse performance than just staying invested in the market the whole time once we drop the outliers.</p>
@@ -571,7 +572,14 @@ Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 
 </section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Bouman, Sven and Jacobsen, Ben (2002). “The Halloween Indicator, ‘Sell in May and Go Away’: Another Puzzle”, The American Economic Review, Vol. 92, No.&nbsp;5, pp.&nbsp;1618-1635, <a href="https://www.jstor.org/stable/3083268">https://www.jstor.org/stable/3083268</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Jacobsen, Ben and Zhang, Cherry Yi (2018), “The Halloween Indicator, ‘Sell in May and Go Away’: Everywhere and All the Time”, <a href="https://ssrn.com/abstract=2154873">https://ssrn.com/abstract=2154873</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -972,7 +980,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","descPosition":"bottom","selector":".lightbox","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","loop":false,"openEffect":"zoom","closeEffect":"zoom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
