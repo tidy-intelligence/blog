@@ -1,0 +1,81 @@
+---
+title: "Tidy Data: Tabular Data Storage Comparison"
+description: "A comparison of popular open-source data storage technologies using R, Python, and Julia."
+metadata:
+  pagetitle: "Tidy Data: Tabular Data Storage Comparison"
+author: "Christoph Scheuch"
+date: "2024-01-19" 
+image: thumbnail.png
+image-alt: ... Created with DALL-E 3.
+draft: true
+---
+
+# Create example data
+
+```{r}
+library(tidyverse)
+
+data <- tibble(
+  character_column = c("A", "B", "C", "D"), 
+  date_column = as.Date(c("2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01")),
+  datetime_column = ymd_hms(c("2023-01-01 10:00:00", "2023-02-01 11:00:00", 
+                              "2023-03-01 12:00:00", "2023-04-01 13:00:00")),
+  numeric_column = c(1.5, 2.5, 3.5, 4.5),
+  integer_column = as.integer(c(1, 2, 3, 4)),
+  logical_column = c(TRUE, FALSE, FALSE, TRUE)
+)
+```
+
+# CSV
+
+Simple, widely supported, and easy to read and write in R, Python, and Julia.
+
+Not efficient for large datasets and doesn't support complex data structures or metadata well.
+
+```{r}
+write_csv(data, file = "data.csv")
+```
+
+```{r}
+data <- read_csv("data.csv")
+```
+
+# SQLite
+
+Lightweight, file-based SQL database. Easy to use and supported by R, Python, and Julia without the need for a separate server.
+
+Not suitable for very large or high-concurrency applications.
+
+```{r}
+library(RSQLite)
+```
+
+
+# DuckDB
+
+https://r4ds.hadley.nz/databases
+
+DuckDB is an emerging database management system that's gaining attention for its efficiency and ease of use, particularly in the data science community. It's designed to be an OLAP (Online Analytical Processing) database and is especially well-suited for analytical queries on large datasets.
+
+As a relatively new system, it might not have the same level of community support, tools, and integrations as more established databases.
+
+```{r}
+library(duckdb)
+```
+
+
+# Parquet
+
+https://r4ds.hadley.nz/arrow
+
+Columnar storage format, which is great for analytics and large datasets. Offers efficient data compression and encoding schemes.
+
+Requires additional libraries and understanding of its format.
+
+```{r}
+library(arrow)
+```
+
+# Conclusion
+
+...
