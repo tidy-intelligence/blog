@@ -10,8 +10,16 @@ image-alt: A server room with a more subdued and professional atmosphere. It fea
 draft: true
 ---
 
+```{r}
+#| echo: false
+JuliaCall::julia_setup("/Applications/Julia-1.9.app/Contents/Resources/julia/bin/")
+```
+
+
 # Create example data
 
+::: {.panel-tabset}
+### R
 ```{r}
 #| message: false
 library(tidyverse)
@@ -19,21 +27,52 @@ library(tidyverse)
 data <- tibble(
   character_column = c("A", "B", "C", "D"), 
   date_column = as.Date(c("2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01")),
-  datetime_column = ymd_hms(c("2023-01-01 10:00:00", "2023-02-01 11:00:00", 
-                              "2023-03-01 12:00:00", "2023-04-01 13:00:00")),
+  datetime_column = ymd_hms(c("2023-01-01 10:00:00", "2023-02-01 11:00:00", "2023-03-01 12:00:00", "2023-04-01 13:00:00")),
   numeric_column = c(1.5, 2.5, 3.5, 4.5),
   integer_column = as.integer(c(1, 2, 3, 4)),
   logical_column = c(TRUE, FALSE, FALSE, TRUE)
 )
-```
 
+glimpse(data)
+```
+### Python
 ```{python}
 import pandas as pd
-data = r.data
-data["character_column"] = data["character_column"].astype("string")
-data["date_column"] = pd.to_datetime(data["date_column"])
+
+data = pd.DataFrame({
+  "character_column": ["A", "B", "C", "D"],
+  "date_column": pd.to_datetime(["2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01"]).date,
+  "datetime_column": pd.to_datetime(["2023-01-01 10:00:00", "2023-02-01 11:00:00", "2023-03-01 12:00:00", "2023-04-01 13:00:00"]),
+  "numeric_column": [1.5, 2.5, 3.5, 4.5],
+  "integer_column": [1, 2, 3, 4],
+  "logical_column": [True, False, False, True]
+})
+
 data.info()
 ```
+### Julia
+```{julia}
+using DataFrames, Dates
+
+data = DataFrame(
+  character_column = ["A", "B", "C", "D"],
+  date_column = Date.(["2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01"]),
+  datetime_column = DateTime.(["2023-01-01T10:00:00", "2023-02-01T11:00:00", "2023-03-01T12:00:00", "2023-04-01T13:00:00"]),
+  numeric_column = [1.5, 2.5, 3.5, 4.5],
+  integer_column = Int32.([1, 2, 3, 4]),
+  logical_column = [true, false, false, true]
+);
+
+function get_column_types(df::DataFrame)
+  return DataFrame(
+    Column_Name = names(df),
+    Column_Type = eltype.(eachcol(df))
+  )
+end;
+
+get_column_types(data)
+```
+:::
 
 # CSV
 
@@ -50,8 +89,7 @@ library(readr)
 write_csv(data, file = "data_r.csv")
 data_csv <- read_csv("data_r.csv")
 
-data_csv |> 
-  glimpse()
+glimpse(data_csv)
 ```
 
 ### Python
@@ -63,6 +101,15 @@ data_csv.info()
 ```
 
 ### Julia
+```{julia}
+using CSV
+
+CSV.write("data_julia.csv", data);
+data_csv = CSV.read("data_julia.csv", DataFrame);
+
+get_column_types(data_csv)
+```
+
 
 :::
 
@@ -83,8 +130,7 @@ copy_to(con_sqlite, data, "data", overwrite = TRUE)
 data_sqlite <- tbl(con_sqlite, "data") |> 
   collect()
 
-data_sqlite |> 
-  glimpse()
+glimpse(data_sqlite)
 ```
 
 ### Python
@@ -101,6 +147,18 @@ data_sqlite.info()
 ```
 
 ### Julia
+
+```{julia}
+using SQLite
+
+con_sqlite = SQLite.DB("data_julia.sqlite");
+
+SQLite.load!(data, con_sqlite, "data", replace = true);
+
+data_sqlite = DBInterface.execute(con_sqlite, "SELECT * FROM data") |> DataFrame;
+
+get_column_types(data_sqlite)
+```
 
 :::
 
@@ -124,8 +182,7 @@ copy_to(con_duckdb, data, "data", overwrite = TRUE)
 data_duckdb <- tbl(con_duckdb, "data") |> 
   collect()
 
-data_duckdb |> 
-  glimpse()
+glimpse(data_duckdb)
 ```
 
 ### Python
@@ -143,6 +200,13 @@ data_duckdb.info()
 ```
 
 ### Julia
+```{julia}
+using DuckDB
+
+con_duckdb = DBInterface.connect(DuckDB.DB, "data_julia.duckdb");
+
+# ...
+```
 
 :::
 
@@ -163,8 +227,7 @@ library(arrow)
 write_parquet(data, "data_r.parquet")
 data_parquet <- read_parquet("data_r.parquet")
 
-data_parquet |> 
-  glimpse()
+glimpse(data_parquet)
 ```
 
 ### Python
@@ -178,6 +241,15 @@ data_parquet.info()
 ```
 
 ### Julia
+```{julia}
+using Arrow
+
+Arrow.write("data_julia.parquet", data);
+
+data_parquet = Arrow.Table("data_julia.parquet") |> DataFrame;
+
+get_column_types(data_parquet)
+```
 
 :::
 
