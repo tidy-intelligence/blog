@@ -13,6 +13,7 @@ draft: true
 # Create example data
 
 ```{r}
+#| message: false
 library(tidyverse)
 
 data <- tibble(
@@ -26,20 +27,44 @@ data <- tibble(
 )
 ```
 
+```{python}
+import pandas as pd
+data = r.data
+data["character_column"] = data["character_column"].astype("string")
+data["date_column"] = pd.to_datetime(data["date_column"])
+data.info()
+```
+
 # CSV
 
 Simple, widely supported, and easy to read and write in R, Python, and Julia.
 
 Not efficient for large datasets and doesn't support complex data structures or metadata well.
 
+::: {.panel-tabset}
+### R
 ```{r}
 #| message: false
-write_csv(data, file = "data.csv")
-data_csv <- read_csv("data.csv")
+library(readr)
+
+write_csv(data, file = "data_r.csv")
+data_csv <- read_csv("data_r.csv")
 
 data_csv |> 
   glimpse()
 ```
+
+### Python
+```{python}
+data.to_csv("data_python.csv", index = False)
+data_csv = pd.read_csv("data_python.csv")
+
+data_csv.info()
+```
+
+### Julia
+
+:::
 
 # SQLite
 
@@ -47,10 +72,12 @@ Lightweight, file-based SQL database. Easy to use and supported by R, Python, an
 
 Not suitable for very large or high-concurrency applications.
 
+::: {.panel-tabset}
+### R
 ```{r}
 library(RSQLite)
 
-con_sqlite <- dbConnect(SQLite(), "data.sqlite")
+con_sqlite <- dbConnect(SQLite(), "data_r.sqlite")
 
 copy_to(con_sqlite, data, "data", overwrite = TRUE)
 data_sqlite <- tbl(con_sqlite, "data") |> 
@@ -60,6 +87,22 @@ data_sqlite |>
   glimpse()
 ```
 
+### Python
+```{python}
+import sqlite3
+
+con_sqlite = sqlite3.connect(database = "data_python.sqlite")
+
+data.to_sql("data", con_sqlite, if_exists = "replace", index = False)
+
+data_sqlite = pd.read_sql_query("SELECT * FROM data", con_sqlite)
+
+data_sqlite.info()
+```
+
+### Julia
+
+:::
 
 # DuckDB
 
@@ -69,11 +112,13 @@ DuckDB is an emerging database management system that's gaining attention for it
 
 As a relatively new system, it might not have the same level of community support, tools, and integrations as more established databases.
 
+::: {.panel-tabset}
+### R
 ```{r}
 #| warning: false
 library(duckdb)
 
-con_duckdb <- dbConnect(duckdb(), "data.duckdb")
+con_duckdb <- dbConnect(duckdb(), "data_r.duckdb")
 
 copy_to(con_duckdb, data, "data", overwrite = TRUE)
 data_duckdb <- tbl(con_duckdb, "data") |> 
@@ -83,6 +128,24 @@ data_duckdb |>
   glimpse()
 ```
 
+### Python
+```{python}
+#| warning: false
+import duckdb
+
+con_duckdb = duckdb.connect("data_r.duckdb")
+
+data.to_sql("data", con_duckdb, if_exists = "replace", index = False)
+
+data_duckdb = pd.read_sql_query("SELECT * FROM data", con_duckdb)
+
+data_duckdb.info()
+```
+
+### Julia
+
+:::
+
 # Parquet
 
 https://r4ds.hadley.nz/arrow
@@ -91,15 +154,32 @@ Columnar storage format, which is great for analytics and large datasets. Offers
 
 Requires additional libraries and understanding of its format.
 
+::: {.panel-tabset}
+### R
 ```{r}
+#| message: false
 library(arrow)
 
-write_parquet(data, "data.parquet")
-data_parquet <- read_parquet("data.parquet")
+write_parquet(data, "data_r.parquet")
+data_parquet <- read_parquet("data_r.parquet")
 
 data_parquet |> 
   glimpse()
 ```
+
+### Python
+```{python}
+import pyarrow.parquet as pq
+
+data.to_parquet("data_python.parquet")
+data_parquet = pd.read_parquet("data_python.parquet")
+
+data_parquet.info()
+```
+
+### Julia
+
+:::
 
 # Conclusion
 
