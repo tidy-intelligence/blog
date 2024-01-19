@@ -185,7 +185,7 @@ cookieconsent.run({
   <ul class="collapse">
   <li><a href="#select-columns" id="toc-select-columns" class="nav-link" data-scroll-target="#select-columns">Select columns</a>
   <ul class="collapse">
-  <li><a href="#dplyrename-columns" id="toc-dplyrename-columns" class="nav-link" data-scroll-target="#dplyrename-columns">dplyrename columns</a></li>
+  <li><a href="#rename-columns" id="toc-rename-columns" class="nav-link" data-scroll-target="#rename-columns">Rename columns</a></li>
   </ul></li>
   <li><a href="#mutate-columns" id="toc-mutate-columns" class="nav-link" data-scroll-target="#mutate-columns">Mutate columns</a>
   <ul class="collapse">
@@ -264,7 +264,7 @@ cookieconsent.run({
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>pl.Config(tbl_rows <span class="op">=</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;polars.config.Config object at 0x16ebc8040&gt;</code></pre>
+<pre><code>&lt;polars.config.Config object at 0x12137ae60&gt;</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> load_penguins().pipe(pl.from_pandas)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -946,8 +946,8 @@ cookieconsent.run({
 </div>
 </div>
 </div>
-<section id="dplyrename-columns" class="level3">
-<h3 class="anchored" data-anchor-id="dplyrename-columns">dplyrename columns</h3>
+<section id="rename-columns" class="level3">
+<h3 class="anchored" data-anchor-id="rename-columns">Rename columns</h3>
 <p>Renaming columns also works very similarly with the major difference that <code>polars.rename()</code> takes a dictionary with mappings of old to new names as input, while <code>dplyr::rename()</code> takes variable names via the usual NSE.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">dplyr</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">polars</a></li></ul>

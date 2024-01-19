@@ -129,7 +129,7 @@ penguins |>
 ```
 :::
 
-### dplyrename columns
+### Rename columns
 
 Renaming columns also works very similarly with the major difference that `ibis.rename()` does not accept the column selector `ibis._` on the right-hand side, while `dplyr::rename()` takes variable names via the usual NSE.
 

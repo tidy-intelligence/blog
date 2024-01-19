@@ -123,7 +123,7 @@ penguins |>
 ```
 :::
 
-### dplyrename columns
+### R columns
 
 Renaming columns also works very similarly with the major difference that `pandas.rename()` takes a dictionary with mappings of old to new names as input, while `dplyr::rename()` takes variable names via the usual NSE.
 
