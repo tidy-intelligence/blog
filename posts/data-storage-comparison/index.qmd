@@ -7,22 +7,27 @@ author: "Christoph Scheuch"
 date: "2024-01-19" 
 image: thumbnail.png
 image-alt: A server room with a more subdued and professional atmosphere. It features four different database servers, each representing a distinct tabular data storage technology. The first server has a sleek and efficient design, symbolizing a modern, high-performance database. The second server is sturdy and straightforward, indicative of a traditional, reliable database system. The third server is compact and practical, representing an efficient, resource-conserving database. The fourth is advanced yet unobtrusive, suggesting a sophisticated, AI-powered database. The room has soft lighting, with a focus on functionality and neatness. The overall ambiance is more business-like and less flashy, conveying a sense of serious technology at work. Created with DALL-E 3.
-draft: true
 ---
 
+Sharing data between different collaborators, machines, or programming languages can be cumbersome. In this post, we look into the issue of column types and how different storage technologies handle them. We focus on self-contained technologies that are easy to install and run on your machine without setting up a separate backend server. This requirement typically arises in academic contexts, educational settings, or when you quickly want to prototype something without spending time on setting up a data backend. 
+
+We start with simple CSV, then move on to the popular SQLite database before we look at the rising star DuckDB. We close the comparison with a look at the Parquet file format. We always check how the column type depends on the language that is used to store the data in the corresponding storage technology.  
+
 # Create example data
+
+We start this blog post by creating some example data frame with the most important column types that one typically encounters in data analysis. The code chunks create the example data. Note that we create a little helper function that allows us to quickly extract the column types for a data frame, while you can use the `.dtypes` method in `pandas` to achieve the same. 
 
 ::: panel-tabset
 ### R
 
 ```{r}
 #| message: false
-library(tidyverse)
+library(dplyr)
 
-data <- tibble(
+data_r <- tibble(
   character_column = c("A", "B", "C", "D"), 
   date_column = as.Date(c("2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01")),
-  datetime_column = ymd_hms(c("2023-01-01 10:00:00", "2023-02-01 11:00:00", "2023-03-01 12:00:00", "2023-04-01 13:00:00")),
+  datetime_column = as.POSIXct(c("2023-01-01 10:00:00", "2023-02-01 11:00:00", "2023-03-01 12:00:00", "2023-04-01 13:00:00")),
   numeric_column = c(1.5, 2.5, 3.5, 4.5),
   integer_column = as.integer(c(1, 2, 3, 4)),
   logical_column = c(TRUE, FALSE, FALSE, TRUE)
@@ -32,7 +37,7 @@ extract_column_classes <- function(df) {
   sapply(sapply(df, class), function(x) paste(x, collapse = ", "))
 }
 
-tibble("data" = extract_column_classes(data))
+tibble("data_r" = extract_column_classes(data_r))
 ```
 
 ### Python
@@ -40,7 +45,7 @@ tibble("data" = extract_column_classes(data))
 ```{python}
 import pandas as pd
 
-data = pd.DataFrame({
+data_python = pd.DataFrame({
   "character_column": ["A", "B", "C", "D"],
   "date_column": pd.to_datetime(["2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01"]),
   "datetime_column": pd.to_datetime(["2023-01-01 10:00:00", "2023-02-01 11:00:00", "2023-03-01 12:00:00", "2023-04-01 13:00:00"]),
@@ -49,7 +54,7 @@ data = pd.DataFrame({
   "logical_column": [True, False, False, True]
 })
 
-data.info()
+data_python.dtypes
 ```
 
 :::
@@ -62,193 +67,278 @@ The following table shows the mapping between the different column types in the 
 | date      | datetime |
 | datetime  | datetime |
 | numeric   | float    |
-| integer   | numeric  |
+| integer   | integer  |
 | logical   | bool     |
+
+A few differences immediately arise: 
+
+- `pandas` uses the `object` type to denote `character` columns.^[There is also a dedicated `StringDtype` for string data, introduced in more recent versions of pandas (version 1.0.0 and later), but it seems that it is not used often.]
+- `pandas` does not have a `date` type and rather reuses `datetime` with a different format.
+
+The other column types might have different names, but they are essentially equivalent. 
 
 # CSV
 
-Simple, widely supported, and easy to read and write in R and Python
+CSV (Comma-Separated Values) files are a popular data format, renowned for their simplicity, widespread support, and ease of use. Their simple structure, consisting of plain text with values separated by commas, makes them an accessible choice for data storage and exchange. 
 
-Not efficient for large datasets and doesn't support complex data structures or metadata well.
+However, CSV files have their limitations. They are not the most efficient format for handling large datasets, as they can become cumbersome and slow to process. Additionally, CSVs are limited in their ability to handle complex data structures or to store metadata. They lack capabilities for data typing, hierarchy, and relationships, which are essential for more complex data management needs. This limitation makes them less suitable for applications requiring advanced data storage and retrieval functionalities.
 
 ::: panel-tabset
 ### R
+
+We use the `readr` package to write and read CSV files in this post. The nice thing is that `readr` actually preserves the column types through its powerful built-in parser. 
 
 ```{r}
 #| message: false
 library(readr)
 
-write_csv(data, file = "data_r.csv")
-data_csv_r <- read_csv("data_r.csv")
+write_csv(data_r, file = "data_r.csv")
+data_r_csv <- read_csv("data_r.csv")
 
-glimpse(data_csv_r)
+glimpse(data_r_csv)
 ```
 
-### Python
-
-```{python}
-data.to_csv("data_python.csv", index = False)
-data_csv = pd.read_csv("data_python.csv")
-
-data_csv.info()
-```
-
-:::
-
-# SQLite
-
-Lightweight, file-based SQL database. Easy to use and supported by R and Python without the need for a separate server.
-
-Not suitable for very large or high-concurrency applications.
-
-::: panel-tabset
-### R
-
-We can see that the column types are not automatically preserved as dates, datetime and logical columns are converted to integers. 
+Thanks to the smart parsing capabilities of `readr::read_csv()`, the column types are even aligned between R and Python when using the CSV file format. 
 
 ```{r}
-library(RSQLite)
-
-con_sqlite_r <- dbConnect(SQLite(), "data_r.sqlite")
-
-copy_to(con_sqlite_r, data, "data", overwrite = TRUE)
-data_sqlite_r <- tbl(con_sqlite_r, "data") |> 
-  collect()
-
-glimpse(data_sqlite_r)
-```
-
-If we now read from the SQLite databases created in the other languages, we can see that things get even more complicated: Python stores dates as characters, so you need to convert them to dates or datetime.
-
-```{r}
-con_sqlite_python <- dbConnect(SQLite(), "data_python.sqlite")
-data_sqlite_python <- tbl(con_sqlite_python, "data") |> 
-  collect()
+#| message: false
+data_python_csv <- read_csv("data_python.csv")
 
 tibble(
-  "data_sqlite_r" = extract_column_classes(data_sqlite_r),
-  "data_sqlite_python" = extract_column_classes(data_sqlite_python)
+  "data_r_csv" = extract_column_classes(data_r_csv),
+  "data_python_csv" = extract_column_classes(data_python_csv)
 )
 ```
 
 ### Python
 
+To write and read CSV files, we use the corresponding `pandas` methods. To parse the dates correctly when reading in data, you actually need to add `parse_dates = ["date_column", "datetime_column"]` to `pandas.read_csv()`. If you don't specify this, then `pandas` automatically reads dates as strings. 
+
 ```{python}
-import sqlite3
+data_python.to_csv("data_python.csv", index = False)
+data_python_csv = pd.read_csv("data_python.csv")
 
-con_sqlite = sqlite3.connect(database = "data_python.sqlite")
+data_python_csv.info()
+```
 
-res = data.to_sql("data", con_sqlite, if_exists = "replace", index = False)
+The missing date parsing specifications actually leads to an alignment with data that was written with R because dates are just handled as strings. 
 
-data_sqlite = pd.read_sql_query("SELECT * FROM data", con_sqlite)
+```{python}
+data_r_csv = pd.read_csv("data_r.csv")
 
-data_sqlite.info()
+pd.DataFrame({
+  "data_r_csv": data_r_csv.dtypes, 
+  "data_python_csv": data_python_csv.dtypes
+})
 ```
 
 :::
 
-# DuckDB
+If you are willing to explicitly specify the date columns in Python, then CSV is actually a valid option to transfer data between R and Python. We could even open CSV files in Excel and manipulate them there, so the simplicity is quite striking. 
 
-https://r4ds.hadley.nz/databases
+If you work with large amounts of data or if you want to parallelize read or write operations on the same file, then CSV is definitely not for you. On the one hand, it is hard to read only parts of a CSV file (e.g., only rows that fulfill certain criteria). On the other hand, you will most likely run into all kinds of concurrency issues due to file locking. 
 
-DuckDB is an emerging database management system that's gaining attention for its efficiency and ease of use, particularly in the data science community. It's designed to be an OLAP (Online Analytical Processing) database and is especially well-suited for analytical queries on large datasets.
+With these issues in mind, let us move on to more advanced storage technologies. 
 
-As a relatively new system, it might not have the same level of community support, tools, and integrations as more established databases.
+# SQLite
+
+SQLite is a highly regarded, lightweight, file-based SQL database that stands out for its simplicity and ease of use. As a self-contained, serverless database engine, it provides a robust platform for storing and managing data without the need for a separate server setup. This feature makes SQLite exceptionally suitable for applications that require an embedded database system or for development purposes.
+
+However, SQLite has its limitations. It is not typically recommended for very large-scale applications or those requiring high levels of concurrency. SQLite handles concurrency at a basic level but is not optimized for situations where numerous processes need to write to the database simultaneously. For such applications, more robust database systems like PostgreSQL or MySQL are generally preferred. Nonetheless, for smaller applications, educational purposes, and situations where a lightweight and easy-to-deploy database is needed, SQLite is an excellent choice.
 
 ::: panel-tabset
 ### R
 
-If we write the data to DuckDB and then read it back in, we get the same column types again - which is nice!
+The `RSQLite` package provides a seamless integration of SQLite databases into R projects. The typical workflow starts with initializing a connection to a database (which also creates an SQLite database if it does not exist). To check how SQLite treats our column types, we just write the data to the local database and then read it again into a different data frame. Note that it is also good practice to close database connections again after you are done with whatever you need from it (in particular when multiple processes target the same database).
+
+We can see that the column types are not automatically preserved, since dates, datetime and logical columns are converted to integers.^[In R, dates are typically represented as the number of days since January 1, 1970, known as the Unix epoch. This is a standard date reference used in many programming languages. The integer is positive for dates after January 1, 1970, and negative for dates before it. For example, a Date object representing January 2, 1970, would have a value of 1, as it is one day after the epoch start. Similarly, POSIXct is a count of the number of seconds since the Unix epoch (January 1, 1970, 00:00:00 GMT).] Note that you can use the `extended_types = TRUE` option in `dbConnect()` if you want your SQLite database to handle dates correctly in R (the other programming languages don't care about this option). 
+
+```{r}
+library(RSQLite)
+
+con_sqlite_r <- dbConnect(SQLite(), "data_r.sqlite")
+dbWriteTable(con_sqlite_r, "data", data_r, overwrite = TRUE)
+data_r_sqlite <- dbReadTable(con_sqlite_r, "data")
+dbDisconnect(con_sqlite_r)
+
+glimpse(data_r_sqlite)
+```
+
+If we now read from the SQLite databases created in Python, we can see that things get even more complicated: `pandas` stores dates as characters, so you need to convert them to dates or datetime. 
+
+```{r}
+con_sqlite_python <- dbConnect(SQLite(), "data_python.sqlite")
+data_python_sqlite <- dbReadTable(con_sqlite_python, "data")
+dbDisconnect(con_sqlite_python)
+
+tibble(
+  "data_r_sqlite" = extract_column_classes(data_r_sqlite),
+  "data_python_sqlite" = extract_column_classes(data_python_sqlite)
+)
+```
+
+### Python
+
+We use the `sqlite3` package to perform the same tasks as in R: create a database (or connect to an existing one), write the data to the database, and read the data again to 
+
+Similar to CSV, you have to add the `parse_dates = ["date_column", "datetime_column"]` option to correctly read back in dates using `pandas.read_sql_query()`. Otherwise dates are simply string columns. 
+
+```{python}
+import sqlite3
+
+con_sqlite_python = sqlite3.connect("data_python.sqlite")
+res = data_python.to_sql("data", con_sqlite_python, if_exists = "replace", index = False)
+data_python_sqlite = pd.read_sql_query("SELECT * FROM data", con_sqlite_python)
+con_sqlite_python.close()
+
+data_python_sqlite.info()
+```
+
+When we compare the SQLite data to the database that we have created in R, we can see that dates are handled differently because R uses integers to store date and datetime, which are actually interpreted as numeric by Python.
+
+```{python}
+con_sqlite_r = sqlite3.connect("data_r.sqlite")
+data_r_sqlite = pd.read_sql_query("SELECT * FROM data", con_sqlite_r)
+con_sqlite_r.close()
+
+pd.DataFrame({
+  "data_r_sqlite": data_r_sqlite.dtypes, 
+  "data_python_sqlite": data_python_sqlite.dtypes
+})
+```
+:::
+
+If you stay in the same programming language and only work with up to a couple of giga bytes of data, then SQLite is a great database. However, if you want to pull data from the same data base in different programming languages, then you have to be really careful with respect to column types. 
+
+# DuckDB
+
+DuckDB is an emerging database management system that is gaining attention for its remarkable efficiency and user-friendliness. It is specifically designed to be an OLAP (Online Analytical Processing) database, making it  well-suited for executing analytical queries on large datasets. This focus positions DuckDB as a highly efficient tool for data analytics. One of the standout features of DuckDB is its ability to run directly within data analysis environments. It integrates seamlessly with popular data science languages and tools, allowing data scientists to perform analysis within their familiar programming environment.
+
+However, being a relatively new addition to the world of database management systems, DuckDB might not yet offer the same level of community support, breadth of tools, and integrations as more established databases (such as SQLite).
+
+::: panel-tabset
+### R
+
+The `duckdb` package contains everything we need to set up the database and execute the same steps as with SQLite.
+
+If we write the data to and then read it back in, we get the same column types again - this is great!
 
 ```{r}
 #| warning: false
 library(duckdb)
 
 con_duckdb_r <- dbConnect(duckdb(), "data_r.duckdb")
+dbWriteTable(con_duckdb_r, "data", data_r, overwrite = TRUE)
+data_r_duckdb <- dbReadTable(con_duckdb_r, "data")
+dbDisconnect(con_duckdb_r, shutdown = TRUE)
 
-copy_to(con_duckdb_r, data, "data", overwrite = TRUE)
-data_duckdb_r <- tbl(con_duckdb_r, "data") |> 
-  collect()
-
-glimpse(data_duckdb_r)
+glimpse(data_r_duckdb)
 ```
+
+If we read data from the database create in Python, we only see a small difference: while we have `Date` in R, we get a `POSIXct` column from the Python database. For many applications, this difference should have no impact. However, if you work with time series data, make sure to have the correct date format before you proceed!
 
 ```{r}
-# con_duckdb_python <- dbConnect(duckdb(), "data_python.duckdb")
-# data_duckdb_python <- tbl(con_duckdb_python, "data") |> 
-#   collect()
-
-# tibble(
-#   "data_r.sqlite" = paste(sapply(data_duckdb_r, class), collapse = ", "),
-#   "data_python.sqlite" = paste(sapply(data_duckdb_python, class), collapse = ", ")
-# )
-```
-
-### Python
-
-```{python}
-#| warning: false
-import duckdb
-
-con_duckdb = duckdb.connect("data_python.duckdb")
-
-data.to_sql("data", con_duckdb, if_exists = "replace", index = False)
-
-data_duckdb = pd.read_sql_query("SELECT * FROM data", con_duckdb)
-
-con_duckdb.close()
-
-data_duckdb.info()
-```
-
-:::
-
-
-# Parquet
-
-https://r4ds.hadley.nz/arrow
-
-Columnar storage format, which is great for analytics and large datasets. Offers efficient data compression and encoding schemes.
-
-Requires additional libraries and understanding of its format.
-
-::: panel-tabset
-### R
-
-Similar to DuckDB, all column types are preserved exactly as to before we wrote the data frame to a parquet file. 
-
-```{r}
-#| message: false
-library(arrow)
-
-write_parquet(data, "data_r.parquet")
-data_parquet_r <- read_parquet("data_r.parquet")
-
-glimpse(data_parquet_r)
-```
-
-```{r}
-data_parquet_python <- read_parquet("data_python.parquet")
+con_duckdb_python <- dbConnect(duckdb(), "data_python.duckdb")
+data_python_duckdb <- dbReadTable(con_duckdb_python, "data")
 
 tibble(
-  "data_parquet_r" = extract_column_classes(data_parquet_r),
-  "data_parquet_python" = extract_column_classes(data_parquet_python),
+  "data_r_duckdb" = extract_column_classes(data_r_duckdb),
+  "data_python_duckdb" = extract_column_classes(data_python_duckdb)
 )
 ```
 
 ### Python
 
+We use the `duckdb` package to create the database and the `sqlalchemy` package to handle the connection. Note that we don't have to disconnect manually because the engine is taking care of this automatically. 
+
+Again, the great thing is that we have the same column types for the data that we put into and the data that we have pulled out of the database!
+
+```{python}
+#| warning: false
+import duckdb
+from sqlalchemy import create_engine
+
+con_duckdb_python = create_engine("duckdb:///data_python.duckdb")
+res = data_python.to_sql("data", con_duckdb_python, if_exists = "replace", index = False)
+data_python_duckdb = pd.read_sql_query("SELECT * FROM data", con_duckdb_python)
+
+data_python_duckdb.info()
+```
+
+If we now read the data from the database generated in R, then we see that the only difference again arises in the date column, but at least the datetime columns are aligned. 
+
+```{python}
+con_duckdb_r = create_engine("duckdb:///data_r.duckdb")
+data_r_duckdb = pd.read_sql_query("SELECT * FROM data", con_duckdb_r)
+
+pd.DataFrame({
+  "data_r_duckdb": data_r_duckdb.dtypes, 
+  "data_python_duckdb": data_python_duckdb.dtypes
+})
+```
+:::
+
+DuckDB is a great alternative if you want to play around with new data storage technologies and if you work with multiple programming languages. The examples above show a high overlap between column types with the only major issue that the `Date` type from R is interpreted as a string in Python.
+
+# Parquet
+
+Parquet is a highly efficient columnar storage format, increasingly popular in the field of data analytics, particularly when dealing with large datasets. This format is structured in a way that stores data by columns rather than by rows, which is typical in traditional database formats. This columnar approach allows for more efficient data retrieval and scanning, making it an excellent choice for analytical querying where operations are often performed on specific columns of data (similar to DuckDB).
+
+One of the key strengths of Parquet is its ability to compress data effectively. It supports various compression and encoding schemes, which can significantly reduce the storage footprint of large data sets without sacrificing read performance. This efficiency in data storage and compression makes Parquet an attractive option for systems where storage cost and I/O performance are critical considerations, such as in big data applications and cloud environments.
+
+::: panel-tabset
+### R
+
+The `arrow` package provides all we need to write and read Parquet files. Similar to DuckDB, all column types are preserved exactly as to before we wrote the data frame to a parquet file. 
+
+```{r}
+#| message: false
+library(arrow)
+
+write_parquet(data_r, "data_r.parquet")
+data_r_parquet <- read_parquet("data_r.parquet")
+
+glimpse(data_r_parquet)
+```
+
+If we now read the data from the database generated in R, then we see that the only difference again arises in the date column (just as with DuckDB). 
+
+```{r}
+data_python_parquet <- read_parquet("data_python.parquet")
+
+tibble(
+  "data_r_parquet" = extract_column_classes(data_r_parquet),
+  "data_python_parquet" = extract_column_classes(data_python_parquet)
+)
+```
+
+### Python
+
+We use the `pyarrow.parquet` to perform the same write and read operations as in R. As expected, all column types are preserved. 
+
 ```{python}
 import pyarrow.parquet as pq
 
-data.to_parquet("data_python.parquet")
-data_parquet = pd.read_parquet("data_python.parquet")
+data_python.to_parquet("data_python.parquet")
+data_python_parquet = pd.read_parquet("data_python.parquet")
 
-data_parquet.info()
+data_python_parquet.info()
+```
+
+If we now read the data from the database generated in R, then we see that the only difference again arises in the date column (just as with DuckDB). 
+
+```{python}
+data_r_parquet = pd.read_parquet("data_r.parquet")
+
+pd.DataFrame({
+  "data_r_parquet": data_r_parquet.dtypes, 
+  "data_python_parquet": data_python_parquet.dtypes
+})
 ```
 
 :::
 
 # Conclusion
 
-...
+There are two main takeaways: first, R's handling of dates is peculiar and cannot be smoothly mirrored into Python. I think I need to ask myself the question whether I really need the `Date` type in my life if I want to avoid issues with other languages. Second, Parquet is an exciting format that I'll definitely use more in future applications. 
+

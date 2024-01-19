@@ -1,5 +1,0 @@
-character_column,date_column,datetime_column,numeric_column,integer_column,logical_column
-A,2023-01-01,2023-01-01 10:00:00,1.5,1,True
-B,2023-02-01,2023-02-01 11:00:00,2.5,2,False
-C,2023-03-01,2023-03-01 12:00:00,3.5,3,False
-D,2023-04-01,2023-04-01 13:00:00,4.5,4,True
