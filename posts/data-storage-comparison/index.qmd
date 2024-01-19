@@ -1,6 +1,6 @@
 ---
 title: "Tidy Data: Tabular Data Storage Comparison"
-description: "A comparison of popular open-source data storage technologies using R, Python, and Julia."
+description: "A comparison of popular open-source data storage technologies using R and Python."
 metadata:
   pagetitle: "Tidy Data: Tabular Data Storage Comparison"
 author: "Christoph Scheuch"
@@ -10,15 +10,11 @@ image-alt: A server room with a more subdued and professional atmosphere. It fea
 draft: true
 ---
 
-```{r}
-#| echo: false
-JuliaCall::julia_setup("/Applications/Julia-1.9.app/Contents/Resources/julia/bin/")
-```
-
 # Create example data
 
-::: {.panel-tabset}
+::: panel-tabset
 ### R
+
 ```{r}
 #| message: false
 library(tidyverse)
@@ -32,15 +28,21 @@ data <- tibble(
   logical_column = c(TRUE, FALSE, FALSE, TRUE)
 )
 
-glimpse(data)
+extract_column_classes <- function(df) {
+  sapply(sapply(df, class), function(x) paste(x, collapse = ", "))
+}
+
+tibble("data" = extract_column_classes(data))
 ```
+
 ### Python
+
 ```{python}
 import pandas as pd
 
 data = pd.DataFrame({
   "character_column": ["A", "B", "C", "D"],
-  "date_column": pd.to_datetime(["2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01"]).date,
+  "date_column": pd.to_datetime(["2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01"]),
   "datetime_column": pd.to_datetime(["2023-01-01 10:00:00", "2023-02-01 11:00:00", "2023-03-01 12:00:00", "2023-04-01 13:00:00"]),
   "numeric_column": [1.5, 2.5, 3.5, 4.5],
   "integer_column": [1, 2, 3, 4],
@@ -49,49 +51,41 @@ data = pd.DataFrame({
 
 data.info()
 ```
-### Julia
-```{julia}
-using DataFrames, Dates
 
-data = DataFrame(
-  character_column = ["A", "B", "C", "D"],
-  date_column = Date.(["2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01"]),
-  datetime_column = DateTime.(["2023-01-01T10:00:00", "2023-02-01T11:00:00", "2023-03-01T12:00:00", "2023-04-01T13:00:00"]),
-  numeric_column = [1.5, 2.5, 3.5, 4.5],
-  integer_column = Int32.([1, 2, 3, 4]),
-  logical_column = [true, false, false, true]
-);
-
-function get_column_types(df::DataFrame)
-  return DataFrame(
-    Column_Name = names(df),
-    Column_Type = eltype.(eachcol(df))
-  )
-end;
-
-get_column_types(data)
-```
 :::
+
+The following table shows the mapping between the different column types in the example above
+
+| R         | Python   | 
+|-----------|----------|
+| character | object   |
+| date      | datetime |
+| datetime  | datetime |
+| numeric   | float    |
+| integer   | numeric  |
+| logical   | bool     |
 
 # CSV
 
-Simple, widely supported, and easy to read and write in R, Python, and Julia.
+Simple, widely supported, and easy to read and write in R and Python
 
 Not efficient for large datasets and doesn't support complex data structures or metadata well.
 
-::: {.panel-tabset}
+::: panel-tabset
 ### R
+
 ```{r}
 #| message: false
 library(readr)
 
 write_csv(data, file = "data_r.csv")
-data_csv <- read_csv("data_r.csv")
+data_csv_r <- read_csv("data_r.csv")
 
-glimpse(data_csv)
+glimpse(data_csv_r)
 ```
 
 ### Python
+
 ```{python}
 data.to_csv("data_python.csv", index = False)
 data_csv = pd.read_csv("data_python.csv")
@@ -99,64 +93,56 @@ data_csv = pd.read_csv("data_python.csv")
 data_csv.info()
 ```
 
-### Julia
-```{julia}
-using CSV
-
-CSV.write("data_julia.csv", data);
-data_csv = CSV.read("data_julia.csv", DataFrame);
-
-get_column_types(data_csv)
-```
-
-
 :::
 
 # SQLite
 
-Lightweight, file-based SQL database. Easy to use and supported by R, Python, and Julia without the need for a separate server.
+Lightweight, file-based SQL database. Easy to use and supported by R and Python without the need for a separate server.
 
 Not suitable for very large or high-concurrency applications.
 
-::: {.panel-tabset}
+::: panel-tabset
 ### R
+
+We can see that the column types are not automatically preserved as dates, datetime and logical columns are converted to integers. 
+
 ```{r}
 library(RSQLite)
 
-con_sqlite <- dbConnect(SQLite(), "data_r.sqlite")
+con_sqlite_r <- dbConnect(SQLite(), "data_r.sqlite")
 
-copy_to(con_sqlite, data, "data", overwrite = TRUE)
-data_sqlite <- tbl(con_sqlite, "data") |> 
+copy_to(con_sqlite_r, data, "data", overwrite = TRUE)
+data_sqlite_r <- tbl(con_sqlite_r, "data") |> 
   collect()
 
-glimpse(data_sqlite)
+glimpse(data_sqlite_r)
+```
+
+If we now read from the SQLite databases created in the other languages, we can see that things get even more complicated: Python stores dates as characters, so you need to convert them to dates or datetime.
+
+```{r}
+con_sqlite_python <- dbConnect(SQLite(), "data_python.sqlite")
+data_sqlite_python <- tbl(con_sqlite_python, "data") |> 
+  collect()
+
+tibble(
+  "data_sqlite_r" = extract_column_classes(data_sqlite_r),
+  "data_sqlite_python" = extract_column_classes(data_sqlite_python)
+)
 ```
 
 ### Python
+
 ```{python}
 import sqlite3
 
 con_sqlite = sqlite3.connect(database = "data_python.sqlite")
 
-data.to_sql("data", con_sqlite, if_exists = "replace", index = False)
+res = data.to_sql("data", con_sqlite, if_exists = "replace", index = False)
 
 data_sqlite = pd.read_sql_query("SELECT * FROM data", con_sqlite)
 
 data_sqlite.info()
-```
-
-### Julia
-
-```{julia}
-using SQLite
-
-con_sqlite = SQLite.DB("data_julia.sqlite");
-
-SQLite.load!(data, con_sqlite, "data", replace = true);
-
-data_sqlite = DBInterface.execute(con_sqlite, "SELECT * FROM data") |> DataFrame;
-
-get_column_types(data_sqlite)
 ```
 
 :::
@@ -169,45 +155,54 @@ DuckDB is an emerging database management system that's gaining attention for it
 
 As a relatively new system, it might not have the same level of community support, tools, and integrations as more established databases.
 
-::: {.panel-tabset}
+::: panel-tabset
 ### R
+
+If we write the data to DuckDB and then read it back in, we get the same column types again - which is nice!
+
 ```{r}
 #| warning: false
 library(duckdb)
 
-con_duckdb <- dbConnect(duckdb(), "data_r.duckdb")
+con_duckdb_r <- dbConnect(duckdb(), "data_r.duckdb")
 
-copy_to(con_duckdb, data, "data", overwrite = TRUE)
-data_duckdb <- tbl(con_duckdb, "data") |> 
+copy_to(con_duckdb_r, data, "data", overwrite = TRUE)
+data_duckdb_r <- tbl(con_duckdb_r, "data") |> 
   collect()
 
-glimpse(data_duckdb)
+glimpse(data_duckdb_r)
+```
+
+```{r}
+# con_duckdb_python <- dbConnect(duckdb(), "data_python.duckdb")
+# data_duckdb_python <- tbl(con_duckdb_python, "data") |> 
+#   collect()
+
+# tibble(
+#   "data_r.sqlite" = paste(sapply(data_duckdb_r, class), collapse = ", "),
+#   "data_python.sqlite" = paste(sapply(data_duckdb_python, class), collapse = ", ")
+# )
 ```
 
 ### Python
+
 ```{python}
 #| warning: false
 import duckdb
 
-con_duckdb = duckdb.connect("data_r.duckdb")
+con_duckdb = duckdb.connect("data_python.duckdb")
 
 data.to_sql("data", con_duckdb, if_exists = "replace", index = False)
 
 data_duckdb = pd.read_sql_query("SELECT * FROM data", con_duckdb)
 
+con_duckdb.close()
+
 data_duckdb.info()
 ```
 
-### Julia
-```{julia}
-using DuckDB
-
-con_duckdb = DBInterface.connect(DuckDB.DB, "data_julia.duckdb");
-
-# ...
-```
-
 :::
+
 
 # Parquet
 
@@ -217,19 +212,32 @@ Columnar storage format, which is great for analytics and large datasets. Offers
 
 Requires additional libraries and understanding of its format.
 
-::: {.panel-tabset}
+::: panel-tabset
 ### R
+
+Similar to DuckDB, all column types are preserved exactly as to before we wrote the data frame to a parquet file. 
+
 ```{r}
 #| message: false
 library(arrow)
 
 write_parquet(data, "data_r.parquet")
-data_parquet <- read_parquet("data_r.parquet")
+data_parquet_r <- read_parquet("data_r.parquet")
 
-glimpse(data_parquet)
+glimpse(data_parquet_r)
+```
+
+```{r}
+data_parquet_python <- read_parquet("data_python.parquet")
+
+tibble(
+  "data_parquet_r" = extract_column_classes(data_parquet_r),
+  "data_parquet_python" = extract_column_classes(data_parquet_python),
+)
 ```
 
 ### Python
+
 ```{python}
 import pyarrow.parquet as pq
 
@@ -237,17 +245,6 @@ data.to_parquet("data_python.parquet")
 data_parquet = pd.read_parquet("data_python.parquet")
 
 data_parquet.info()
-```
-
-### Julia
-```{julia}
-using Arrow
-
-Arrow.write("data_julia.parquet", data);
-
-data_parquet = Arrow.Table("data_julia.parquet") |> DataFrame;
-
-get_column_types(data_parquet)
 ```
 
 :::
