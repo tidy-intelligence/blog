@@ -4,18 +4,18 @@ description: "A comparison of popular open-source data storage technologies usin
 metadata:
   pagetitle: "Tidy Data: Tabular Data Storage Comparison"
 author: "Christoph Scheuch"
-date: "2024-01-19" 
+date: "2024-01-20" 
 image: thumbnail.png
 image-alt: A server room with a more subdued and professional atmosphere. It features four different database servers, each representing a distinct tabular data storage technology. The first server has a sleek and efficient design, symbolizing a modern, high-performance database. The second server is sturdy and straightforward, indicative of a traditional, reliable database system. The third server is compact and practical, representing an efficient, resource-conserving database. The fourth is advanced yet unobtrusive, suggesting a sophisticated, AI-powered database. The room has soft lighting, with a focus on functionality and neatness. The overall ambiance is more business-like and less flashy, conveying a sense of serious technology at work. Created with DALL-E 3.
 ---
 
-Sharing data between different collaborators, machines, or programming languages can be cumbersome. In this post, we look into the issue of column types and how different storage technologies handle them. We focus on self-contained technologies that are easy to install and run on your machine without setting up a separate backend server. This requirement typically arises in academic contexts, educational settings, or when you quickly want to prototype something without spending time on setting up a data backend. 
+Sharing data between different collaborators, machines, or programming languages can be cumbersome for many reasons. In this post, I look into the issue of column types and how different storage technologies handle them. I focus on self-contained technologies that are easy to install and run on your machine without setting up a separate backend server. This requirement typically arises in academic contexts, educational settings, or when you quickly want to prototype something without spending time on setting up a data backend. 
 
-We start with simple CSV, then move on to the popular SQLite database before we look at the rising star DuckDB. We close the comparison with a look at the Parquet file format. We always check how the column type depends on the language that is used to store the data in the corresponding storage technology.  
+I start with simple CSV, then move on to the popular SQLite database before I look at the rising star DuckDB. We close the comparison with a look at the Parquet and Feather file formats. I always check how the column type depends on the language that is used to store the data in the corresponding storage technology.  
 
 # Create example data
 
-We start this blog post by creating some example data frame with the most important column types that one typically encounters in data analysis. The code chunks create the example data. Note that we create a little helper function that allows us to quickly extract the column types for a data frame, while you can use the `.dtypes` method in `pandas` to achieve the same. 
+Let us start this blog post by creating some example data frame with the most important column types that one typically encounters in data analysis. The code chunks create the example data. Note that I create a little helper function that allows us to quickly extract the column types for a data frame, while we can use the `.dtypes` method in `pandas` to achieve the same. 
 
 ::: panel-tabset
 ### R
@@ -59,7 +59,7 @@ data_python.dtypes
 
 :::
 
-The following table shows the mapping between the different column types in the example above
+The following table shows the mapping between the different column types in the example above.
 
 | R         | Python   | 
 |-----------|----------|
@@ -86,7 +86,7 @@ However, CSV files have their limitations. They are not the most efficient forma
 ::: panel-tabset
 ### R
 
-We use the `readr` package to write and read CSV files in this post. The nice thing is that `readr` actually preserves the column types through its powerful built-in parser. 
+I use the `readr` package to write and read CSV files in this post. The nice thing is that `readr` actually preserves the column types through its powerful built-in parser. 
 
 ```{r}
 #| message: false
@@ -98,7 +98,7 @@ data_r_csv <- read_csv("data_r.csv")
 glimpse(data_r_csv)
 ```
 
-Thanks to the smart parsing capabilities of `readr::read_csv()`, the column types are even aligned between R and Python when using the CSV file format. 
+Thanks to the smart parsing capabilities of `read_csv()`, the column types are even aligned between R and Python when using the CSV file format. 
 
 ```{r}
 #| message: false
@@ -112,7 +112,7 @@ tibble(
 
 ### Python
 
-To write and read CSV files, we use the corresponding `pandas` methods. To parse the dates correctly when reading in data, you actually need to add `parse_dates = ["date_column", "datetime_column"]` to `pandas.read_csv()`. If you don't specify this, then `pandas` automatically reads dates as strings. 
+To write and read CSV files, I use the corresponding `pandas` methods. To parse the dates correctly when reading in data, you actually need to add `parse_dates = ["date_column", "datetime_column"]` to `pandas.read_csv()`. If you don't specify this, then `pandas` automatically reads dates as strings. 
 
 ```{python}
 data_python.to_csv("data_python.csv", index = False)
@@ -149,7 +149,7 @@ However, SQLite has its limitations. It is not typically recommended for very la
 ::: panel-tabset
 ### R
 
-The `RSQLite` package provides a seamless integration of SQLite databases into R projects. The typical workflow starts with initializing a connection to a database (which also creates an SQLite database if it does not exist). To check how SQLite treats our column types, we just write the data to the local database and then read it again into a different data frame. Note that it is also good practice to close database connections again after you are done with whatever you need from it (in particular when multiple processes target the same database).
+The `RSQLite` package provides a seamless integration of SQLite databases into R projects. The typical workflow starts with initializing a connection to a database (which also creates an SQLite database if it does not exist). To check how SQLite treats our column types, I just write the data to the local database and then read it again into a different data frame. Note that it is also good practice to close database connections again after you are done with whatever you need from it (in particular when multiple processes target the same database).
 
 We can see that the column types are not automatically preserved, since dates, datetime and logical columns are converted to integers.^[In R, dates are typically represented as the number of days since January 1, 1970, known as the Unix epoch. This is a standard date reference used in many programming languages. The integer is positive for dates after January 1, 1970, and negative for dates before it. For example, a Date object representing January 2, 1970, would have a value of 1, as it is one day after the epoch start. Similarly, POSIXct is a count of the number of seconds since the Unix epoch (January 1, 1970, 00:00:00 GMT).] Note that you can use the `extended_types = TRUE` option in `dbConnect()` if you want your SQLite database to handle dates correctly in R (the other programming languages don't care about this option). 
 
@@ -179,7 +179,7 @@ tibble(
 
 ### Python
 
-We use the `sqlite3` package to perform the same tasks as in R: create a database (or connect to an existing one), write the data to the database, and read the data again to 
+I use the `sqlite3` package to perform the same tasks as in R: create a database (or connect to an existing one), write the data to the database, and read the data again to 
 
 Similar to CSV, you have to add the `parse_dates = ["date_column", "datetime_column"]` option to correctly read back in dates using `pandas.read_sql_query()`. Otherwise dates are simply string columns. 
 
@@ -194,7 +194,7 @@ con_sqlite_python.close()
 data_python_sqlite.info()
 ```
 
-When we compare the SQLite data to the database that we have created in R, we can see that dates are handled differently because R uses integers to store date and datetime, which are actually interpreted as numeric by Python.
+When I compare the SQLite data to the database that I have created in R, we can see that dates are handled differently because R uses integers to store date and datetime, which are actually interpreted as numeric by Python.
 
 ```{python}
 con_sqlite_r = sqlite3.connect("data_r.sqlite")
@@ -219,9 +219,7 @@ However, being a relatively new addition to the world of database management sys
 ::: panel-tabset
 ### R
 
-The `duckdb` package contains everything we need to set up the database and execute the same steps as with SQLite.
-
-If we write the data to and then read it back in, we get the same column types again - this is great!
+The `duckdb` package contains everything we need to set up the database and execute the same steps as with SQLite. If I write the data to and then read it back in, I get the same column types again - this is great!
 
 ```{r}
 #| warning: false
@@ -235,7 +233,7 @@ dbDisconnect(con_duckdb_r, shutdown = TRUE)
 glimpse(data_r_duckdb)
 ```
 
-If we read data from the database create in Python, we only see a small difference: while we have `Date` in R, we get a `POSIXct` column from the Python database. For many applications, this difference should have no impact. However, if you work with time series data, make sure to have the correct date format before you proceed!
+If I read data from the database create in Python, we only see a small difference: while we have `Date` in R, we get a `POSIXct` column from the Python database. For many applications, this difference should have no impact. However, if you work with time series data, make sure to have the correct date format before you proceed!
 
 ```{r}
 con_duckdb_python <- dbConnect(duckdb(), "data_python.duckdb")
@@ -249,9 +247,7 @@ tibble(
 
 ### Python
 
-We use the `duckdb` package to create the database and the `sqlalchemy` package to handle the connection. Note that we don't have to disconnect manually because the engine is taking care of this automatically. 
-
-Again, the great thing is that we have the same column types for the data that we put into and the data that we have pulled out of the database!
+I use the `duckdb` package to create the database and the `sqlalchemy` package to handle the connection. Note that I don't have to disconnect manually because the engine is taking care of this automatically. Again, the great thing is that we have the same column types for the data that I put into and the data that I have pulled out of the database!
 
 ```{python}
 #| warning: false
@@ -265,7 +261,7 @@ data_python_duckdb = pd.read_sql_query("SELECT * FROM data", con_duckdb_python)
 data_python_duckdb.info()
 ```
 
-If we now read the data from the database generated in R, then we see that the only difference again arises in the date column, but at least the datetime columns are aligned. 
+If I now read the data from the database generated in R, then we see that the only difference again arises in the date column, but at least the datetime columns are aligned. 
 
 ```{python}
 con_duckdb_r = create_engine("duckdb:///data_r.duckdb")
@@ -301,7 +297,7 @@ data_r_parquet <- read_parquet("data_r.parquet")
 glimpse(data_r_parquet)
 ```
 
-If we now read the data from the database generated in R, then we see that the only difference again arises in the date column (just as with DuckDB). 
+If I now read the data from the database generated in R, then we see that the only difference again arises in the date column (just as with DuckDB). 
 
 ```{r}
 data_python_parquet <- read_parquet("data_python.parquet")
@@ -314,7 +310,7 @@ tibble(
 
 ### Python
 
-We use the `pyarrow.parquet` to perform the same write and read operations as in R. As expected, all column types are preserved. 
+I use the `pyarrow.parquet` to perform the same write and read operations as in R. As expected, all column types are preserved. 
 
 ```{python}
 import pyarrow.parquet as pq
@@ -325,7 +321,7 @@ data_python_parquet = pd.read_parquet("data_python.parquet")
 data_python_parquet.info()
 ```
 
-If we now read the data from the database generated in R, then we see that the only difference again arises in the date column (just as with DuckDB). 
+If I now read the data from the database generated in R, then we see that the only difference again arises in the date column (just as with DuckDB). 
 
 ```{python}
 data_r_parquet = pd.read_parquet("data_r.parquet")
@@ -338,7 +334,58 @@ pd.DataFrame({
 
 :::
 
+# Feather
+
+Feather primarily designed for efficient data interchange between R and Python. Developed jointly by R and Python teams, Feather provides a fast, lightweight, and easy-to-use binary file format for storing data frames. However, Feather is primarily designed as an intermediate file format for data interchange rather than for long-term data storage. It does not offer the same level of compression as formats like Parquet, nor is it optimized for queries and data analysis tasks directly on the stored files. 
+
+::: panel-tabset
+### R
+
+The `arrow` package also provides all we need to write and read Feather files. Similar to DuckDB and Parquet, all column types are preserved exactly as to before we wrote the data frame to a parquet file. 
+
+```{r}
+#| message: false
+write_feather(data_r, "data_r.feather")
+data_r_feather <- read_feather("data_r.feather")
+
+glimpse(data_r_feather)
+```
+
+```{r}
+data_python_feather <- read_feather("data_python.feather")
+
+tibble(
+  "data_r_feather" = extract_column_classes(data_r_feather),
+  "data_python_feather" = extract_column_classes(data_python_feather)
+)
+```
+
+### Python
+
+I use `pyarrow.feather` to perform the same write and read operations as in R. As expected, all column types are preserved. 
+
+```{python}
+import pyarrow.feather as feather
+
+feather.write_feather(data_python, "data_python.feather")
+data_python_feather = feather.read_feather("data_python.feather")
+
+data_python_feather.info()
+```
+
+If I now read the data from the database generated in R, then we see that the only difference again arises in the date column (just as with DuckDB and Parquet). 
+
+```{python}
+data_r_feather = feather.read_feather("data_r.feather")
+
+pd.DataFrame({
+  "data_r_feather": data_r_feather.dtypes, 
+  "data_python_feather": data_python_feather.dtypes
+})
+```
+
+:::
+
 # Conclusion
 
-There are two main takeaways: first, R's handling of dates is peculiar and cannot be smoothly mirrored into Python. I think I need to ask myself the question whether I really need the `Date` type in my life if I want to avoid issues with other languages. Second, Parquet is an exciting format that I'll definitely use more in future applications. 
-
+There are two main takeaways: first, R's handling of dates is peculiar and cannot be smoothly aligned with Python (at with `pandas`). I think I need to ask myself the question how often I actually need the `Date` type if I want to avoid issues with other languages. Second, Parquet is an exciting format for storing data and I'll definitely use it more in future applications. 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Christoph Scheuch">
-<meta name="dcterms.date" content="2024-01-19">
+<meta name="dcterms.date" content="2024-01-20">
 <meta name="description" content="A comparison of popular open-source data storage technologies using R and Python.">
 
 <title>Tidy Data: Tabular Data Storage Comparison</title>
@@ -179,6 +179,7 @@ cookieconsent.run({
   <li><a href="#sqlite" id="toc-sqlite" class="nav-link" data-scroll-target="#sqlite">SQLite</a></li>
   <li><a href="#duckdb" id="toc-duckdb" class="nav-link" data-scroll-target="#duckdb">DuckDB</a></li>
   <li><a href="#parquet" id="toc-parquet" class="nav-link" data-scroll-target="#parquet">Parquet</a></li>
+  <li><a href="#feather" id="toc-feather" class="nav-link" data-scroll-target="#feather">Feather</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
@@ -210,7 +211,7 @@ cookieconsent.run({
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 19, 2024</p>
+      <p class="date">January 20, 2024</p>
     </div>
   </div>
   
@@ -222,11 +223,11 @@ cookieconsent.run({
 </header>
 
 
-<p>Sharing data between different collaborators, machines, or programming languages can be cumbersome. In this post, we look into the issue of column types and how different storage technologies handle them. We focus on self-contained technologies that are easy to install and run on your machine without setting up a separate backend server. This requirement typically arises in academic contexts, educational settings, or when you quickly want to prototype something without spending time on setting up a data backend.</p>
-<p>We start with simple CSV, then move on to the popular SQLite database before we look at the rising star DuckDB. We close the comparison with a look at the Parquet file format. We always check how the column type depends on the language that is used to store the data in the corresponding storage technology.</p>
+<p>Sharing data between different collaborators, machines, or programming languages can be cumbersome for many reasons. In this post, I look into the issue of column types and how different storage technologies handle them. I focus on self-contained technologies that are easy to install and run on your machine without setting up a separate backend server. This requirement typically arises in academic contexts, educational settings, or when you quickly want to prototype something without spending time on setting up a data backend.</p>
+<p>I start with simple CSV, then move on to the popular SQLite database before I look at the rising star DuckDB. We close the comparison with a look at the Parquet and Feather file formats. I always check how the column type depends on the language that is used to store the data in the corresponding storage technology.</p>
 <section id="create-example-data" class="level1">
 <h1>Create example data</h1>
-<p>We start this blog post by creating some example data frame with the most important column types that one typically encounters in data analysis. The code chunks create the example data. Note that we create a little helper function that allows us to quickly extract the column types for a data frame, while you can use the <code>.dtypes</code> method in <code>pandas</code> to achieve the same.</p>
+<p>Let us start this blog post by creating some example data frame with the most important column types that one typically encounters in data analysis. The code chunks create the example data. Note that I create a little helper function that allows us to quickly extract the column types for a data frame, while we can use the <code>.dtypes</code> method in <code>pandas</code> to achieve the same.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -288,7 +289,7 @@ dtype: object</code></pre>
 </div>
 </div>
 </div>
-<p>The following table shows the mapping between the different column types in the example above</p>
+<p>The following table shows the mapping between the different column types in the example above.</p>
 <table class="table">
 <thead>
 <tr class="header">
@@ -338,7 +339,7 @@ dtype: object</code></pre>
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
-<p>We use the <code>readr</code> package to write and read CSV files in this post. The nice thing is that <code>readr</code> actually preserves the column types through its powerful built-in parser.</p>
+<p>I use the <code>readr</code> package to write and read CSV files in this post. The nice thing is that <code>readr</code> actually preserves the column types through its powerful built-in parser.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -357,7 +358,7 @@ $ integer_column   &lt;dbl&gt; 1, 2, 3, 4
 $ logical_column   &lt;lgl&gt; TRUE, FALSE, FALSE, TRUE</code></pre>
 </div>
 </div>
-<p>Thanks to the smart parsing capabilities of <code>readr::read_csv()</code>, the column types are even aligned between R and Python when using the CSV file format.</p>
+<p>Thanks to the smart parsing capabilities of <code>read_csv()</code>, the column types are even aligned between R and Python when using the CSV file format.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>data_python_csv <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data_python.csv"</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -379,7 +380,7 @@ $ logical_column   &lt;lgl&gt; TRUE, FALSE, FALSE, TRUE</code></pre>
 </div>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
-<p>To write and read CSV files, we use the corresponding <code>pandas</code> methods. To parse the dates correctly when reading in data, you actually need to add <code>parse_dates = ["date_column", "datetime_column"]</code> to <code>pandas.read_csv()</code>. If you don’t specify this, then <code>pandas</code> automatically reads dates as strings.</p>
+<p>To write and read CSV files, I use the corresponding <code>pandas</code> methods. To parse the dates correctly when reading in data, you actually need to add <code>parse_dates = ["date_column", "datetime_column"]</code> to <code>pandas.read_csv()</code>. If you don’t specify this, then <code>pandas</code> automatically reads dates as strings.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>data_python.to_csv(<span class="st">"data_python.csv"</span>, index <span class="op">=</span> <span class="va">False</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>data_python_csv <span class="op">=</span> pd.read_csv(<span class="st">"data_python.csv"</span>)</span>
@@ -434,7 +435,7 @@ logical_column         bool            bool</code></pre>
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
-<p>The <code>RSQLite</code> package provides a seamless integration of SQLite databases into R projects. The typical workflow starts with initializing a connection to a database (which also creates an SQLite database if it does not exist). To check how SQLite treats our column types, we just write the data to the local database and then read it again into a different data frame. Note that it is also good practice to close database connections again after you are done with whatever you need from it (in particular when multiple processes target the same database).</p>
+<p>The <code>RSQLite</code> package provides a seamless integration of SQLite databases into R projects. The typical workflow starts with initializing a connection to a database (which also creates an SQLite database if it does not exist). To check how SQLite treats our column types, I just write the data to the local database and then read it again into a different data frame. Note that it is also good practice to close database connections again after you are done with whatever you need from it (in particular when multiple processes target the same database).</p>
 <p>We can see that the column types are not automatically preserved, since dates, datetime and logical columns are converted to integers.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> Note that you can use the <code>extended_types = TRUE</code> option in <code>dbConnect()</code> if you want your SQLite database to handle dates correctly in R (the other programming languages don’t care about this option).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RSQLite)</span>
@@ -480,7 +481,7 @@ $ logical_column   &lt;int&gt; 1, 0, 0, 1</code></pre>
 </div>
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
-<p>We use the <code>sqlite3</code> package to perform the same tasks as in R: create a database (or connect to an existing one), write the data to the database, and read the data again to</p>
+<p>I use the <code>sqlite3</code> package to perform the same tasks as in R: create a database (or connect to an existing one), write the data to the database, and read the data again to</p>
 <p>Similar to CSV, you have to add the <code>parse_dates = ["date_column", "datetime_column"]</code> option to correctly read back in dates using <code>pandas.read_sql_query()</code>. Otherwise dates are simply string columns.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlite3</span>
@@ -507,7 +508,7 @@ dtypes: float64(1), int64(2), object(3)
 memory usage: 320.0+ bytes</code></pre>
 </div>
 </div>
-<p>When we compare the SQLite data to the database that we have created in R, we can see that dates are handled differently because R uses integers to store date and datetime, which are actually interpreted as numeric by Python.</p>
+<p>When I compare the SQLite data to the database that I have created in R, we can see that dates are handled differently because R uses integers to store date and datetime, which are actually interpreted as numeric by Python.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>con_sqlite_r <span class="op">=</span> sqlite3.<span class="ex">connect</span>(<span class="st">"data_r.sqlite"</span>)</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>data_r_sqlite <span class="op">=</span> pd.read_sql_query(<span class="st">"SELECT * FROM data"</span>, con_sqlite_r)</span>
@@ -540,8 +541,7 @@ logical_column           int64              int64</code></pre>
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
-<p>The <code>duckdb</code> package contains everything we need to set up the database and execute the same steps as with SQLite.</p>
-<p>If we write the data to and then read it back in, we get the same column types again - this is great!</p>
+<p>The <code>duckdb</code> package contains everything we need to set up the database and execute the same steps as with SQLite. If I write the data to and then read it back in, I get the same column types again - this is great!</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -562,7 +562,7 @@ $ integer_column   &lt;int&gt; 1, 2, 3, 4
 $ logical_column   &lt;lgl&gt; TRUE, FALSE, FALSE, TRUE</code></pre>
 </div>
 </div>
-<p>If we read data from the database create in Python, we only see a small difference: while we have <code>Date</code> in R, we get a <code>POSIXct</code> column from the Python database. For many applications, this difference should have no impact. However, if you work with time series data, make sure to have the correct date format before you proceed!</p>
+<p>If I read data from the database create in Python, we only see a small difference: while we have <code>Date</code> in R, we get a <code>POSIXct</code> column from the Python database. For many applications, this difference should have no impact. However, if you work with time series data, make sure to have the correct date format before you proceed!</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>con_duckdb_python <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(), <span class="st">"data_python.duckdb"</span>)</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>data_python_duckdb <span class="ot">&lt;-</span> <span class="fu">dbReadTable</span>(con_duckdb_python, <span class="st">"data"</span>)</span>
@@ -585,8 +585,7 @@ $ logical_column   &lt;lgl&gt; TRUE, FALSE, FALSE, TRUE</code></pre>
 </div>
 </div>
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
-<p>We use the <code>duckdb</code> package to create the database and the <code>sqlalchemy</code> package to handle the connection. Note that we don’t have to disconnect manually because the engine is taking care of this automatically.</p>
-<p>Again, the great thing is that we have the same column types for the data that we put into and the data that we have pulled out of the database!</p>
+<p>I use the <code>duckdb</code> package to create the database and the <code>sqlalchemy</code> package to handle the connection. Note that I don’t have to disconnect manually because the engine is taking care of this automatically. Again, the great thing is that we have the same column types for the data that I put into and the data that I have pulled out of the database!</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sqlalchemy <span class="im">import</span> create_engine</span>
@@ -612,7 +611,7 @@ dtypes: bool(1), datetime64[ns](2), float64(1), int64(1), object(1)
 memory usage: 292.0+ bytes</code></pre>
 </div>
 </div>
-<p>If we now read the data from the database generated in R, then we see that the only difference again arises in the date column, but at least the datetime columns are aligned.</p>
+<p>If I now read the data from the database generated in R, then we see that the only difference again arises in the date column, but at least the datetime columns are aligned.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>con_duckdb_r <span class="op">=</span> create_engine(<span class="st">"duckdb:///data_r.duckdb"</span>)</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>data_r_duckdb <span class="op">=</span> pd.read_sql_query(<span class="st">"SELECT * FROM data"</span>, con_duckdb_r)</span>
@@ -663,7 +662,7 @@ $ integer_column   &lt;int&gt; 1, 2, 3, 4
 $ logical_column   &lt;lgl&gt; TRUE, FALSE, FALSE, TRUE</code></pre>
 </div>
 </div>
-<p>If we now read the data from the database generated in R, then we see that the only difference again arises in the date column (just as with DuckDB).</p>
+<p>If I now read the data from the database generated in R, then we see that the only difference again arises in the date column (just as with DuckDB).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>data_python_parquet <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"data_python.parquet"</span>)</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -685,7 +684,7 @@ $ logical_column   &lt;lgl&gt; TRUE, FALSE, FALSE, TRUE</code></pre>
 </div>
 </div>
 <div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
-<p>We use the <code>pyarrow.parquet</code> to perform the same write and read operations as in R. As expected, all column types are preserved.</p>
+<p>I use the <code>pyarrow.parquet</code> to perform the same write and read operations as in R. As expected, all column types are preserved.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.parquet <span class="im">as</span> pq</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -709,7 +708,7 @@ dtypes: bool(1), datetime64[ns](2), float64(1), int64(1), object(1)
 memory usage: 292.0+ bytes</code></pre>
 </div>
 </div>
-<p>If we now read the data from the database generated in R, then we see that the only difference again arises in the date column (just as with DuckDB).</p>
+<p>If I now read the data from the database generated in R, then we see that the only difference again arises in the date column (just as with DuckDB).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>data_r_parquet <span class="op">=</span> pd.read_parquet(<span class="st">"data_r.parquet"</span>)</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -731,9 +730,100 @@ logical_column              bool                bool</code></pre>
 </div>
 </div>
 </section>
+<section id="feather" class="level1">
+<h1>Feather</h1>
+<p>Feather primarily designed for efficient data interchange between R and Python. Developed jointly by R and Python teams, Feather provides a fast, lightweight, and easy-to-use binary file format for storing data frames. However, Feather is primarily designed as an intermediate file format for data interchange rather than for long-term data storage. It does not offer the same level of compression as formats like Parquet, nor is it optimized for queries and data analysis tasks directly on the stored files.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<p>The <code>arrow</code> package also provides all we need to write and read Feather files. Similar to DuckDB and Parquet, all column types are preserved exactly as to before we wrote the data frame to a parquet file.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_feather</span>(data_r, <span class="st">"data_r.feather"</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>data_r_feather <span class="ot">&lt;-</span> <span class="fu">read_feather</span>(<span class="st">"data_r.feather"</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data_r_feather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 4
+Columns: 6
+$ character_column &lt;chr&gt; "A", "B", "C", "D"
+$ date_column      &lt;date&gt; 2023-01-01, 2023-02-01, 2023-03-01, 2023-04-01
+$ datetime_column  &lt;dttm&gt; 2023-01-01 10:00:00, 2023-02-01 11:00:00, 2023-03-01 …
+$ numeric_column   &lt;dbl&gt; 1.5, 2.5, 3.5, 4.5
+$ integer_column   &lt;int&gt; 1, 2, 3, 4
+$ logical_column   &lt;lgl&gt; TRUE, FALSE, FALSE, TRUE</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>data_python_feather <span class="ot">&lt;-</span> <span class="fu">read_feather</span>(<span class="st">"data_python.feather"</span>)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data_r_feather"</span> <span class="ot">=</span> <span class="fu">extract_column_classes</span>(data_r_feather),</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data_python_feather"</span> <span class="ot">=</span> <span class="fu">extract_column_classes</span>(data_python_feather)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  data_r_feather  data_python_feather
+  &lt;chr&gt;           &lt;chr&gt;              
+1 character       character          
+2 Date            POSIXct, POSIXt    
+3 POSIXct, POSIXt POSIXct, POSIXt    
+4 numeric         numeric            
+5 integer         integer            
+6 logical         logical            </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<p>I use <code>pyarrow.feather</code> to perform the same write and read operations as in R. As expected, all column types are preserved.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.feather <span class="im">as</span> feather</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>feather.write_feather(data_python, <span class="st">"data_python.feather"</span>)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>data_python_feather <span class="op">=</span> feather.read_feather(<span class="st">"data_python.feather"</span>)</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>data_python_feather.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 4 entries, 0 to 3
+Data columns (total 6 columns):
+ #   Column            Non-Null Count  Dtype         
+---  ------            --------------  -----         
+ 0   character_column  4 non-null      object        
+ 1   date_column       4 non-null      datetime64[ns]
+ 2   datetime_column   4 non-null      datetime64[ns]
+ 3   numeric_column    4 non-null      float64       
+ 4   integer_column    4 non-null      int64         
+ 5   logical_column    4 non-null      bool          
+dtypes: bool(1), datetime64[ns](2), float64(1), int64(1), object(1)
+memory usage: 292.0+ bytes</code></pre>
+</div>
+</div>
+<p>If I now read the data from the database generated in R, then we see that the only difference again arises in the date column (just as with DuckDB and Parquet).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>data_r_feather <span class="op">=</span> feather.read_feather(<span class="st">"data_r.feather"</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data_r_feather"</span>: data_r_feather.dtypes, </span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data_python_feather"</span>: data_python_feather.dtypes</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  data_r_feather data_python_feather
+character_column          object              object
+date_column               object      datetime64[ns]
+datetime_column   datetime64[us]      datetime64[ns]
+numeric_column           float64             float64
+integer_column             int32               int64
+logical_column              bool                bool</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
-<p>There are two main takeaways: first, R’s handling of dates is peculiar and cannot be smoothly mirrored into Python. I think I need to ask myself the question whether I really need the <code>Date</code> type in my life if I want to avoid issues with other languages. Second, Parquet is an exciting format that I’ll definitely use more in future applications.</p>
+<p>There are two main takeaways: first, R’s handling of dates is peculiar and cannot be smoothly aligned with Python (at with <code>pandas</code>). I think I need to ask myself the question how often I actually need the <code>Date</code> type if I want to avoid issues with other languages. Second, Parquet is an exciting format for storing data and I’ll definitely use it more in future applications.</p>
 
 
 </section>
