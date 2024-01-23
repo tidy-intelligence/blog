@@ -101,6 +101,7 @@ fig_full <- penguins |>
   hc_add_theme(hc_theme_ggplot2())
 
 species_unique <- levels(penguins$species)
+colors <- c("#440154", "#21908C", "#FDE725")
 for(j in seq_along(species_unique)) {
   
   penguins_subset <- penguins |> 
@@ -117,8 +118,9 @@ for(j in seq_along(species_unique)) {
   )
   
   fig_full <- fig_full |>  
-    hc_add_series(data = list_parse2(line_data), type = "line", marker = "none",
-                  color = highchart2()$hc_colors[j])
+    hc_add_series(data = list_parse2(line_data), 
+                  type = "line", marker = "none",
+                  color = colors[j])
 }
 
 fig_full
