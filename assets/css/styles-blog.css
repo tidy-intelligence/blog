@@ -97,7 +97,7 @@ pre {
   margin: 0px
 }
 
-.nav-item {
+.nav-item[role="presentation"] {
   border: none; 
   outline: none;
   min-width: 92px;

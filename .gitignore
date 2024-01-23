@@ -6,3 +6,5 @@ data/
 .Rhistory
 posts/.DS_Store
 .Rhistory
+.RData
+.Rhistory
