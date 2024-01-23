@@ -11,6 +11,7 @@ h2 {
   padding-bottom: 0px;
 }
   
+/* Styling of grid items on blog overview */
 .quarto-grid-item {
   border: none;
   border-radius: 8px;
@@ -75,3 +76,64 @@ h2 {
   text-decoration: underline;
 }
   
+/* Styling of panel tabset */
+.panel-tabset {
+  border: none;
+  outline: none;
+  border-radius: 8px; /* Adjust the value to control the degree of rounding */
+  overflow: hidden;   /* Ensure the corners are properly rounded */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  padding: 0px;
+  margin: 0px 0px 16px 0px;
+}
+
+pre {
+  margin: 0px
+}
+
+.tab-content {
+  border: none; 
+  outline: none; 
+  margin: 0px
+}
+
+.nav-item {
+  border: none; 
+  outline: none;
+  min-width: 92px;
+  text-align: center  ;
+}
+
+.nav-link {
+  border: none; 
+  outline: none; 
+}
+
+.nav-tabs {
+  border: 0px 0px 2px 0px; 
+  outline: none; 
+}
+
+.nav-link:hover {
+  border: none; 
+  outline: none; 
+  color: black;
+}
+
+.nav-link[role="tab"].active {
+  outline: none; 
+  font-weight: bold;
+  transition: none;
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 0px;
+  border-bottom: 4px solid #3b9ab2; 
+}
+
+.nav-link {
+  border: none; 
+  outline: none; 
+  font-weight: light;
+  color: black;
+  transition: none;
+}

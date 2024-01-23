@@ -259,13 +259,13 @@ cookieconsent.run({
 <pre><code># A tibble: 503 × 4
    symbol company                 sector                 industry               
    &lt;chr&gt;  &lt;chr&gt;                   &lt;chr&gt;                  &lt;chr&gt;                  
- 1 A      Agilent Technologies    Health Care            Health Care Equipment  
+ 1 A      Agilent Technologies    Health Care            Life Sciences Tools &amp; …
  2 AAL    American Airlines Group Industrials            Passenger Airlines     
  3 AAPL   Apple Inc.              Information Technology Technology Hardware, S…
- 4 ABBV   AbbVie                  Health Care            Pharmaceuticals        
+ 4 ABBV   AbbVie                  Health Care            Biotechnology          
  5 ABNB   Airbnb                  Consumer Discretionary Hotels, Resorts &amp; Crui…
  6 ABT    Abbott                  Health Care            Health Care Equipment  
- 7 ACGL   Arch Capital Group      Financials             Reinsurance            
+ 7 ACGL   Arch Capital Group      Financials             Property &amp; Casualty In…
  8 ACN    Accenture               Information Technology IT Consulting &amp; Other …
  9 ADBE   Adobe Inc.              Information Technology Application Software   
 10 ADI    Analog Devices          Information Technology Semiconductors         
@@ -903,7 +903,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","openEffect":"zoom","loop":false,"descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","descPosition":"bottom","closeEffect":"zoom","loop":false,"openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
