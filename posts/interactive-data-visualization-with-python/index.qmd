@@ -1,0 +1,202 @@
+---
+title: "Interactive Data Visualization with Python: plotly vs bokeh vs altair"
+description: "A comparison of dynamic visualization packages for the programming language Python."
+metadata:
+  pagetitle: "Interactive Data Visualization with Python: plotly vs bokeh vs altair"
+author: "Christoph Scheuch"
+date: "2024-01-28" 
+image: thumbnail.png
+image-alt: ... . Created with DALL-E 3.
+draft: true
+---
+
+Interactive figures are an essential tool for communicating data insights, in particular in reports or dashboards. In this blog post, I compare different packages for dynamic data visualization in Python. Before we dive into the comparison, here is a quick introduction to each contestant. 
+
+`plotly` https://plotly.com/python/getting-started/
+
+`bokeh` https://docs.bokeh.org/en/latest/docs/first_steps.html#first-steps
+
+`altair` https://altair-viz.github.io/getting_started/starting.html
+
+I compare code to generate ... output in the post below. The types of plots that I chose for the comparison heavily draw on the examples given in [R for Data Science](https://r4ds.hadley.nz/data-visualize) - an amazing resource if you want to get started with data visualization. Spoiler alert: I'm not always able to replicate the same figure with all approaches (yet).
+
+# Loading packages and data
+
+We start by loading the main packages of interest (`plotly`, `bokeh`, `altair`) and `palmerpenguins` data. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don't want to get into related messages in this post. 
+
+```{python}
+import pandas as pd
+import plotly.express as px
+import bokeh as bkq
+import altair as alt
+
+from palmerpenguins import load_penguins
+
+penguins = load_penguins().dropna()
+```
+
+# A full-blown example
+
+Let"s start with an advanced example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. You can click through the results in the tabs below. 
+
+::: {.panel-tabset}
+### plotly
+```{python}
+
+```
+### bokeh
+```{python}
+
+```
+### altair
+```{python}
+
+```
+::: 
+
+# Visualizing distributions
+
+## A categorical variable
+
+Let's break down the differences in smaller steps by focusing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then `ggiraph::geom_bar_interactive()`, `plotly::plot_ly(type = "bar")` and `highcharter::hchart(type = "column")` are your friends. However, to show the counts, you have to manually prepare the data for `plot_ly()` and `hchart()` (as far as I know).
+
+Notice how you have to manually specify the `tooltip` to show the counts on hover in `geom_bar_interactive()` and that `data_id` determines which bar is highlighted on hover. 
+
+::: {.panel-tabset}
+### plotly
+```{python}
+island_counts = (penguins
+  .groupby("island")
+  .size()
+  .reset_index(name = "n")
+)
+
+(px.bar(island_counts, x = "island", y = "n")
+  .update_layout(barmode = "stack")
+) 
+```
+### bokeh
+```{python}
+
+```
+### altair
+```{python}
+
+```
+::: 
+
+## A numerical variable
+
+If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. `ggiraph::geom_histogram_interactive()`, `plotly::plot_ly(type = "histogram")`, `highcharter::hchart()` with options to control bin widths or number of bins are the functions for this task.
+
+Note that the binning algorithms are different across the approaches: while `ggpplot2` creates bins around a midpoint (e.g. 34), `plotly` and `highcharter` create bins across a range (e.g. between 34-35.9). This leads to seemingly different histograms, but none of them is wrong.  
+
+Moreover, note that the `data` property is not available for histograms in `highcharter`, unlike most other Highcharts series,^[See the official documentation [here](https://www.highcharts.com/docs/chart-and-series-types/histogram-series).], so we need to pass `penguins$bill_length_mm`. This is tidy anti-pattern and cost me quite some time to figure out. 
+
+::: {.panel-tabset}
+### plotly
+```{python}
+(px.histogram(penguins, x = "bill_length_mm")
+  .update_traces(xbins = dict(size =  2))
+)
+```
+### bokeh
+```{python}
+
+```
+### altair
+```{python}
+
+```
+::: 
+
+# Visualizing relationships
+
+## A numerical and a categorical variable
+
+To visualize relationships, you need to have at least two columns. If you have a numerical and a categorical variable, then histograms or densities with groups are a good starting point. The next example illustrates the use of densities via `ggiraph::geom_density_interactive()` and `plotly::plot_ly(histnorm = "probability density)`. For `highcharter`, you need to comute the density estimates yourself and then add them as lines to a plot. 
+
+Note that `plotly` offers no out-of-the-box support for density curves as `ggplot2`, so we'd have to manually create densities and draw the curves. Also, note that it is currently not possible to use the `after_stat(density)` aesthetic in the tooltip. 
+
+::: {.panel-tabset}
+### plotly
+```{python}
+(px.histogram(penguins, x="body_mass_g", color="species",
+              histnorm = 'density', barmode = 'overlay', opacity = 0.5)
+  .update_traces(marker_line_width =0.75)
+)
+```
+### bokeh
+```{python}
+
+```
+### altair
+```{python}
+
+```
+:::
+
+## Two categorical columns
+
+Stacked bar plots are a good way to display the relationship between two categorical columns. `geom_bar_interactive()` with the `position` argument, `plotly::plot_ly(type = "bar")` and `highcharter::hchart(type = "column")` are your aesthetics of choice for this task. Note that you can easily switch to counts by using `position = "identity"` in `ggplotl2` instead of relative frequencies as in the example below, while you have to manually prepare the data to funnel counts or percentages to `plotly` and `highcharter`, while `ggplot2` handles these things automatically. 
+
+::: {.panel-tabset}
+### plotly
+```{python}
+
+```
+### bokeh
+```{python}
+
+```
+### altair
+```{python}
+
+```
+::: 
+
+## Two numerical columns
+
+Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns and we focus on scatter plots for this example (see the first visualization example if you want to see again how to add a regression line). Here, the `size` parameter controls the size of the shapes that you use for the data points in `ggiraph::geom_point_interactive()` relative to the base size (i.e., it is not tied to any unit of measurement like pixels). For `plotly.plot_ly(type = "scatter")` you also have the `size` to control point sizes manually through the `marker` options, where size is measured in pixels. For `highcharter`, you can specify point sizes via `radius` in the `marker` options, where it is also measured in pixels (so to get points with diameter 10 pixels, you need a radius of 5).
+
+::: {.panel-tabset}
+### plotly
+```{python}
+
+```
+### bokeh
+```{python}
+
+```
+### altair
+```{python}
+
+```
+::: 
+
+## Three or more columns
+
+You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data. 
+
+In `ggplot2` you add the facet layer at the end, whereas in `plotly` you have to start with the facet grid at the beginning and map scatter plots across facets. However, I was not able to achieve two things in `plotly`: how can we have subtitles for each subplot similar to `ggplot2`? How can I have a shared legend across facets? If you have an idea, please create a comment below!
+
+For `highcharter`, I have no idea how to make shared legends or keep the axis in sync across subplots, while both are easily customizable in `ggplot2`.
+
+::: {.panel-tabset}
+### plotly
+```{python}
+
+```
+### bokeh
+```{python}
+
+```
+### altair
+```{python}
+
+```
+::: 
+
+# Conclusion
+
+...
