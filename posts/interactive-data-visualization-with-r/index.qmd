@@ -1,13 +1,12 @@
 ---
-title: "Interactive Data Visualization in R: ggiraph vs plotly vs highcharter"
-description: "A comparison of dynamic visualization packages in R."
+title: "Interactive Data Visualization with R: ggiraph vs plotly vs highcharter"
+description: "A comparison of dynamic visualization packages for the programming language R."
 metadata:
-  pagetitle: "Interactive Data Visualization in R: ggiraph vs plotly vs highcharter"
+  pagetitle: "Interactive Data Visualization with R: ggiraph vs plotly vs highcharter"
 author: "Christoph Scheuch"
 date: "2024-01-23" 
 image: thumbnail.png
-image-alt: ... Created with DALL-E 3.
-draft: true
+image-alt: The scene shows a human figure in a friendly and inviting office space, interacting with a simple data visualization on a screen. The office features softer lighting, more vibrant indoor plants, and cozy, colorful furniture that creates a welcoming atmosphere. The large windows let in plenty of natural light, but the overall vibe is relaxed and homelike. The person, smiling and in casual attire, is pointing at a basic, easy-to-understand chart on the screen, making the interaction appear more accessible and less formal. This image emphasizes a comfortable work environment and simplifies the complexity of data analysis.. Created with DALL-E 3.
 ---
 
 Interactive figures are an essential tool for communicating data insights, in particular in reports or dashboards. In this blog post, I compare different packages for dynamic data visualization in R. Before we dive into the comparison, here is a quick introduction to each contestant. 
@@ -398,6 +397,6 @@ hw_grid(plots)
 
 # Conclusion
 
-I personally like the visual appearance and user experience of `highcharter`, but I still prefer the flexibility of `ggplot2` in combination with `plotly`. The `ggplotly()` function provides a powerful tool for quick, interactive data visualization of complex relationships that you prototype with `ggplot2`. 
+I really like the visual appearance and user experience of `highcharter`, but I still prefer the flexibility of `ggplot2` in combination with `plotly`. The `ggplotly()` function provides a powerful tool for quick, interactive data visualization of complex relationships that you prototype with `ggplot2`. 
 
 `plotly` and `highcharter` require relatively more tinkering as the complexity of plots increases (e.g. if you want to add regression lines). But maybe I just missed some shortcuts. Do you know any that I should include? 
