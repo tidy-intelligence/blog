@@ -379,6 +379,9 @@ fig_many_columns <- penguins |>
 ggplotly(fig_many_columns)
 ```
 ### highcharter
+::: {.callout-note}
+Using `hw_grid()` does not work qith Quarto (which this blog is built on) because of CSS conflicts. See the discussion of this issue [here](https://github.com/quarto-dev/quarto-cli/issues/7739). In your IDE, there should be three plots next to each other. 
+:::
 ```{r}
 plots <- map(levels(penguins$island), function(x) {
   
@@ -393,7 +396,7 @@ plots <- map(levels(penguins$island), function(x) {
     hc_legend(enabled = FALSE)
 })
 
-hw_grid(plots)
+hw_grid(plots, ncol = 3, rowheight = 600)
 ```
 ::: 
 
