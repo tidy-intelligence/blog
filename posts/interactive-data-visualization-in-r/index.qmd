@@ -1,0 +1,403 @@
+---
+title: "Interactive Data Visualization in R: ggiraph vs plotly vs highcharter"
+description: "A comparison of dynamic visualization packages in R."
+metadata:
+  pagetitle: "Interactive Data Visualization in R: ggiraph vs plotly vs highcharter"
+author: "Christoph Scheuch"
+date: "2024-01-23" 
+image: thumbnail.png
+image-alt: ... Created with DALL-E 3.
+draft: true
+---
+
+Interactive figures are an essential tool for communicating data insights, in particular in reports or dashboards. In this blog post, I compare different packages for dynamic data visualization in R. Before we dive into the comparison, here is a quick introduction to each contestant. 
+
+`ggiraph` is a package designed to enhance the interactivity of `ggplot2` visualizations. `ggiraph` allows users to create dynamic and interactive graphics that can include features such as tooltips, clickable elements, and JavaScript actions. This is particularly useful for web-based data visualizations and interactive reporting.
+
+`plotly` is a powerful framework for creating interactive, web-based data visualizations directly from R. It serves as an interface to the `Plotly` javascript library, enabling R users to create a wide range of highly interactive and dynamic plots that can be viewed in any web browser. One of the key features of `plotly` is its ability to add interactivity to plots with minimal effort. Interactive features include tooltips, zooming, panning, and selection capabilities, allowing users to explore and interact with the data in depth. Furthermore, `plotly` integrates seamlessly with the `ggplot2` package, allowing users to convert `ggplot2` figures into interactive plotly charts using the `ggplotly()` function. 
+
+The `highcharter` package is a wrapper for the `Highcharts` javascript library and its modules. `Highcharts` is very flexible and customizable javascript charting library and it has a powerful API. `highcharter` stands out for its emphasis on creating visually appealing, interactive charts.
+
+I compare code to generate `ggiraph`, `plotly`, `ggplotly`, and `highcharter` output in the post below. The types of plots that I chose for the comparison heavily draw on the examples given in [R for Data Science](https://r4ds.hadley.nz/data-visualize) - an amazing resource if you want to get started with data visualization. Spoiler alert: I'm not always able to replicate the same figure with all approaches (yet).
+
+# Loading packages and data
+
+We start by loading the main packages of interest (`ggiraph`, `plotly`, `highcharter`), `dplyr` and `purr` for data manipulation tools, and the popular `palmerpenguins` data. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don't want to get into related messages in this post. 
+
+```{r}
+#| message: false
+library(ggiraph)
+library(plotly)
+library(highcharter)
+library(dplyr)
+library(purrr)
+library(palmerpenguins)
+
+penguins <- na.omit(palmerpenguins::penguins)
+```
+
+# A full-blown example
+
+Let"s start with an advanced example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. You can click through the results in the tabs below. 
+
+Unfortunately, I wasn't able to add species-specific regression lines to the `plotly` output - do you have any idea? Feel free to drop a comment below. You can also see that adding regression lines to `highcharter` plots requires a lot of manual tinkering compared to `ggplot2`. Moreoever, `plotly` does not support subtitles, while, for some reason, `plotly::ggplotly()` and `highcharter` don't display the subtitles. 
+
+::: {.panel-tabset}
+### ggiraph
+```{r}
+fig_full <- penguins |> 
+  ggplot(aes(x = bill_length_mm, y = bill_depth_mm, 
+             color = species, shape = species)) + 
+  geom_point_interactive(
+    aes(tooltip = paste("bill_length_mm:", bill_length_mm, "<br>",
+                        "bill_depth_mm:", bill_depth_mm)),
+    size = 2
+  ) + 
+  geom_smooth_interactive(method = "lm", formula = "y ~ x") +
+  labs(x = "Bill length (mm)", y = "Bill width (mm)", 
+       title = "Bill length vs. bill width", 
+       subtitle = "Using the ggiraph package",
+       color = "Species", shape = "Species") +
+  theme_minimal()
+girafe(ggobj = fig_full)
+```
+### plotly 
+```{r}
+penguins |> 
+  plot_ly(x = ~bill_length_mm, y = ~flipper_length_mm, 
+          color = ~species, symbol = ~species,
+          type = "scatter", mode = "markers",  marker = list(size = 10)) |> 
+  layout(
+    plot_bgcolor = 'white',
+    xaxis = list(title = "Bill Length (mm)", zeroline = FALSE, ticklen = 5),
+    yaxis = list(title = "Flipper Length (mm)", zeroline = FALSE, ticklen = 5),
+    title = "Bill length vs. bill width"
+  )
+```
+### ggplotly
+```{r}
+fig_full <- penguins |> 
+  ggplot(aes(x = bill_length_mm, y = bill_depth_mm, 
+             color = species, shape = species)) + 
+  geom_point(size = 2) + 
+  geom_smooth(method = "lm", formula = "y ~ x") +
+  labs(x = "Bill length (mm)", y = "Bill width (mm)", 
+       title = "Bill length vs. bill width", 
+       subtitle = "Using ggplot2 and ggplotly() from plotly",
+       color = "Species", shape = "Species") +
+  theme_minimal()
+ggplotly(fig_full)
+```
+### highcharter
+```{r}
+fig_full <- penguins |> 
+  hchart(type = "scatter", 
+         hcaes(x = bill_length_mm, y = flipper_length_mm,
+               color = species), 
+         marker = list(radius = 5)) |> 
+  hc_xAxis(title = list(text = "Bill length (mm)")) |> 
+  hc_yAxis(title = list(text = "Bill width (mm)")) |> 
+  hc_title(text = "Bill length vs. bill width") |>
+  hc_subtitle("Using highcharter") |> 
+  hc_add_theme(hc_theme_ggplot2())
+
+species_unique <- levels(penguins$species)
+for(j in seq_along(species_unique)) {
+  
+  penguins_subset <- penguins |> 
+    filter(species == species_unique[j])
+  
+  regression <- lm(flipper_length_mm ~ bill_length_mm, data = penguins_subset)
+  intercept <- regression$coefficients[1]
+  slope <- regression$coefficients[2]
+  values_range <- range(penguins_subset$bill_length_mm, na.rm = TRUE)
+  
+  line_data <- tibble(
+    bill_length_mm = values_range,
+    flipper_length_mm = intercept + slope * values_range
+  )
+  
+  fig_full <- fig_full |>  
+    hc_add_series(data = list_parse2(line_data), type = "line", marker = "none",
+                  color = highchart2()$hc_colors[j])
+}
+
+fig_full
+```
+::: 
+
+# Visualizing distributions
+
+## A categorical variable
+
+Let's break down the differences in smaller steps by focusing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then `ggiraph::geom_bar_interactive()`, `plotly::plot_ly(type = "bar")` and `highcharter::hchart(type = "column")` are your friends. However, to show the counts, you have to manually prepare the data for `plot_ly()` and `hchart()` (as far as I know).
+
+Notice how you have to manually specify the `tooltip` to show the counts on hover in `geom_bar_interactive()` and that `data_id` determines which bar is highlighted on hover. 
+
+::: {.panel-tabset}
+### ggiraph
+```{r}
+fig_categorical <- penguins |> 
+  ggplot(aes(x = island)) +
+  geom_bar_interactive(aes(tooltip = paste("count:", after_stat(count)),
+                           data_id = island))
+girafe(ggobj = fig_categorical)
+```
+### plotly
+```{r}
+penguins |> 
+  count(island) |> 
+  plot_ly(data = _, x = ~island, y = ~n, type = "bar") |> 
+  layout(barmode = 'stack')
+```
+### ggplotly
+```{r}
+fig_categorical <- penguins |> 
+  ggplot(aes(x = island)) +
+  geom_bar()
+ggplotly(fig_categorical)
+```
+### highcharter
+```{r}
+penguins |> 
+  count(island) |> 
+  hchart(type = "column", 
+         hcaes(x = island, y = n))
+```
+::: 
+
+## A numerical variable
+
+If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. `ggiraph::geom_histogram_interactive()`, `plotly::plot_ly(type = "histogram")`, `highcharter::hchart()` with options to control bin widths or number of bins are the functions for this task.
+
+Note that the binning algorithms are different across the approaches: while `ggpplot2` creates bins around a midpoint (e.g. 34), `plotly` and `highcharter` create bins across a range (e.g. between 34-35.9). This leads to seemingly different histograms, but none of them is wrong.  
+
+Moreover, note that the `data` property is not available for histograms in `highcharter`, unlike most other Highcharts series,^[See the official documentation [here](https://www.highcharts.com/docs/chart-and-series-types/histogram-series).], so we need to pass `penguins$bill_length_mm`. This is tidy anti-pattern and cost me quite some time to figure out. 
+
+::: {.panel-tabset}
+### ggiraph
+```{r}
+fig_numerical <- penguins |> 
+  ggplot(aes(x = bill_length_mm)) +
+  geom_histogram_interactive(
+    aes(tooltip = paste("bill_length_mm:", after_stat(count))),
+    binwidth = 2
+  )
+girafe(ggobj = fig_numerical)
+```
+### plotly
+```{r}
+plot_ly(penguins, x = ~bill_length_mm, type = "histogram",
+        xbins = list(size = 2))
+```
+### ggplotly
+```{r}
+fig_numerical <- penguins |> 
+  ggplot(aes(x = bill_length_mm)) +
+  geom_histogram(binwidth = 2)
+ggplotly(fig_numerical)
+```
+### highcharter
+```{r}
+hchart(penguins$bill_length_mm) |> 
+  hc_plotOptions(series = list(binWidth = 2))
+```
+::: 
+
+# Visualizing relationships
+
+## A numerical and a categorical variable
+
+To visualize relationships, you need to have at least two columns. If you have a numerical and a categorical variable, then histograms or densities with groups are a good starting point. The next example illustrates the use of densities via `ggiraph::geom_density_interactive()` and `plotly::plot_ly(histnorm = "probability density)`. For `highcharter`, you need to comute the density estimates yourself and then add them as lines to a plot. 
+
+Note that `plotly` offers no out-of-the-box support for density curves as `ggplot2`, so we'd have to manually create densities and draw the curves. Also, note that it is currently not possible to use the `after_stat(density)` aesthetic in the tooltip. 
+
+::: {.panel-tabset}
+### ggiraph
+```{r}
+fig_density <- penguins |> 
+  ggplot(aes(x = body_mass_g, color = species, fill = species)) +
+  geom_density_interactive(
+    aes(tooltip = paste("Species:", species)),
+    linewidth = 0.75, alpha = 0.5
+  )
+girafe(ggobj = fig_density)
+```
+### plotly
+```{r}
+plot_ly(penguins, x = ~body_mass_g,
+        type = "histogram", histnorm = "probability density",
+        color = ~species, opacity = 0.5) |> 
+  layout(barmode = "overlay")
+```
+### ggplotly
+```{r}
+fig_density <- penguins |> 
+  ggplot(aes(x = body_mass_g, color = species, fill = species)) +
+  geom_density(linewidth = 0.75, alpha = 0.5)
+ggplotly(fig_density)
+```
+### highcharter
+```{r}
+series <- map(levels(penguins$species), function(x){
+  penguins_subset <- penguins |> 
+    filter(species == x)
+  
+  data <- density(penguins_subset$body_mass_g)[1:2] |> 
+    as.data.frame() |> 
+    list_parse2()
+  
+  list(data = data, name = x)
+})
+
+highchart() |> 
+  hc_add_series_list(series)
+```
+:::
+
+## Two categorical columns
+
+Stacked bar plots are a good way to display the relationship between two categorical columns. `geom_bar_interactive()` with the `position` argument, `plotly::plot_ly(type = "bar")` and `highcharter::hchart(type = "column")` are your aesthetics of choice for this task. Note that you can easily switch to counts by using `position = "identity"` in `ggplotl2` instead of relative frequencies as in the example below, while you have to manually prepare the data to funnel counts or percentages to `plotly` and `highcharter`, while `ggplot2` handles these things automatically. 
+
+::: {.panel-tabset}
+### ggiraph
+```{r}
+#
+fig_two_categorical <- penguins |> 
+  ggplot(aes(x = species, fill = island)) +
+  geom_bar_interactive(
+    aes(tooltip = paste(fill, ":", after_stat(count)),
+        data_id = island),
+    position = "fill"
+  )
+girafe(ggobj = fig_two_categorical)
+```
+### plotly
+```{r}
+penguins |> 
+  count(species, island) |> 
+  group_by(species) |> 
+  mutate(percentage = n / sum(n)) |> 
+  plot_ly(x = ~species, y = ~percentage, type = "bar", color = ~island) |> 
+  layout(barmode = "stack")
+```
+### ggplotly
+```{r}
+fig_two_categorical <- penguins |> 
+  ggplot(aes(x = species, fill = island)) +
+  geom_bar(position = "fill")
+ggplotly(fig_two_categorical)
+```
+### highcharter
+```{r}
+penguins |> 
+  count(species, island) |> 
+  group_by(species) |> 
+  mutate(percentage = n / sum(n)) |>
+  hchart(type = "column", 
+         hcaes(x = species, y = percentage, group = island)) |> 
+  hc_plotOptions(series = list(stacking = "percent"))
+```
+::: 
+
+## Two numerical columns
+
+Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns and we focus on scatter plots for this example (see the first visualization example if you want to see again how to add a regression line). Here, the `size` parameter controls the size of the shapes that you use for the data points in `ggiraph::geom_point_interactive()` relative to the base size (i.e., it is not tied to any unit of measurement like pixels). For `plotly.plot_ly(type = "scatter")` you also have the `size` to control point sizes manually through the `marker` options, where size is measured in pixels. For `highcharter`, you can specify point sizes via `radius` in the `marker` options, where it is also measured in pixels (so to get points with diameter 10 pixels, you need a radius of 5).
+
+::: {.panel-tabset}
+### ggiraph
+```{r}
+fig_two_columns <- penguins |> 
+  ggplot(aes(x = bill_length_mm, y = flipper_length_mm)) +
+  geom_point_interactive(
+    aes(tooltip = paste("bill_length_mm:", bill_length_mm, "<br>",
+                        "flipper_length_mm:", flipper_length_mm)), 
+    size = 2
+  )
+girafe(ggobj = fig_two_columns)
+```
+### plotly
+```{r}
+plot_ly(data = penguins, x = ~bill_length_mm, y = ~flipper_length_mm, 
+        type = "scatter", mode = "markers",  marker = list(size = 10))
+```
+### ggplotly
+```{r}
+fig_two_columns <- penguins |> 
+  ggplot(aes(x = bill_length_mm, y = flipper_length_mm)) +
+  geom_point(size = 2)
+ggplotly(fig_two_columns)
+```
+### highcharter
+```{r}
+penguins |> 
+  hchart(type = "scatter", 
+         hcaes(x = bill_length_mm, y = flipper_length_mm), 
+         marker = list(radius = 5))
+```
+::: 
+
+## Three or more columns
+
+You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data. 
+
+In `ggplot2` you add the facet layer at the end, whereas in `plotly` you have to start with the facet grid at the beginning and map scatter plots across facets. However, I was not able to achieve two things in `plotly`: how can we have subtitles for each subplot similar to `ggplot2`? How can I have a shared legend across facets? If you have an idea, please create a comment below!
+
+For `highcharter`, I have no idea how to make shared legends or keep the axis in sync across subplots, while both are easily customizable in `ggplot2`.
+
+::: {.panel-tabset}
+### ggiraph
+```{r}
+fig_many_columns <- penguins |> 
+  ggplot(aes(x = bill_length_mm, y = flipper_length_mm)) +
+  geom_point_interactive(
+    aes(color = species, shape = species,
+        tooltip = paste("bill_length_mm:", bill_length_mm, "<br>",
+                        "flipper_length_mm:", flipper_length_mm, "<br>",
+                        "species:", species))
+  ) +
+  facet_wrap(~island)
+girafe(ggobj = fig_many_columns)
+```
+### plotly
+```{r}
+penguins |>
+  group_by(island) |>
+  group_map(~{
+    plot_ly(data = ., x = ~bill_length_mm, y = ~flipper_length_mm, 
+                     color = ~species, type = "scatter", mode = "markers")
+    }, .keep = TRUE) |>
+  subplot(nrows = 1, shareX = TRUE, shareY = TRUE)
+```
+### ggplotly
+```{r}
+fig_many_columns <- penguins |> 
+  ggplot(aes(x = bill_length_mm, y = flipper_length_mm)) +
+  geom_point(aes(color = species, shape = species)) +
+  facet_wrap(~island)
+ggplotly(fig_many_columns)
+```
+### highcharter
+```{r}
+plots <- map(levels(penguins$island), function(x) {
+  
+  penguins_subset <- penguins  |> 
+    filter(island == x)
+
+  hchart(penguins_subset,
+         type = "scatter", 
+         hcaes(x = bill_length_mm, y = flipper_length_mm, 
+               color = species, symbol = species)) |> 
+    hc_title(text = x)  |> 
+    hc_legend(enabled = FALSE)
+})
+
+hw_grid(plots)
+```
+::: 
+
+# Conclusion
+
+I personally like the visual appearance and user experience of `highcharter`, but I still prefer the flexibility of `ggplot2` in combination with `plotly`. The `ggplotly()` function provides a powerful tool for quick, interactive data visualization of complex relationships that you prototype with `ggplot2`. 
+
+`plotly` and `highcharter` require relatively more tinkering as the complexity of plots increases (e.g. if you want to add regression lines). But maybe I just missed some shortcuts. Do you know any that I should include? 
