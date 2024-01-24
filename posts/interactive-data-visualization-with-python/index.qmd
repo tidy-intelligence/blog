@@ -197,6 +197,25 @@ For `highcharter`, I have no idea how to make shared legends or keep the axis in
 ```
 ::: 
 
+# Time series
+
+As a last example, we quickly dive into time series plots where you typically show multiple lines over some date vector. Here, I aggregate the number of penguins by year and island and plot the corresponding lines. All packages behave as expected and show similar output. 
+
+::: {.panel-tabset}
+### plotly
+```{python}
+
+```
+### bokeh
+```{python}
+
+```
+### altair
+```{python}
+
+```
+::: 
+
 # Conclusion
 
 ...

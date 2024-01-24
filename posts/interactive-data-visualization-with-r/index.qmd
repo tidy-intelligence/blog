@@ -398,7 +398,45 @@ plots <- map(levels(penguins$island), function(x) {
 
 hw_grid(plots, ncol = 3, rowheight = 600)
 ```
-::: 
+:::
+
+# Time series
+
+As a last example, we quickly dive into time series plots where you typically want to show multiple lines over some time period. Here, I aggregate the number of penguins by year and island and plot the corresponding lines. All packages behave as expected and show similar output. 
+
+### ggiraph
+```{r}
+fig_time <- penguins |> 
+  count(year, island) |> 
+  ggplot(aes(x = year, y = n, group = island, color = island)) +
+  geom_line_interactive(aes(tooltip = paste("island:", island, "<br>", 
+                                            "count:", n)))
+girafe(ggobj = fig_time)
+```
+### plotly
+```{r}
+penguins |> 
+  count(year, island) |> 
+  plot_ly(x = ~year, y = ~n, color = ~island, 
+          type = "scatter", mode = "lines")
+```
+### ggplotly
+```{r}
+fig_time <- penguins |> 
+  count(year, island) |> 
+  ggplot(aes(x = year, y = n, color = island)) +
+  geom_line()
+ggplotly(fig_time)
+```
+### highcharter
+
+```{r}
+penguins |> 
+  count(year, island)  |> 
+  hchart(type = "line", 
+         hcaes(x = year, y = n, group = island))
+```
+:::
 
 # Conclusion
 
