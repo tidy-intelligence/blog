@@ -42,7 +42,19 @@ Let"s start with an advanced example that combines many different aesthetics at 
 ::: {.panel-tabset}
 ### plotly
 ```{python}
-
+(px.scatter(
+    penguins, x = "bill_length_mm", y = "flipper_length_mm", 
+    color = "species", symbol = "species",
+    title = "Bill length vs. flipper length",
+    labels={"bill_length_mm": "Bill length (mm)", 
+            "flipper_length_mm": "Flipper length (mm)",
+            "species": "Species"})
+  .update_traces(marker = dict(size = 10))
+  .update_layout(
+    plot_bgcolor = 'white',
+    xaxis = dict(zeroline = False, ticklen = 5),
+    yaxis = dict(zeroline = False, ticklen = 5))
+)
 ```
 ### bokeh
 ```{python}
@@ -106,7 +118,15 @@ Moreover, note that the `data` property is not available for histograms in `high
 ```
 ### altair
 ```{python}
-
+(alt.Chart(penguins)
+  .mark_bar()
+  .encode(
+    x = alt.X("bill_length_mm:Q", bin = alt.Bin(step = 2)),
+    y = alt.Y("count()"),
+    tooltip = [alt.Tooltip('bill_length_mm:Q', bin = alt.Bin(step = 2)),
+               alt.Tooltip('count()')])
+  .interactive()
+)
 ```
 ::: 
 
@@ -121,9 +141,9 @@ Note that `plotly` offers no out-of-the-box support for density curves as `ggplo
 ::: {.panel-tabset}
 ### plotly
 ```{python}
-(px.histogram(penguins, x="body_mass_g", color="species",
-              histnorm = 'density', barmode = 'overlay', opacity = 0.5)
-  .update_traces(marker_line_width =0.75)
+(px.histogram(penguins, x = "body_mass_g", color = "species",
+              histnorm = "density", barmode = "overlay", opacity = 0.5)
+  .update_traces(marker_line_width = 0.75)
 )
 ```
 ### bokeh
@@ -143,7 +163,15 @@ Stacked bar plots are a good way to display the relationship between two categor
 ::: {.panel-tabset}
 ### plotly
 ```{python}
+species_island_counts = (penguins
+  .groupby(['species', 'island'])
+  .size()
+  .reset_index(name="n")
+  .assign(percentage = lambda x: x["n"] / x.groupby("species")["n"].transform("sum"))
+)
 
+px.bar(species_island_counts, x = 'species', y = 'percentage', 
+       color = 'island', barmode = 'stack')
 ```
 ### bokeh
 ```{python}
@@ -162,7 +190,9 @@ Scatter plots and regression lines are definitely the most common approach for v
 ::: {.panel-tabset}
 ### plotly
 ```{python}
-
+(px.scatter(penguins, x = "bill_length_mm", y = "flipper_length_mm")
+  .update_traces(marker = dict(size = 10))
+)
 ```
 ### bokeh
 ```{python}
@@ -185,7 +215,11 @@ For `highcharter`, I have no idea how to make shared legends or keep the axis in
 ::: {.panel-tabset}
 ### plotly
 ```{python}
-
+px.scatter(
+  penguins, 
+  x = "bill_length_mm", y = "flipper_length_mm", 
+  color = "species", facet_col = "island"
+)
 ```
 ### bokeh
 ```{python}
@@ -204,7 +238,14 @@ As a last example, we quickly dive into time series plots where you typically sh
 ::: {.panel-tabset}
 ### plotly
 ```{python}
+year_island_count = (penguins
+  .groupby(['year', 'island'])
+  .size()
+  .reset_index(name='n')
+)
 
+px.line(year_island_count, 
+        x = "year", y = "n", color = "island", line_shape = "linear")
 ```
 ### bokeh
 ```{python}

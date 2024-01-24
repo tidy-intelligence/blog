@@ -342,7 +342,7 @@ penguins |>
 
 You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data. 
 
-In `ggplot2` you add the facet layer at the end, whereas in `plotly` you have to start with the facet grid at the beginning and map scatter plots across facets. However, I was not able to achieve two things in `plotly`: how can we have subtitles for each subplot similar to `ggplot2`? How can I have a shared legend across facets? If you have an idea, please create a comment below!
+In `ggplot2` you add the facet layer at the end, whereas in `plotly` you have to start with the facet grid at the beginning and map scatter plots across facets. However, I was not able to achieve two things in `plotly`: how can we have subtitles for each subplot similar to `ggplot2`? How can I have a shared legend across facets? Both seem to work nicely in Python, at least (see my [post here](../interactive-visualizations-with-python.qmd)). If you have an idea, please create a comment below! 
 
 For `highcharter`, I have no idea how to make shared legends or keep the axis in sync across subplots, while both are easily customizable in `ggplot2`.
 
