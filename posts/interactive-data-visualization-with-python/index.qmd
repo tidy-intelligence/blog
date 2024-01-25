@@ -26,9 +26,20 @@ We start by loading the main packages of interest (`plotly`, `bokeh`, `altair`) 
 
 ```{python}
 import pandas as pd
+import numpy as np
+from scipy.stats import gaussian_kde
+
 import plotly.express as px
-import bokeh as bkq
+
 import altair as alt
+
+from bokeh.plotting import figure, show
+from bokeh.io import output_notebook
+from bokeh.models import ColumnDataSource, CategoricalColorMapper, HoverTool
+from bokeh.layouts import gridplot
+from bokeh.transform import factor_cmap
+from bokeh.palettes import Spectral6, Category10
+output_notebook()
 
 from palmerpenguins import load_penguins
 
@@ -42,7 +53,11 @@ Let"s start with an advanced example that combines many different aesthetics at 
 ::: {.panel-tabset}
 ### plotly
 ```{python}
-(px.scatter(
+#| warning: false
+import statsmodels.api as sm
+import plotly.graph_objs as go
+
+fig = (px.scatter(
     penguins, x = "bill_length_mm", y = "flipper_length_mm", 
     color = "species", symbol = "species",
     title = "Bill length vs. flipper length",
@@ -55,14 +70,83 @@ Let"s start with an advanced example that combines many different aesthetics at 
     xaxis = dict(zeroline = False, ticklen = 5),
     yaxis = dict(zeroline = False, ticklen = 5))
 )
+
+for species in penguins['species'].unique():
+    subset = penguins[penguins['species'] == species]
+    X = subset['bill_length_mm']
+    X = sm.add_constant(X)
+    y = subset['flipper_length_mm']
+
+    model = sm.OLS(y, X).fit()
+    line = model.params[0] + model.params[1] * subset['bill_length_mm']
+
+    fig.add_trace(go.Scatter(x=subset['bill_length_mm'], y=line, mode='lines', showlegend=False))
+
+fig.show()
 ```
 ### bokeh
 ```{python}
+def get_regression_data_sm(df, x_col, y_col):
+    X = df[[x_col]]
+    X = sm.add_constant(X)
+    y = df[y_col]
+    
+    model = sm.OLS(y, X).fit()
+    predictions = model.predict(X)
+    
+    plot_df = pd.DataFrame({
+        x_col: df[x_col],
+        y_col: predictions
+    })
+    
+    plot_df.sort_values(by=x_col, inplace=True)
+    
+    return plot_df[x_col], plot_df[y_col]
 
+p = figure(title="Bill length vs. flipper length",
+           x_axis_label="Bill length (mm)", y_axis_label="Flipper length (mm)",
+           tools="hover", tooltips=[
+               ("Bill length (mm)", "@bill_length_mm"),
+               ("Flipper length (mm)", "@flipper_length_mm"),
+               ("Species", "@species")
+           ], toolbar_location=None)
+
+species_list = penguins['species'].unique().tolist()
+color_map = {species: color for species, color in zip(species_list, ['blue', 'green', 'red'])}  
+
+for species in species_list:
+    subset = penguins[penguins['species'] == species]
+    source = ColumnDataSource(subset)
+
+    p.scatter('bill_length_mm', 'flipper_length_mm', source=source, legend_label=species,
+              color=color_map[species], size=10, fill_alpha=0.6)
+    
+    x, y = get_regression_data_sm(subset, 'bill_length_mm', 'flipper_length_mm')
+    p.line(x, y, color=color_map[species], line_width=2, legend_label=species)
+
+p.legend.title = "Species"
+p.legend.location = "top_left"
+p.background_fill_color = "white"
+p.border_fill_color = "white"
+p.outline_line_color = None
+
+show(p)
 ```
 ### altair
 ```{python}
-(alt.Chart(penguins)
+points = alt.Chart(penguins).mark_point(size=100, filled=True).encode(
+    x=alt.X("bill_length_mm", scale=alt.Scale(zero=False), title="Bill length (mm)", axis=alt.Axis(tickCount=5, grid=False)),
+    y=alt.Y("flipper_length_mm", scale=alt.Scale(zero=False), title="Flipper length (mm)", axis=alt.Axis(tickCount=5, grid=False)),
+    color="species:N",
+    shape="species:N",
+    tooltip=[
+        alt.Tooltip("bill_length_mm", title="Bill length (mm)"),
+        alt.Tooltip("flipper_length_mm", title="Flipper length (mm)"),
+        alt.Tooltip("species", title="Species")
+    ]
+)
+
+points = (alt.Chart(penguins)
   .mark_point(size=100, filled=True)
   .encode(
     x = alt.X("bill_length_mm", 
@@ -77,10 +161,23 @@ Let"s start with an advanced example that combines many different aesthetics at 
     tooltip = [alt.Tooltip("bill_length_mm", title = "Bill length (mm)"),
                alt.Tooltip("flipper_length_mm", title = "Flipper length (mm)"),
                alt.Tooltip("species", title = "Species")])
+)
+
+regression_lines = (alt.Chart(penguins)
+  .transform_regression(
+    "bill_length_mm", "flipper_length_mm", groupby=["species"])
+  .mark_line()
+  .encode(
+    x="bill_length_mm:Q", y="flipper_length_mm:Q", color="species:N"
+  )
+)
+
+chart = ((points + regression_lines)
   .properties(title = "Bill length vs. flipper length")
   .configure_view(stroke = "transparent", fill = "white")
   .configure_axis(labelFontSize = 10, titleFontSize = 12)
 )
+chart
 ```
 ::: 
 
@@ -107,7 +204,13 @@ island_counts = (penguins
 ```
 ### bokeh
 ```{python}
+islands = island_counts["island"].unique().tolist()
 
+p = figure(x_range=islands)
+
+p.vbar(source=ColumnDataSource(island_counts),
+       x='island', top='n', width=0.9, line_color='white')
+show(p)
 ```
 ### altair
 ```{python}
@@ -140,7 +243,18 @@ Moreover, note that the `data` property is not available for histograms in `high
 ```
 ### bokeh
 ```{python}
+bin_size = 2
+bins = np.arange(start=penguins['bill_length_mm'].min(), stop=penguins['bill_length_mm'].max() + bin_size, step=bin_size)
+hist, edges = np.histogram(penguins['bill_length_mm'], bins=bins)
 
+source = ColumnDataSource(data=dict(top=hist, left=edges[:-1], right=edges[1:]))
+
+p = figure(tools = "hover")
+
+p.quad(bottom=0, top='top', left='left', right='right', source=source,
+       fill_color='skyblue', line_color='white')
+
+show(p)
 ```
 ### altair
 ```{python}
@@ -173,7 +287,29 @@ Note that `plotly` offers no out-of-the-box support for density curves as `ggplo
 ```
 ### bokeh
 ```{python}
+species_list = penguins['species'].unique()
 
+colors = Category10[len(species_list)]
+
+p = figure(title="Density of Penguin Body Mass by Species", 
+           x_axis_label="Body Mass (g)", y_axis_label="Density",
+           width=800, height=600)
+
+p.add_tools(HoverTool(tooltips=[("Species", "@species"), ("Body Mass (g)", "@body_mass_g"), ("Density", "@density")]))
+
+for i, species in enumerate(species_list):
+    subset = penguins[penguins['species'] == species]
+    body_mass = subset['body_mass_g'].dropna()
+    
+    kde = gaussian_kde(body_mass)
+    x_range = np.linspace(body_mass.min(), body_mass.max(), 100)
+    density = kde(x_range)
+
+    source = ColumnDataSource(data=dict(body_mass_g=x_range, density=density, species=[species]*len(x_range)))
+    
+    p.patch('body_mass_g', 'density', source=source, alpha=0.5, color=colors[i], legend_label=species)
+
+show(p)
 ```
 ### altair
 ```{python}
@@ -244,7 +380,17 @@ Scatter plots and regression lines are definitely the most common approach for v
 ```
 ### bokeh
 ```{python}
+fig_scatter = figure(
+  tools = ["hover"]
+)
 
+fig_scatter.circle(
+  source = ColumnDataSource(penguins),
+  x = "bill_length_mm", y = "flipper_length_mm", 
+  size = 10
+)
+
+show(fig_scatter)
 ```
 ### altair
 ```{python}
@@ -261,9 +407,7 @@ Scatter plots and regression lines are definitely the most common approach for v
 
 You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data. 
 
-In `ggplot2` you add the facet layer at the end, whereas in `plotly` you have to start with the facet grid at the beginning and map scatter plots across facets. However, I was not able to achieve two things in `plotly`: how can we have subtitles for each subplot similar to `ggplot2`? How can I have a shared legend across facets? If you have an idea, please create a comment below!
-
-For `highcharter`, I have no idea how to make shared legends or keep the axis in sync across subplots, while both are easily customizable in `ggplot2`.
+Facets in `bokeh` involve a more manual process because it doesn't have a direct equivalent of `plotly`'s `facet_col` parameter. Instead, you'll create individual plots for each facet and arrange them in a grid, which also means that you cannot have an automatically shared legend.
 
 ::: {.panel-tabset}
 ### plotly
@@ -276,7 +420,29 @@ px.scatter(
 ```
 ### bokeh
 ```{python}
+islands = penguins['island'].unique()
+species = penguins['species'].unique()
 
+color_mapper = CategoricalColorMapper(
+  factors=species, palette=['red', 'green', 'blue']
+)
+
+plots = []
+
+for island in islands:
+    penguins_subset = penguins[penguins['island'] == island]
+    
+    p = figure(tools="pan,wheel_zoom,box_zoom,reset", width=250, height=250)
+    
+    p.circle(x='bill_length_mm', y='flipper_length_mm', source=ColumnDataSource(penguins_subset),
+             color={'field': 'species', 'transform': color_mapper},
+             legend_field='species', size = 8)
+    
+    plots.append(p)
+
+grid = gridplot(plots, ncols = 3)
+
+show(grid)
 ```
 ### altair
 ```{python}
@@ -302,7 +468,7 @@ As a last example, we quickly dive into time series plots where you typically sh
 year_island_count = (penguins
   .groupby(['year', 'island'])
   .size()
-  .reset_index(name='n')
+  .reset_index(name = 'n')
 )
 
 px.line(year_island_count, 
@@ -311,7 +477,21 @@ px.line(year_island_count,
 ```
 ### bokeh
 ```{python}
+unique_islands = year_island_count['island'].unique()
+colors = ["blue", "green", "red"]
+dashes = ["solid", "dashed", "dotdash"] 
 
+color_mapper = CategoricalColorMapper(factors=unique_islands, palette=colors)
+
+p = figure(tools="pan,wheel_zoom,box_zoom,reset,hover")
+
+for i, island in enumerate(unique_islands):
+    year_island_count_subset = year_island_count[year_island_count['island'] == island]
+    p.line(x='year', y='n', source=ColumnDataSource(year_island_count_subset), 
+    legend_label=island, color=colors[i % len(colors)], 
+           line_dash=dashes[i % len(dashes)], line_width=2)
+
+show(p)
 ```
 ### altair
 ```{python}
