@@ -62,7 +62,25 @@ Let"s start with an advanced example that combines many different aesthetics at 
 ```
 ### altair
 ```{python}
-
+(alt.Chart(penguins)
+  .mark_point(size=100, filled=True)
+  .encode(
+    x = alt.X("bill_length_mm", 
+              scale = alt.Scale(zero = False), 
+              title = "Bill length (mm)", 
+              axis = alt.Axis(tickCount = 5, grid = False)),
+    y = alt.Y("flipper_length_mm", 
+              scale = alt.Scale(zero = False), 
+              title = "Flipper length (mm)", 
+              axis = alt.Axis(tickCount = 5, grid = False)),
+    color = "species:N", shape = "species:N",
+    tooltip = [alt.Tooltip("bill_length_mm", title = "Bill length (mm)"),
+               alt.Tooltip("flipper_length_mm", title = "Flipper length (mm)"),
+               alt.Tooltip("species", title = "Species")])
+  .properties(title = "Bill length vs. flipper length")
+  .configure_view(stroke = "transparent", fill = "white")
+  .configure_axis(labelFontSize = 10, titleFontSize = 12)
+)
 ```
 ::: 
 
@@ -93,7 +111,15 @@ island_counts = (penguins
 ```
 ### altair
 ```{python}
+island_counts = (penguins
+  .groupby("island")
+  .size()
+  .reset_index(name = "n")
+)
 
+(alt.Chart(island_counts)
+  .mark_bar().encode(x = "island", y = "n")
+)
 ```
 ::: 
 
@@ -125,7 +151,6 @@ Moreover, note that the `data` property is not available for histograms in `high
     y = alt.Y("count()"),
     tooltip = [alt.Tooltip('bill_length_mm:Q', bin = alt.Bin(step = 2)),
                alt.Tooltip('count()')])
-  .interactive()
 )
 ```
 ::: 
@@ -152,7 +177,15 @@ Note that `plotly` offers no out-of-the-box support for density curves as `ggplo
 ```
 ### altair
 ```{python}
-
+(alt.Chart(penguins)
+  .transform_density("body_mass_g", 
+                     as_ = ["body_mass_g", "density"], groupby = ["species"])
+  .mark_area(opacity = 0.5)
+  .encode(
+    x = alt.X("body_mass_g:Q"), y = alt.Y("density:Q"),
+    color = "species:N", tooltip = ["species:N", "body_mass_g:Q"]
+  )
+)
 ```
 :::
 
@@ -170,8 +203,8 @@ species_island_counts = (penguins
   .assign(percentage = lambda x: x["n"] / x.groupby("species")["n"].transform("sum"))
 )
 
-px.bar(species_island_counts, x = 'species', y = 'percentage', 
-       color = 'island', barmode = 'stack')
+px.bar(species_island_counts, x = "species", y = "percentage", 
+       color = "island", barmode = "stack")
 ```
 ### bokeh
 ```{python}
@@ -179,13 +212,28 @@ px.bar(species_island_counts, x = 'species', y = 'percentage',
 ```
 ### altair
 ```{python}
+species_island_counts = (penguins
+  .groupby(["species", "island"])
+  .size()
+  .reset_index(name = "n")
+  .assign(percentage = lambda x: x["n"] / x.groupby("species")["n"].transform("sum"))
+)
 
+(alt.Chart(species_island_counts)
+  .mark_bar()
+  .encode(
+    x = "species", y = "percentage", color = "island",
+    order = alt.Order("island", sort = "ascending"),
+    tooltip = ["species", "island", "percentage"])
+)
 ```
 ::: 
 
 ## Two numerical columns
 
 Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns and we focus on scatter plots for this example (see the first visualization example if you want to see again how to add a regression line). Here, the `size` parameter controls the size of the shapes that you use for the data points in `ggiraph::geom_point_interactive()` relative to the base size (i.e., it is not tied to any unit of measurement like pixels). For `plotly.plot_ly(type = "scatter")` you also have the `size` to control point sizes manually through the `marker` options, where size is measured in pixels. For `highcharter`, you can specify point sizes via `radius` in the `marker` options, where it is also measured in pixels (so to get points with diameter 10 pixels, you need a radius of 5).
+
+`altair` axis ranges by default includes 0, you need to manually tell the scale to ignore it.   
 
 ::: {.panel-tabset}
 ### plotly
@@ -200,7 +248,12 @@ Scatter plots and regression lines are definitely the most common approach for v
 ```
 ### altair
 ```{python}
-
+(alt.Chart(penguins)
+  .mark_circle(size = 100)
+  .encode(x = alt.X("bill_length_mm", scale = alt.Scale(zero = False)),
+          y = alt.Y("flipper_length_mm", scale = alt.Scale(zero = False)),
+          tooltip = ["bill_length_mm", "flipper_length_mm"])
+)
 ```
 ::: 
 
@@ -227,7 +280,15 @@ px.scatter(
 ```
 ### altair
 ```{python}
-
+(alt.Chart(penguins)
+  .mark_circle()
+  .encode(
+    x = alt.X("bill_length_mm", scale = alt.Scale(zero = False)),
+    y = alt.Y("flipper_length_mm", scale = alt.Scale(zero = False)),
+    tooltip = ["bill_length_mm", "flipper_length_mm"],
+    color = "species:N")
+  .facet(column = "island:N")
+)
 ```
 ::: 
 
@@ -245,7 +306,8 @@ year_island_count = (penguins
 )
 
 px.line(year_island_count, 
-        x = "year", y = "n", color = "island", line_shape = "linear")
+        x = "year", y = "n", 
+        color = "island", line_shape = "linear", line_dash = "island")
 ```
 ### bokeh
 ```{python}
@@ -253,7 +315,13 @@ px.line(year_island_count,
 ```
 ### altair
 ```{python}
-
+(alt.Chart(year_island_count)
+  .mark_line()
+  .encode(
+    x = "year:T", y = "n:Q",
+    color = "island:N", strokeDash = "island:N",
+    tooltip = ["year", "n", "island"])
+)
 ```
 ::: 
 
