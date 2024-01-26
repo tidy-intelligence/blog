@@ -1,0 +1,14 @@
+---
+title: "Tidy Panel Regressions: fixest vs pyfixest"
+description: "A comparison of panel regressions in R and Python."
+metadata:
+  pagetitle: "Tidy Panel Regressions: fixest vs pyfixest"
+  
+author: "Christoph Scheuch"
+date: "2024-01-31" 
+image: thumbnail.png
+image-alt: Created with DALL-E 3.
+draft: true
+---
+
+Template
