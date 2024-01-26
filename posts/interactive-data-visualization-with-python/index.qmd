@@ -1,6 +1,6 @@
 ---
 title: "Interactive Data Visualization with Python: plotly vs bokeh vs altair"
-description: "A comparison of dynamic visualization packages for the programming language Python."
+description: "A comparison of dynamic visualization libraries for the programming language Python."
 metadata:
   pagetitle: "Interactive Data Visualization with Python: plotly vs bokeh vs altair"
 author: "Christoph Scheuch"
@@ -10,142 +10,138 @@ image-alt: An eagle, a hummingbird, and a butterfly are in front of a computer s
 draft: true
 ---
 
-Interactive figures are an essential tool for communicating data insights, in particular in reports or dashboards. In this blog post, I compare different packages for dynamic data visualization in Python. Before we dive into the comparison, here is a quick introduction to each contestant. 
+Interactive figures are an essential tool for communicating data insights, in particular in reports or dashboards. In this blog post, I compare different libraries for dynamic data visualization in Python. Before we dive into the comparison, here is a quick introduction to each contestant. 
 
-`plotly` https://plotly.com/python/getting-started/
+`plotly` is an interactive, open-source plotting library that enable the creation of publication-quality figures. It supports a wide range of chart types including line charts, scatter plots, bar charts, pie charts, bubble charts, heatmaps, and more advanced visualizations like 3D plots and geographical maps. One of the key features of `plotly` is its ability to produce interactive plots that users can zoom, pan, and hover over, providing tooltips and additional information, which makes it highly effective for data exploration and presentation.
 
-`bokeh` https://docs.bokeh.org/en/latest/docs/first_steps.html#first-steps
+`bokeh` is a powerful, flexible library for creating interactive plots and dashboards in the web browser. It is designed to help users create elegant, concise constructions of versatile graphics with high-performance interactivity over very large or streaming datasets. One of the core features of `bokeh` is its ability to generate dynamic javascript plots directly from Python code, which means you can harness the interactivity of web technologies without needing to write any javascript yourself. The plots can be embedded in HTML pages or served as standalone applications, making it a versatile choice for web development and data analysis tasks.
 
-`altair` https://altair-viz.github.io/getting_started/starting.html
+`altair` is a declarative statistical visualization library, designed to create interactive visualizations with a minimal amount of code. It is built on top of the powerful Vega and Vega-Lite visualization grammars, enabling the construction of a wide range of statistical plots with a simple and intuitive syntax. One of the key advantages of `altair` is its emphasis on data-driven visualization design. By allowing users to think about their data first and foremost, Altair facilitates the exploration and `altair`understanding of complex datasets. 
 
-I compare code to generate ... output in the post below. The types of plots that I chose for the comparison heavily draw on the examples given in [R for Data Science](https://r4ds.hadley.nz/data-visualize) - an amazing resource if you want to get started with data visualization. Spoiler alert: I'm not always able to replicate the same figure with all approaches (yet).
+I compare code to generate `plotly`, `bokeh`, and `altair` output in the post below. The types of plots that I chose for the comparison heavily draw on the examples given in [R for Data Science](https://r4ds.hadley.nz/data-visualize) - an amazing resource if you want to get started with data visualization. Spoiler alert: I'm not always able to replicate the same figure with all approaches (yet).
 
-# Loading packages and data
+# Loading libraries and data
 
-We start by loading the main packages of interest (`plotly`, `bokeh`, `altair`) and `palmerpenguins` data. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don't want to get into related messages in this post. 
+We start by loading a dew data manipulation libraries, the main libraries and modules of interest, and `palmerpenguins` data. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don't want to get into related messages in this post. 
 
 ```{python}
+# Load data manipulation libraries
 import pandas as pd
 import numpy as np
+import statsmodels.api as sm
 from scipy.stats import gaussian_kde
 
+# Load plotly visualization modules
 import plotly.express as px
+import plotly.graph_objs as go
 
-import altair as alt
-
+# Load bokeh visualization modules
 from bokeh.plotting import figure, show
 from bokeh.io import output_notebook
-from bokeh.models import ColumnDataSource, CategoricalColorMapper, HoverTool
+from bokeh.models import ColumnDataSource, CategoricalColorMapper, HoverTool, FactorRange
 from bokeh.layouts import gridplot
 from bokeh.transform import factor_cmap
 from bokeh.palettes import Spectral6, Category10
 output_notebook()
 
-from palmerpenguins import load_penguins
+# Load altair visualization library
+import altair as alt
 
+# Load penguins data
+from palmerpenguins import load_penguins
 penguins = load_penguins().dropna()
 ```
 
 # A full-blown example
 
-Let"s start with an advanced example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. You can click through the results in the tabs below. 
+Let's start with an advanced example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. You can click through the results in the tabs below. 
+
+Note that we have to manually add regression lines for `plotly` and `bokeh`, while `altair` has built-in support for them. 
 
 ::: {.panel-tabset}
 ### plotly
 ```{python}
 #| warning: false
-import statsmodels.api as sm
-import plotly.graph_objs as go
-
-fig = (px.scatter(
+fig_full = (px.scatter(
     penguins, x = "bill_length_mm", y = "flipper_length_mm", 
     color = "species", symbol = "species",
     title = "Bill length vs. flipper length",
-    labels={"bill_length_mm": "Bill length (mm)", 
-            "flipper_length_mm": "Flipper length (mm)",
-            "species": "Species"})
+    labels = {"bill_length_mm": "Bill length (mm)", 
+              "flipper_length_mm": "Flipper length (mm)",
+              "species": "Species"})
   .update_traces(marker = dict(size = 10))
   .update_layout(
-    plot_bgcolor = 'white',
+    plot_bgcolor = "white",
     xaxis = dict(zeroline = False, ticklen = 5),
     yaxis = dict(zeroline = False, ticklen = 5))
 )
 
-for species in penguins['species'].unique():
-    subset = penguins[penguins['species'] == species]
-    X = subset['bill_length_mm']
-    X = sm.add_constant(X)
-    y = subset['flipper_length_mm']
+for species in penguins["species"].unique():
+  penguins_subset = penguins[penguins["species"] == species]
+  X = penguins_subset["bill_length_mm"]
+  X = sm.add_constant(X)
+  y = penguins_subset["flipper_length_mm"]
 
-    model = sm.OLS(y, X).fit()
-    line = model.params[0] + model.params[1] * subset['bill_length_mm']
+  model = sm.OLS(y, X).fit()
+  line = model.params[0] + model.params[1] * penguins_subset["bill_length_mm"]
 
-    fig.add_trace(go.Scatter(x=subset['bill_length_mm'], y=line, mode='lines', showlegend=False))
+  fig_full.add_trace(
+    go.Scatter(x = penguins_subset["bill_length_mm"], y = line, 
+               mode = "lines", showlegend = False)
+  )
 
-fig.show()
+fig_full
 ```
 ### bokeh
 ```{python}
-def get_regression_data_sm(df, x_col, y_col):
-    X = df[[x_col]]
+fig_full = figure(
+  title = "Bill length vs. flipper length",
+  x_axis_label = "Bill length (mm)", y_axis_label = "Flipper length (mm)",
+  tools = "pan,wheel_zoom,box_zoom,reset,hover",
+  tooltips = [
+    ("Bill length (mm)", "@bill_length_mm"),
+    ("Flipper length (mm)", "@flipper_length_mm"),
+    ("Species", "@species")
+  ]
+)
+
+species = penguins["species"].unique()
+color_map = {
+  species: color for species, color in zip(species, ["red", "green", "blue"])
+}  
+
+for species in species:
+    penguins_subset = penguins[penguins["species"] == species]
+
+    fig_full.scatter(
+      source = ColumnDataSource(penguins_subset),
+      x = "bill_length_mm", y = "flipper_length_mm", 
+      legend_label = species, color = color_map[species], 
+      size = 10, fill_alpha = 0.6
+    )
+              
+    X = penguins_subset["bill_length_mm"]
     X = sm.add_constant(X)
-    y = df[y_col]
-    
+    y = penguins_subset["flipper_length_mm"]
+
     model = sm.OLS(y, X).fit()
     predictions = model.predict(X)
-    
-    plot_df = pd.DataFrame({
-        x_col: df[x_col],
-        y_col: predictions
-    })
-    
-    plot_df.sort_values(by=x_col, inplace=True)
-    
-    return plot_df[x_col], plot_df[y_col]
 
-p = figure(title="Bill length vs. flipper length",
-           x_axis_label="Bill length (mm)", y_axis_label="Flipper length (mm)",
-           tools="hover", tooltips=[
-               ("Bill length (mm)", "@bill_length_mm"),
-               ("Flipper length (mm)", "@flipper_length_mm"),
-               ("Species", "@species")
-           ], toolbar_location=None)
+    fig_full.line(
+      penguins_subset["bill_length_mm"], predictions, 
+      color =color_map[species], line_width = 2, legend_label = species
+    )
 
-species_list = penguins['species'].unique().tolist()
-color_map = {species: color for species, color in zip(species_list, ['blue', 'green', 'red'])}  
-
-for species in species_list:
-    subset = penguins[penguins['species'] == species]
-    source = ColumnDataSource(subset)
-
-    p.scatter('bill_length_mm', 'flipper_length_mm', source=source, legend_label=species,
-              color=color_map[species], size=10, fill_alpha=0.6)
-    
-    x, y = get_regression_data_sm(subset, 'bill_length_mm', 'flipper_length_mm')
-    p.line(x, y, color=color_map[species], line_width=2, legend_label=species)
-
-p.legend.title = "Species"
-p.legend.location = "top_left"
-p.background_fill_color = "white"
-p.border_fill_color = "white"
-p.outline_line_color = None
-
-show(p)
+fig_full.legend.title = "Species"
+fig_full.legend.location = "top_left"
+fig_full.background_fill_color = "white"
+fig_full.border_fill_color = "white"
+fig_full.outline_line_color = None
+ 
+show(fig_full)
 ```
 ### altair
 ```{python}
-points = alt.Chart(penguins).mark_point(size=100, filled=True).encode(
-    x = alt.X("bill_length_mm", scale=alt.Scale(zero=False), title="Bill length (mm)", axis=alt.Axis(tickCount=5, grid=False)),
-    y=alt.Y("flipper_length_mm", scale=alt.Scale(zero=False), title="Flipper length (mm)", axis=alt.Axis(tickCount=5, grid=False)),
-    color="species:N",
-    shape="species:N",
-    tooltip=[
-        alt.Tooltip("bill_length_mm", title="Bill length (mm)"),
-        alt.Tooltip("flipper_length_mm", title="Flipper length (mm)"),
-        alt.Tooltip("species", title="Species")
-    ]
-)
-
 points = (alt.Chart(penguins)
   .mark_point(size=100, filled=True)
   .encode(
@@ -165,19 +161,22 @@ points = (alt.Chart(penguins)
 
 regression_lines = (alt.Chart(penguins)
   .transform_regression(
-    "bill_length_mm", "flipper_length_mm", groupby=["species"])
+    "bill_length_mm", "flipper_length_mm", groupby = ["species"]
+  )
   .mark_line()
   .encode(
-    x="bill_length_mm:Q", y="flipper_length_mm:Q", color="species:N"
+    x = "bill_length_mm:Q", y = "flipper_length_mm:Q", 
+    color = "species:N"
   )
 )
 
-chart = ((points + regression_lines)
+fig_full = ((points + regression_lines)
   .properties(title = "Bill length vs. flipper length")
   .configure_view(stroke = "transparent", fill = "white")
   .configure_axis(labelFontSize = 10, titleFontSize = 12)
 )
-chart
+
+fig_full
 ```
 ::: 
 
@@ -185,9 +184,7 @@ chart
 
 ## A categorical variable
 
-Let's break down the differences in smaller steps by focusing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then `ggiraph::geom_bar_interactive()`, `plotly::plot_ly(type = "bar")` and `highcharter::hchart(type = "column")` are your friends. However, to show the counts, you have to manually prepare the data for `plot_ly()` and `hchart()` (as far as I know).
-
-Notice how you have to manually specify the `tooltip` to show the counts on hover in `geom_bar_interactive()` and that `data_id` determines which bar is highlighted on hover. 
+Let's break down the differences in smaller steps by focusing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then bar charts are your friends. The code chunks below show you how to implement them for each approach. 
 
 ::: {.panel-tabset}
 ### plotly
@@ -204,13 +201,20 @@ island_counts = (penguins
 ```
 ### bokeh
 ```{python}
-islands = island_counts["island"].unique().tolist()
+island_counts = (penguins
+  .groupby("island")
+  .size()
+  .reset_index(name = "n")
+)
 
-p = figure(x_range=islands)
+islands = island_counts["island"].unique()
 
-p.vbar(source=ColumnDataSource(island_counts),
-       x='island', top='n', width=0.9, line_color='white')
-show(p)
+fig_bar = figure(x_range = islands,
+                 tools = "pan,wheel_zoom,box_zoom,reset,hover")
+
+fig_bar.vbar(source = ColumnDataSource(island_counts),
+             x = "island", top = "n", width = 0.9, line_color = "white")
+show(fig_bar)
 ```
 ### altair
 ```{python}
@@ -221,18 +225,16 @@ island_counts = (penguins
 )
 
 (alt.Chart(island_counts)
-  .mark_bar().encode(x = "island", y = "n")
+  .mark_bar()
+  .encode(x = "island", y = "n",
+          tooltip = ["island", "n"])
 )
 ```
 ::: 
 
 ## A numerical variable
 
-If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. `ggiraph::geom_histogram_interactive()`, `plotly::plot_ly(type = "histogram")`, `highcharter::hchart()` with options to control bin widths or number of bins are the functions for this task.
-
-Note that the binning algorithms are different across the approaches: while `ggpplot2` creates bins around a midpoint (e.g. 34), `plotly` and `highcharter` create bins across a range (e.g. between 34-35.9). This leads to seemingly different histograms, but none of them is wrong.  
-
-Moreover, note that the `data` property is not available for histograms in `highcharter`, unlike most other Highcharts series,^[See the official documentation [here](https://www.highcharts.com/docs/chart-and-series-types/histogram-series).], so we need to pass `penguins$bill_length_mm`. This is tidy anti-pattern and cost me quite some time to figure out. 
+If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. You can quickly create histograms in `plotly` and `altair`, while you have to manually construct the the histogram from individual bars in `bokeh`.
 
 ::: {.panel-tabset}
 ### plotly
@@ -244,17 +246,26 @@ Moreover, note that the `data` property is not available for histograms in `high
 ### bokeh
 ```{python}
 bin_size = 2
-bins = np.arange(start=penguins['bill_length_mm'].min(), stop=penguins['bill_length_mm'].max() + bin_size, step=bin_size)
-hist, edges = np.histogram(penguins['bill_length_mm'], bins=bins)
+bins = np.arange(
+  start = penguins["bill_length_mm"].min(), 
+  stop = penguins["bill_length_mm"].max() + bin_size, 
+  step = bin_size
+)
+hist, edges = np.histogram(penguins["bill_length_mm"], bins = bins)
 
-source = ColumnDataSource(data=dict(top=hist, left=edges[:-1], right=edges[1:]))
+source = ColumnDataSource(
+  data = dict(top = hist, left = edges[:-1], right = edges[1:])
+)
 
-p = figure(tools = "hover")
+fig_histogram = figure(tools = "pan,wheel_zoom,box_zoom,reset,hover")
 
-p.quad(bottom=0, top='top', left='left', right='right', source=source,
-       fill_color='skyblue', line_color='white')
+fig_histogram.quad(
+  source = source, 
+  bottom = 0, top = "top", left = "left", right = "right",
+  fill_color = "skyblue", line_color = "white"
+)
 
-show(p)
+show(fig_histogram)
 ```
 ### altair
 ```{python}
@@ -263,8 +274,9 @@ show(p)
   .encode(
     x = alt.X("bill_length_mm:Q", bin = alt.Bin(step = 2)),
     y = alt.Y("count()"),
-    tooltip = [alt.Tooltip('bill_length_mm:Q', bin = alt.Bin(step = 2)),
-               alt.Tooltip('count()')])
+    tooltip = [alt.Tooltip("bill_length_mm:Q", bin = alt.Bin(step = 2)),
+               alt.Tooltip("count()")]
+  )
 )
 ```
 ::: 
@@ -273,9 +285,7 @@ show(p)
 
 ## A numerical and a categorical variable
 
-To visualize relationships, you need to have at least two columns. If you have a numerical and a categorical variable, then histograms or densities with groups are a good starting point. The next example illustrates the use of densities via `ggiraph::geom_density_interactive()` and `plotly::plot_ly(histnorm = "probability density)`. For `highcharter`, you need to comute the density estimates yourself and then add them as lines to a plot. 
-
-Note that `plotly` offers no out-of-the-box support for density curves as `ggplot2`, so we'd have to manually create densities and draw the curves. Also, note that it is currently not possible to use the `after_stat(density)` aesthetic in the tooltip. 
+To visualize relationships, you need to have at least two columns. If you have a numerical and a categorical variable, then histograms or densities with groups are a good starting point. The next example illustrates the use of densities. `plotly` and `altair` have built-in support for densities, while you have to manually compute the densities in `bokeh`.
 
 ::: {.panel-tabset}
 ### plotly
@@ -287,29 +297,31 @@ Note that `plotly` offers no out-of-the-box support for density curves as `ggplo
 ```
 ### bokeh
 ```{python}
-species_list = penguins['species'].unique()
+species = penguins["species"].unique()
 
-colors = Category10[len(species_list)]
+colors = Category10[len(species)]
 
-p = figure(title="Density of Penguin Body Mass by Species", 
-           x_axis_label="Body Mass (g)", y_axis_label="Density",
-           width=800, height=600)
+fig_densities = figure(tools = "pan,wheel_zoom,box_zoom,reset,hover")
 
-p.add_tools(HoverTool(tooltips=[("Species", "@species"), ("Body Mass (g)", "@body_mass_g"), ("Density", "@density")]))
-
-for i, species in enumerate(species_list):
-    subset = penguins[penguins['species'] == species]
-    body_mass = subset['body_mass_g'].dropna()
+for j, species in enumerate(species):
+    penguins_subset = penguins[penguins["species"] == species]
+    body_mass = penguins_subset["body_mass_g"].dropna()
     
     kde = gaussian_kde(body_mass)
     x_range = np.linspace(body_mass.min(), body_mass.max(), 100)
     density = kde(x_range)
 
-    source = ColumnDataSource(data=dict(body_mass_g=x_range, density=density, species=[species]*len(x_range)))
+    source = ColumnDataSource(
+      data = dict(body_mass_g = x_range, density = density, species = [species]*len(x_range))
+    )
     
-    p.patch('body_mass_g', 'density', source=source, alpha=0.5, color=colors[i], legend_label=species)
+    fig_densities.patch(
+      source = source, 
+      x = "body_mass_g", y = "density", 
+      alpha = 0.5, color = colors[j], legend_label = species
+    )
 
-show(p)
+show(fig_densities)
 ```
 ### altair
 ```{python}
@@ -327,16 +339,18 @@ show(p)
 
 ## Two categorical columns
 
-Stacked bar plots are a good way to display the relationship between two categorical columns. `geom_bar_interactive()` with the `position` argument, `plotly::plot_ly(type = "bar")` and `highcharter::hchart(type = "column")` are your aesthetics of choice for this task. Note that you can easily switch to counts by using `position = "identity"` in `ggplotl2` instead of relative frequencies as in the example below, while you have to manually prepare the data to funnel counts or percentages to `plotly` and `highcharter`, while `ggplot2` handles these things automatically. 
+Stacked bar plots are a good way to display the relationship between two categorical columns. For `plotly` and `altair`, we simply compute the percentages by species and island and put them into the bar plotting functions. Note that `bokeh` is peculiar because it requires the data in wide format for stacked bar charts. 
 
 ::: {.panel-tabset}
 ### plotly
 ```{python}
 species_island_counts = (penguins
-  .groupby(['species', 'island'])
+  .groupby(["species", "island"])
   .size()
-  .reset_index(name="n")
-  .assign(percentage = lambda x: x["n"] / x.groupby("species")["n"].transform("sum"))
+  .reset_index(name = "n")
+  .assign(
+    percentage = lambda x: x["n"] / x.groupby("species")["n"].transform("sum")
+  )
 )
 
 px.bar(species_island_counts, x = "species", y = "percentage", 
@@ -344,7 +358,29 @@ px.bar(species_island_counts, x = "species", y = "percentage",
 ```
 ### bokeh
 ```{python}
+species_island_counts = (penguins
+  .groupby(["species", "island"])
+  .size()
+  .reset_index(name = "n")
+  .assign(
+    percentage = lambda x: x["n"] / x.groupby("species")["n"].transform("sum")
+  )
+)
 
+species_island_counts_wide = (species_island_counts
+  .pivot(index = "species", columns = "island", values = "percentage")
+  .fillna(0)
+)
+
+fig_stacked = figure(x_range = penguins["species"].unique())
+
+fig_stacked .vbar_stack(
+  source = ColumnDataSource(data = species_island_counts_wide), 
+  stackers = penguins["island"].unique(), x = "species", 
+  width = 0.9, color = ["red", "blue", "green"]
+)
+
+show(fig_stacked)
 ```
 ### altair
 ```{python}
@@ -352,7 +388,9 @@ species_island_counts = (penguins
   .groupby(["species", "island"])
   .size()
   .reset_index(name = "n")
-  .assign(percentage = lambda x: x["n"] / x.groupby("species")["n"].transform("sum"))
+  .assign(
+    percentage = lambda x: x["n"] / x.groupby("species")["n"].transform("sum")
+  )
 )
 
 (alt.Chart(species_island_counts)
@@ -360,16 +398,15 @@ species_island_counts = (penguins
   .encode(
     x = "species", y = "percentage", color = "island",
     order = alt.Order("island", sort = "ascending"),
-    tooltip = ["species", "island", "percentage"])
+    tooltip = ["species", "island", "percentage"]
+  )
 )
 ```
 ::: 
 
 ## Two numerical columns
 
-Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns and we focus on scatter plots for this example (see the first visualization example if you want to see again how to add a regression line). Here, the `size` parameter controls the size of the shapes that you use for the data points in `ggiraph::geom_point_interactive()` relative to the base size (i.e., it is not tied to any unit of measurement like pixels). For `plotly.plot_ly(type = "scatter")` you also have the `size` to control point sizes manually through the `marker` options, where size is measured in pixels. For `highcharter`, you can specify point sizes via `radius` in the `marker` options, where it is also measured in pixels (so to get points with diameter 10 pixels, you need a radius of 5).
-
-`altair` axis ranges by default includes 0, you need to manually tell the scale to ignore it.   
+Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns and we focus on scatter plots for this example (see the first visualization example if you want to see again how to add a regression line). Note that `altair` axis ranges by default includes 0,so  you need to manually tell the scale to ignore it.   
 
 ::: {.panel-tabset}
 ### plotly
@@ -380,9 +417,7 @@ Scatter plots and regression lines are definitely the most common approach for v
 ```
 ### bokeh
 ```{python}
-fig_scatter = figure(
-  tools = ["hover"]
-)
+fig_scatter = figure(tools = "pan,wheel_zoom,box_zoom,reset,hover")
 
 fig_scatter.circle(
   source = ColumnDataSource(penguins),
@@ -396,9 +431,11 @@ show(fig_scatter)
 ```{python}
 (alt.Chart(penguins)
   .mark_circle(size = 100)
-  .encode(x = alt.X("bill_length_mm", scale = alt.Scale(zero = False)),
-          y = alt.Y("flipper_length_mm", scale = alt.Scale(zero = False)),
-          tooltip = ["bill_length_mm", "flipper_length_mm"])
+  .encode(
+    x = alt.X("bill_length_mm", scale = alt.Scale(zero = False)),
+    y = alt.Y("flipper_length_mm", scale = alt.Scale(zero = False)),
+    tooltip = ["bill_length_mm", "flipper_length_mm"]
+  )
 )
 ```
 ::: 
@@ -407,7 +444,7 @@ show(fig_scatter)
 
 You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data. 
 
-Facets in `bokeh` involve a more manual process because it doesn't have a direct equivalent of `plotly`'s `facet_col` parameter. Instead, you'll create individual plots for each facet and arrange them in a grid, which also means that you cannot have an automatically shared legend.
+Facets in `bokeh` involve a more manual process because it doesn't have a direct equivalent of `plotly`'s `facet_col` parameter or `altair`'s `facet()` method. Instead, you'll create individual plots for each facet and arrange them in a grid, which also means that you cannot have an automatically shared legend.
 
 ::: {.panel-tabset}
 ### plotly
@@ -420,29 +457,30 @@ px.scatter(
 ```
 ### bokeh
 ```{python}
-islands = penguins['island'].unique()
-species = penguins['species'].unique()
+islands = penguins["island"].unique()
+species = penguins["species"].unique()
 
 color_mapper = CategoricalColorMapper(
-  factors=species, palette=['red', 'green', 'blue']
+  factors = species, palette = ["red", "green", "blue"]
 )
 
 plots = []
-
 for island in islands:
-    penguins_subset = penguins[penguins['island'] == island]
+  penguins_subset = penguins[penguins["island"] == island]
     
-    p = figure(tools="pan,wheel_zoom,box_zoom,reset", width=250, height=250)
+  p = figure(tools="pan,wheel_zoom,box_zoom,reset", 
+             width = 250, height = 250)
     
-    p.circle(x='bill_length_mm', y='flipper_length_mm', source=ColumnDataSource(penguins_subset),
-             color={'field': 'species', 'transform': color_mapper},
-             legend_field='species', size = 8)
+  p.circle(x = "bill_length_mm", y = "flipper_length_mm", 
+           source = ColumnDataSource(penguins_subset),
+           color = {"field": "species", "transform": color_mapper},
+           legend_field = "species", size = 8)
     
-    plots.append(p)
+  plots.append(p)
 
-grid = gridplot(plots, ncols = 3)
+fig_grid = gridplot(plots, ncols = 3)
 
-show(grid)
+show(fig_grid)
 ```
 ### altair
 ```{python}
@@ -452,7 +490,8 @@ show(grid)
     x = alt.X("bill_length_mm", scale = alt.Scale(zero = False)),
     y = alt.Y("flipper_length_mm", scale = alt.Scale(zero = False)),
     tooltip = ["bill_length_mm", "flipper_length_mm"],
-    color = "species:N")
+    color = "species:N"
+  )
   .facet(column = "island:N")
 )
 ```
@@ -460,15 +499,15 @@ show(grid)
 
 # Time series
 
-As a last example, we quickly dive into time series plots where you typically show multiple lines over some date vector. Here, I aggregate the number of penguins by year and island and plot the corresponding lines. All packages behave as expected and show similar output. 
+As a last example, we quickly dive into time series plots where you typically show multiple lines over some date vector. Here, I aggregate the number of penguins by year and island and plot the corresponding lines. While you can simply define colors and line types in `plotly` and `altair` plotting functions, you have to manually loop in `bokeh`. 
 
 ::: {.panel-tabset}
 ### plotly
 ```{python}
 year_island_count = (penguins
-  .groupby(['year', 'island'])
+  .groupby(["year", "island"])
   .size()
-  .reset_index(name = 'n')
+  .reset_index(name = "n")
 )
 
 px.line(year_island_count, 
@@ -477,21 +516,26 @@ px.line(year_island_count,
 ```
 ### bokeh
 ```{python}
-unique_islands = year_island_count['island'].unique()
+islands = year_island_count["island"].unique()
 colors = ["blue", "green", "red"]
 dashes = ["solid", "dashed", "dotdash"] 
 
-color_mapper = CategoricalColorMapper(factors=unique_islands, palette=colors)
+fig_time_series = figure(tools = "pan,wheel_zoom,box_zoom,reset,hover")
 
-p = figure(tools="pan,wheel_zoom,box_zoom,reset,hover")
+for j, island in enumerate(islands):
+  year_island_count_subset = year_island_count[
+    year_island_count["island"] == island
+  ]
+  
+  fig_time_series.line(
+    source = ColumnDataSource(year_island_count_subset),
+    x = "year", y = "n", 
+    legend_label = island, 
+    color = colors[j % len(colors)], 
+    line_dash = dashes[j % len(dashes)], line_width = 2
+  ) 
 
-for i, island in enumerate(unique_islands):
-    year_island_count_subset = year_island_count[year_island_count['island'] == island]
-    p.line(x='year', y='n', source=ColumnDataSource(year_island_count_subset), 
-    legend_label=island, color=colors[i % len(colors)], 
-           line_dash=dashes[i % len(dashes)], line_width=2)
-
-show(p)
+show(fig_time_series)
 ```
 ### altair
 ```{python}
@@ -500,11 +544,12 @@ show(p)
   .encode(
     x = "year:T", y = "n:Q",
     color = "island:N", strokeDash = "island:N",
-    tooltip = ["year", "n", "island"])
+    tooltip = ["year", "n", "island"]
+  )
 )
 ```
 ::: 
 
 # Conclusion
 
-...
+`plotly`, `bokeh`, and `altair` each cater to distinct visualization needs in Python. `plotly` shines with its interactive, high-quality visuals and ease of embedding in web applications, making it ideal for creating complex interactive charts and dashboards. `bokeh` is focused on real-time data visualizations and interactivity, particularly suited for web apps that require dynamic data streaming. Its strength lies in the seamless integration of Python code with web technologies. `altair` offers a declarative approach, emphasizing simplicity and efficiency in creating elegant statistical visualizations with minimal code, making it ideal for exploratory data analysis in notebooks. 
