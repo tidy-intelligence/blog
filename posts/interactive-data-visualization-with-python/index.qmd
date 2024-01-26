@@ -6,7 +6,7 @@ metadata:
 author: "Christoph Scheuch"
 date: "2024-01-28" 
 image: thumbnail.png
-image-alt: ... . Created with DALL-E 3.
+image-alt: An eagle, a hummingbird, and a butterfly are in front of a computer screen displaying a simple pie chart with three colored sections, in a vibrant and welcoming office environment filled with plants and colorful decorations. Created with DALL-E 3.
 draft: true
 ---
 
@@ -135,7 +135,7 @@ show(p)
 ### altair
 ```{python}
 points = alt.Chart(penguins).mark_point(size=100, filled=True).encode(
-    x=alt.X("bill_length_mm", scale=alt.Scale(zero=False), title="Bill length (mm)", axis=alt.Axis(tickCount=5, grid=False)),
+    x = alt.X("bill_length_mm", scale=alt.Scale(zero=False), title="Bill length (mm)", axis=alt.Axis(tickCount=5, grid=False)),
     y=alt.Y("flipper_length_mm", scale=alt.Scale(zero=False), title="Flipper length (mm)", axis=alt.Axis(tickCount=5, grid=False)),
     color="species:N",
     shape="species:N",
