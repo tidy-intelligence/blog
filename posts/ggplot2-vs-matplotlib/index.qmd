@@ -7,6 +7,10 @@ author: "Christoph Scheuch"
 date: "2024-01-31" 
 image: thumbnail.png
 image-alt: An owl and a peacock are in front of a computer screen displaying a simple bar chart with three colored sections, in a vibrant and welcoming office environment filled with plants and colorful decorations. Created with DALL-E 3.
+categories: 
+  - R
+  - Python
+  - Visualization
 draft: true
 ---
 

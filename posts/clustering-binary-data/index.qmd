@@ -4,6 +4,9 @@ description: "An application of different unsupervised learning approaches to cl
 author: "Christoph Scheuch"
 date: "2023-11-25" 
 image: thumbnail.png
+categories: 
+  - R
+  - Unsupervised Learning
 ---
 
 In this post, I tackle the challenge to extract a small number of typical respondent profiles from a large scale survey with multiple yes-no questions. This type of setting corresponds to a classification problem without knowing the true labels of the observations – also known as unsupervised learning. 

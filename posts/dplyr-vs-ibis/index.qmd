@@ -7,6 +7,10 @@ author: "Christoph Scheuch"
 date: "2024-01-04" 
 image: thumbnail.png
 image-alt: An ibis bird, with its long, curved beak and distinctive white plumage, standing in a brightly lit environment. The bird is curiously looking at a single pair of shiny, metallic pliers lying on the ground. The surroundings are vibrant and well-lit, with a clear blue sky overhead and lush green grass underfoot. The scene captures a sense of curiosity and contrast between the natural bird and the man-made tool. Created with DALL-E 3.
+categories: 
+  - R
+  - Python
+  - Manipulation
 ---
 
 There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my other posts on [dplyr vs pandas](../dplyr-vs-pandas/index.qmd) and [dplyr vs polars](../dplyr-vs-polars/index.qmd)). However, if we want to do tidy data science in R, there is a clear forerunner: `dplyr`. In the world of Python, `ibis` has been around since 2015 but recently gained traction due to its appealing flexibility with respect to data backends. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks. 

@@ -8,6 +8,10 @@ author: "Christoph Scheuch"
 date: "2024-01-14" 
 image: thumbnail.png
 image-alt: An image of a bright and friendly office setting with two equally sized screens placed centrally. Each screen displays a simple line chart without any text or numbers. The office is very well-lit, giving a warm and inviting ambiance. The decor is colorful and cheerful, with a minimalist design. The two screens are on a sleek, modern desk in the center of the image. The line charts are clear and straightforward. The overall atmosphere of the office is lively and welcoming, with vibrant colors and ample natural light. Created with DALL-E 3.
+categories: 
+  - R
+  - Python
+  - Visualization
 ---
 
 Both `ggplot2` and `plotnine` are based on Leland Wilkinson's Grammar of Graphics, a set of principles for creating consistent and effective statistical graphics. This means they both use similar syntax and logic for constructing plots, making it relatively easy for users to transition between them. `ggplot2`, developed by Hadley Wickham, is a cornerstone of the R community and integrates seamlessly with other `tidyverse` packages. `plotnine`, on the other hand, is a Python package that attempts to bring `ggplot2` functionality and philosophy to Python users, but it is not part of a larger ecosystem (although it works well with `pandas`, Python's most popular data manipulation package).

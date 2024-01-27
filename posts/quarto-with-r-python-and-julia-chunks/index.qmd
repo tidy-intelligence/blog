@@ -7,6 +7,10 @@ author: "Christoph Scheuch"
 date: "2024-01-11" 
 image: thumbnail.png
 image-alt: ... Created with DALL-E 3.
+categories: 
+  - R
+  - Python
+  - Julia
 draft: true
 ---
 

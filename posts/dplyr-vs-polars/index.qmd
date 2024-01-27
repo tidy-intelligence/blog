@@ -7,6 +7,10 @@ author: "Christoph Scheuch"
 date: "2024-01-02" 
 image: thumbnail.png
 image-alt: A realistic polar bear sitting on a snowy landscape, looking curiously at a pair of pliers lying on the ground. The polar bear should have a thick, white coat and appear both majestic and inquisitive. The pliers are standard steel with red rubber grips, contrasting against the white snow. The scene is set in the Arctic with a clear blue sky and a few distant icebergs in the background. Created with DALL-E 3.
+categories: 
+  - R
+  - Python
+  - Manipulation
 ---
 
 There are a myriad of options to perform essential data manipulation tasks in R and Python (see, for instance, my other posts on [dplyr vs ibis](../dplyr-vs-ibis/index.qmd) and [dplyr vs pandas](../dplyr-vs-pandas/index.qmd)). However, if we want to do tidy data science in R, there is a clear forerunner: `dplyr`. In the world of Python, `polars` is a relatively new kid on the block that shares a lot of semantic with `dplyr`. In this blog post, I illustrate their syntactic similarities and highlight differences between these two packages that emerge for a few key tasks. 

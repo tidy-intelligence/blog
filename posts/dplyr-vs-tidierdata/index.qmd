@@ -7,6 +7,10 @@ author: "Christoph Scheuch"
 date: "2024-01-09" 
 image: thumbnail.png
 image-alt: A standard plastic broom stands upright on a lush green lawn, with its long handle and bristles clearly visible. Beside it is a large pair of pliers, about half the size of the broom, with detailed rubber handles. The background shows a serene landscape, with a sparkling lake visible in the distance, surrounded by gentle hills and a clear blue sky. Created with DALL-E 3.
+categories: 
+  - R
+  - Julia
+  - Manipulation
 ---
 
 ```{r}
