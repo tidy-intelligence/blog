@@ -1,7 +1,7 @@
 ---
 metadata:
   pagetitle: "Tidy Intelligence Blog"
-  description-meta: "Blog Posts about tidy data science with R, Python, and Julia."
+  description-meta: "Blog posts about tidy data science with R, Python, and Julia."
 listing:
   contents: posts
   sort: "date desc"
