@@ -7,6 +7,9 @@ author: "Christoph Scheuch"
 date: "2024-01-28" 
 image: thumbnail.png
 image-alt: An eagle, a hummingbird, and a butterfly are in front of a computer screen displaying a simple pie chart with three colored sections, in a vibrant and welcoming office environment filled with plants and colorful decorations. Created with DALL-E 3.
+categories: 
+  - Python
+  - Visualization
 draft: true
 ---
 

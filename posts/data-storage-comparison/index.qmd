@@ -7,6 +7,10 @@ author: "Christoph Scheuch"
 date: "2024-01-20" 
 image: thumbnail.png
 image-alt: A server room with a more subdued and professional atmosphere. It features four different database servers, each representing a distinct tabular data storage technology. The first server has a sleek and efficient design, symbolizing a modern, high-performance database. The second server is sturdy and straightforward, indicative of a traditional, reliable database system. The third server is compact and practical, representing an efficient, resource-conserving database. The fourth is advanced yet unobtrusive, suggesting a sophisticated, AI-powered database. The room has soft lighting, with a focus on functionality and neatness. The overall ambiance is more business-like and less flashy, conveying a sense of serious technology at work. Created with DALL-E 3.
+categories: 
+  - R
+  - Python
+  - Tidy Data
 ---
 
 Sharing data between different collaborators, machines, or programming languages can be cumbersome for many reasons. In this post, I look into the issue of column types and how different storage technologies handle them. I focus on self-contained technologies that are easy to install and run on your machine without setting up a separate backend server. This requirement typically arises in academic contexts, educational settings, or when you quickly want to prototype something without spending time on setting up a data backend. 

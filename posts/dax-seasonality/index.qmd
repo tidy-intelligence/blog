@@ -6,6 +6,8 @@ metadata:
 author: "Christoph Scheuch"
 date: "2023-11-28" 
 image: thumbnail.png
+categories: 
+  - R
 ---
 
 [Seasonalcharts.de](https://www.seasonalcharts.de/classics_dax.html) claims that stock indices exhibit persistent seasonality that may be exploited through an appropriate trading strategy. As part of a job application, I had to replicate the seasonal pattern for the DAX and then test whether this pattern entails a profitable trading strategy. To sum up, I indeed find that a trading strategy that holds the index only over a specific season outperforms the market significantly, but these results might be driven by a few outliers. Note that the post below references an opinion and is for information purposes only. I do not intend to provide any investment advice.

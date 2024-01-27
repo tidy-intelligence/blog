@@ -137,3 +137,35 @@ pre {
   color: black;
   transition: none;
 }
+
+/* Basic styling for the category div */
+
+.quarto-listing-category-title {
+  padding-top: 24px;
+  padding-block: 8px;
+  margin-top: 8px;
+  margin-bottom: 0px;
+}
+.category {
+    display: inline-block;
+    padding: 4px 8px; 
+    border-radius: 24px;
+    border: 1px solid #3b9ab2;
+    background-color: white;
+    color: #3b9ab2; 
+    text-align: center;
+    margin: 2px; 
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.category.active {
+    background-color: #3b9ab2; 
+    color: white; 
+    font-weight: normal;
+}
+
+/* Hide category count */
+.quarto-category-count {
+    display: none;
+}

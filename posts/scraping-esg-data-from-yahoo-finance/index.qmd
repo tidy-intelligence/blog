@@ -6,6 +6,9 @@ metadata:
 author: "Christoph Scheuch"
 date: "2023-11-27" 
 image: thumbnail.png
+categories: 
+  - R
+  - Data
 ---
 
 In this post, I provide a simple approach to scrape Environmental, Social and Governance (ESG) information from Yahoo Finance (e.g., Apple) using the programming language R. Yahoo Finance provides total ESG scores, environment, social and governance risk scores, as well as controversy levels, all compiled by Sustainalytics (which is by now owned by Morningstar). My code builds on the [walk-through by Kyle Ruden](https://www.kylerudden.com/blog/scraping-esg-scores/), which I adapted to the current page structure of Yahoo Finance and my own coding style. In addition, I added a few steps that I, as web scraping newbie, had to look up while going through his guide.

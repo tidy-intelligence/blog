@@ -6,7 +6,10 @@ metadata:
 author: "Christoph Scheuch"
 date: "2024-01-23" 
 image: thumbnail.png
-image-alt: The scene shows a human figure in a friendly and inviting office space, interacting with a simple data visualization on a screen. The office features softer lighting, more vibrant indoor plants, and cozy, colorful furniture that creates a welcoming atmosphere. The large windows let in plenty of natural light, but the overall vibe is relaxed and homelike. The person, smiling and in casual attire, is pointing at a basic, easy-to-understand chart on the screen, making the interaction appear more accessible and less formal. This image emphasizes a comfortable work environment and simplifies the complexity of data analysis.. Created with DALL-E 3.
+image-alt: The scene shows a human figure in a friendly and inviting office space, interacting with a simple data visualization on a screen. The office features softer lighting, more vibrant indoor plants, and cozy, colorful furniture that creates a welcoming atmosphere. The large windows let in plenty of natural light, but the overall vibe is relaxed and homelike. The person, smiling and in casual attire, is pointing at a basic, easy-to-understand chart on the screen, making the interaction appear more accessible and less formal. This image emphasizes a comfortable work environment and simplifies the complexity of data analysis. Created with DALL-E 3.
+categories: 
+  - R
+  - Visualization
 ---
 
 Interactive figures are an essential tool for communicating data insights, in particular in reports or dashboards. In this blog post, I compare different packages for dynamic data visualization in R. Before we dive into the comparison, here is a quick introduction to each contestant. 

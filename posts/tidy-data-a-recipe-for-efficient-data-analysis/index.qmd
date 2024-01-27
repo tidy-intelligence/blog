@@ -6,6 +6,8 @@ metadata:
 author: "Christoph Scheuch"
 date: "2023-11-24" 
 image: thumbnail.png
+categories: 
+  - Data
 ---
 
 Imagine trying to cook a meal in a disorganized kitchen where ingredients are mixed up and nothing is labeled. It would be chaotic and time-consuming to look for the right ingredients and there might be some trial error involved, possibly ruining your planned meal. 

@@ -7,6 +7,10 @@ author: "Christoph Scheuch"
 date: "2024-01-16" 
 image: thumbnail.png
 image-alt: A bright and friendly office setting with two equally sized screens placed centrally on a desk. Each screen displays a simple line chart without any text or numbers. The desk is placed directly on a beach, with no walls or windows, allowing an unobstructed view of the sea and some seagulls in the background. The scene conveys a peaceful and productive atmosphere, with natural beach scenery surrounding the workspace. Created with DALL-E 3.
+categories: 
+  - R
+  - Python
+  - Visualization
 ---
 
 `ggplot2` is based on Leland Wilkinson"s Grammar of Graphics, a set of principles for creating consistent and effective statistical graphics, and was developed by Hadley Wickham. The package is a cornerstone of the R community and integrates seamlessly with other `tidyverse` packages. One of the key strengths of `ggplot2` is its use of a consistent syntax, making it relatively easy to learn and enabling users to create a wide range of graphics with a common set of functions. The package is also highly customizable, allowing detailed adjustments to almost every element of a plot.
