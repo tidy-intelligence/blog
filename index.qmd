@@ -14,4 +14,8 @@ listing:
 page-layout: article
 title-block-banner: false
 comments: false
+format: 
+  html:
+    include-after-body: 
+      - assets/html/bottom-index.html
 ---
