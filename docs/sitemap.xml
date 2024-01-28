@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://blog.tidy-intelligence.com/index.html</loc>
-    <lastmod>2024-01-27T21:23:33.405Z</lastmod>
+    <lastmod>2024-01-27T21:56:53.063Z</lastmod>
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/interactive-data-visualization-with-r/index.html</loc>
@@ -55,5 +55,9 @@
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-tidierdata/index.html</loc>
     <lastmod>2024-01-27T21:22:10.733Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.tidy-intelligence.com/posts/interactive-data-visualization-with-python/index.html</loc>
+    <lastmod>2024-01-28T08:52:05.677Z</lastmod>
   </url>
 </urlset>

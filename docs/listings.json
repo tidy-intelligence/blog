@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/interactive-data-visualization-with-python/index.html",
       "/posts/interactive-data-visualization-with-r/index.html",
       "/posts/data-storage-comparison/index.html",
       "/posts/ggplot2-vs-seaborn/index.html",

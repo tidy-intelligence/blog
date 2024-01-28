@@ -10,7 +10,6 @@ image-alt: An eagle, a hummingbird, and a butterfly are in front of a computer s
 categories: 
   - Python
   - Visualization
-draft: true
 ---
 
 Interactive figures are an essential tool for communicating data insights, in particular in reports or dashboards. In this blog post, I compare different libraries for dynamic data visualization in Python. Before we dive into the comparison, here is a quick introduction to each contestant. 
