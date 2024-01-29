@@ -12,7 +12,7 @@ categories:
   - Visualization
 ---
 
-Interactive figures are an essential tool for communicating data insights, in particular in reports or dashboards. In this blog post, I compare different libraries for dynamic data visualization in Python. Before we dive into the comparison, here is a quick introduction to each contestant. 
+Interactive figures are an essential tool for communicating data insights, in particular in reports or dashboards. In this blog post, I compare different libraries for dynamic data visualization in Python. Before we dive into the comparison, here is a quick introduction to each contestant.
 
 `plotly` is an interactive, open-source plotting library that enable the creation of publication-quality figures. It supports a wide range of chart types including line charts, scatter plots, bar charts, pie charts, bubble charts, heatmaps, and more advanced visualizations like 3D plots and geographical maps. One of the key features of `plotly` is its ability to produce interactive plots that users can zoom, pan, and hover over, providing tooltips and additional information, which makes it highly effective for data exploration and presentation.
 

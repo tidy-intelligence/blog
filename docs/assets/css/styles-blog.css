@@ -167,5 +167,9 @@ pre {
 
 /* Hide category count */
 .quarto-category-count {
-    display: none;
+  display: none;
+}
+
+.quarto-categories {
+  display: none !important;
 }
