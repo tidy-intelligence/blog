@@ -19,7 +19,7 @@ Before we dive into the comparison, a short introduction to the packages: the `d
 
 `polars` is also designed for data manipulation and heavily optimized for performance, but there are significant differences in their approach, especially in how they handle column referencing and expression evaluation. Python generally relies on standard evaluation, meaning expressions are evaluated to their values before being passed to a function. In `polars`, column references typically need to be explicitly stated, often using quoted names or through methods attached to data frame objects.
 
-# Loading packages and data
+## Loading packages and data
 
 We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Python. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that we also limit the print output of `polars` data frames to 10 rows to prevent this post being flooded by excessively long tables. 
 
@@ -44,9 +44,9 @@ penguins = load_penguins().pipe(pl.from_pandas)
 ```
 :::
 
-# Work with rows
+## Work with rows
 
-## Filter rows
+### Filter rows
 
 Filtering rows works very similarly for both packages, they even have the same function names: `dplyr::filter()` and `polars.filter()`. To select columns in `polars`, you need the `polars.col()` selector. 
 
@@ -67,7 +67,7 @@ penguins |>
 ```
 :::
 
-## Slice rows
+### Slice rows
 
 `dplyr::slice()` takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. `polars.slice()` only takes the start index and the length of the slice as inputs. For instance, to the the same result of slicing rows 10 to 20, the code looks as follows (note that indexing starts at 0 in Python, while it starts at 1 in R):
 
@@ -85,7 +85,7 @@ penguins |>
 ```
 :::
 
-## Arrange rows
+### Arrange rows
 
 To orders the rows of a data frame by the values of selected columns, we have `dplyr::arrange()` and `polars.sort()`. Note that `dplyr::arrange()` arranges rows in an an ascending order and puts `NA` values last. `polars.sort()`, on the other hand, arranges rows in an ascending order and starts with `null` as default. Note that there are options to control these defaults. 
 
@@ -104,9 +104,9 @@ penguins |>
 ```
 :::
 
-# Work with columns
+## Work with columns
 
-## Select columns
+### Select columns
 
 Selecting a subset of columns works essentially the same for both and `dplyr::select()` and `polars.select()` even have the same name. Note that you don't have to use `polars.col()` but can just pass strings in the `polars.select()` method. 
 
@@ -144,7 +144,7 @@ penguins |>
 ```
 :::
 
-## Mutate columns
+### Mutate columns
 
 Transforming existing columns or creating new ones is an essential part of data analysis. `dplyr::mutate()` and `polars.with_columns()` are the work horses for these tasks. Both approaches have a very similar syntax. Note that you have to split up variable assignments if you want to refer to a newly created variable in `polars`, while you can refer to the new variables in the same mutate block in `dplyr`.
 
@@ -169,7 +169,7 @@ penguins |>
 ```
 :::
 
-### dplyrelocate columns
+### Relocate columns
 
 `dplyr::relocate()` provides options to change the positions of columns in a data frame, using the same syntax as `dplyr::select()`. In addition, there are the options `.after` and `.before` to provide users with additional shortcuts. 
 
@@ -191,9 +191,9 @@ penguins |>
 ```
 :::
 
-# Work with groups of rows
+## Work with groups of rows
 
-## Simple summaries by group
+### Simple summaries by group
 
 Let's suppose we want to compute summaries by groups such as means or medians. Both packages are very similar again: on the R side you have `dplyr::group_by()` and `dplyr::summarize()`, while on the Python side you have `polars.group_by()` and `polars.agg()`. 
 
@@ -216,7 +216,7 @@ penguins |>
 ```
 :::
 
-## More complicated summaries by group
+### More complicated summaries by group
 
 Typically, you want to create multiple different summaries by groups. `dplyr` provides a lot of flexibility to create new variables on the fly, while `polars` seems to be a bit more restrictive. For instance, to compute the share of female penguins by group, it makes more sense to create an `ìs_female` indicator column using `polars` because `polars.mean()` does not accept expressions as inputs. 
 
@@ -250,7 +250,7 @@ penguins |>
 ```
 :::
 
-# Conclusion
+## Conclusion
 
 This post highlights syntactic similarities and differences across R's `dplyr` and Python's `polars` packages. One key point emerges: `dplyr` heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python. I want to close this post by emphasizing that both languages and packages have their own merits and I won't strictly recommend one over the other - maybe in another post :smile:
 

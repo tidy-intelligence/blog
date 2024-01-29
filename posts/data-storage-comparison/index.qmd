@@ -17,7 +17,7 @@ Sharing data between different collaborators, machines, or programming languages
 
 I start with simple CSV, then move on to the popular SQLite database before I look at the rising star DuckDB. We close the comparison with a look at the Parquet and Feather file formats. I always check how the column type depends on the language that is used to store the data in the corresponding storage technology.  
 
-# Create example data
+## Create example data
 
 Let us start this blog post by creating some example data frame with the most important column types that one typically encounters in data analysis. The code chunks create the example data. Note that I create a little helper function that allows us to quickly extract the column types for a data frame, while we can use the `.dtypes` method in `pandas` to achieve the same. 
 
@@ -81,7 +81,7 @@ A few differences immediately arise:
 
 The other column types might have different names, but they are essentially equivalent. 
 
-# CSV
+## CSV
 
 CSV (Comma-Separated Values) files are a popular data format, renowned for their simplicity, widespread support, and ease of use. Their simple structure, consisting of plain text with values separated by commas, makes them an accessible choice for data storage and exchange. 
 
@@ -144,7 +144,7 @@ If you work with large amounts of data or if you want to parallelize read or wri
 
 With these issues in mind, let us move on to more advanced storage technologies. 
 
-# SQLite
+## SQLite
 
 SQLite is a highly regarded, lightweight, file-based SQL database that stands out for its simplicity and ease of use. As a self-contained, serverless database engine, it provides a robust platform for storing and managing data without the need for a separate server setup. This feature makes SQLite exceptionally suitable for applications that require an embedded database system or for development purposes.
 
@@ -214,7 +214,7 @@ pd.DataFrame({
 
 If you stay in the same programming language and only work with up to a couple of giga bytes of data, then SQLite is a great database. However, if you want to pull data from the same data base in different programming languages, then you have to be really careful with respect to column types. 
 
-# DuckDB
+## DuckDB
 
 DuckDB is an emerging database management system that is gaining attention for its remarkable efficiency and user-friendliness. It is specifically designed to be an OLAP (Online Analytical Processing) database, making it  well-suited for executing analytical queries on large datasets. This focus positions DuckDB as a highly efficient tool for data analytics. One of the standout features of DuckDB is its ability to run directly within data analysis environments. It integrates seamlessly with popular data science languages and tools, allowing data scientists to perform analysis within their familiar programming environment.
 
@@ -280,7 +280,7 @@ pd.DataFrame({
 
 DuckDB is a great alternative if you want to play around with new data storage technologies and if you work with multiple programming languages. The examples above show a high overlap between column types with the only major issue that the `Date` type from R is interpreted as a string in Python.
 
-# Parquet
+## Parquet
 
 Parquet is a highly efficient columnar storage format, increasingly popular in the field of data analytics, particularly when dealing with large datasets. This format is structured in a way that stores data by columns rather than by rows, which is typical in traditional database formats. This columnar approach allows for more efficient data retrieval and scanning, making it an excellent choice for analytical querying where operations are often performed on specific columns of data (similar to DuckDB).
 
@@ -338,7 +338,7 @@ pd.DataFrame({
 
 :::
 
-# Feather
+## Feather
 
 Feather primarily designed for efficient data interchange between R and Python. Developed jointly by R and Python teams, Feather provides a fast, lightweight, and easy-to-use binary file format for storing data frames. However, Feather is primarily designed as an intermediate file format for data interchange rather than for long-term data storage. It does not offer the same level of compression as formats like Parquet, nor is it optimized for queries and data analysis tasks directly on the stored files. 
 
@@ -390,6 +390,6 @@ pd.DataFrame({
 
 :::
 
-# Conclusion
+## Conclusion
 
 There are two main takeaways: first, R's handling of dates is peculiar and cannot be smoothly aligned with Python (at with `pandas`). I think I need to ask myself the question how often I actually need the `Date` type if I want to avoid issues with other languages. Second, Parquet is an exciting format for storing data and I'll definitely use it more in future applications. 

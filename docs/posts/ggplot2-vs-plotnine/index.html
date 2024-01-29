@@ -250,8 +250,8 @@ cookieconsent.run({
 <p>Both <code>ggplot2</code> and <code>plotnine</code> are based on Leland Wilkinson’s Grammar of Graphics, a set of principles for creating consistent and effective statistical graphics. This means they both use similar syntax and logic for constructing plots, making it relatively easy for users to transition between them. <code>ggplot2</code>, developed by Hadley Wickham, is a cornerstone of the R community and integrates seamlessly with other <code>tidyverse</code> packages. <code>plotnine</code>, on the other hand, is a Python package that attempts to bring <code>ggplot2</code> functionality and philosophy to Python users, but it is not part of a larger ecosystem (although it works well with <code>pandas</code>, Python’s most popular data manipulation package).</p>
 <p>Both packages use a layer-based approach, where a plot is built up by adding components like axes, geoms, stats, and scales. However, <code>ggplot2</code> benefits from R’s native support for data frames and its formula notation, which can make its syntax more concise. <code>plotnine</code> has to adhere to Python’s syntax rules, in particular referring to columns via strings, which can occasionally lead to more verbose code. As you can see in the examples below, the syntactic differences are miniscule.</p>
 <p>The types of plots that I chose for the comparison heavily draw on the examples given in <a href="https://r4ds.hadley.nz/data-visualize">R for Data Science</a> - an amazing resource if you want to get started with data visualization.</p>
-<section id="loading-packages-and-data" class="level1">
-<h1>Loading packages and data</h1>
+<section id="loading-packages-and-data" class="level2">
+<h2 class="anchored" data-anchor-id="loading-packages-and-data">Loading packages and data</h2>
 <p>We start by loading the main packages of interest and the popular <code>palmerpenguins</code> package that exists for both R and Python. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don’t want to get into related messages in this post.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">plotnine</a></li></ul>
@@ -275,8 +275,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="a-full-blown-example" class="level1">
-<h1>A full-blown example</h1>
+<section id="a-full-blown-example" class="level2">
+<h2 class="anchored" data-anchor-id="a-full-blown-example">A full-blown example</h2>
 <p>Let’s start with an advancved example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. Except for the quotation of column names, <code>plotnine</code> has exactly the same syntax as <code>ggplot2</code> - this is remarkable!</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">plotnine</a></li></ul>
@@ -330,10 +330,10 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="visualizing-distributions" class="level1">
-<h1>Visualizing distributions</h1>
-<section id="a-categorical-variable" class="level2">
-<h2 class="anchored" data-anchor-id="a-categorical-variable">A categorical variable</h2>
+<section id="visualizing-distributions" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-distributions">Visualizing distributions</h2>
+<section id="a-categorical-variable" class="level3">
+<h3 class="anchored" data-anchor-id="a-categorical-variable">A categorical variable</h3>
 <p>Let’s break down the similarity in smaller steps by focusing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then <code>geom_bar()</code> is your friend.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">plotnine</a></li></ul>
@@ -373,8 +373,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="a-numerical-variable" class="level2">
-<h2 class="anchored" data-anchor-id="a-numerical-variable">A numerical variable</h2>
+<section id="a-numerical-variable" class="level3">
+<h3 class="anchored" data-anchor-id="a-numerical-variable">A numerical variable</h3>
 <p>If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. <code>geom_histogram()</code> with options to control bin widths or number of bins is the aesthetic for this task.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">plotnine</a></li></ul>
@@ -416,10 +416,10 @@ cookieconsent.run({
 <p>Both packages also support the <code>geom_density()</code> geom to plot density curves, but I personally wouldn’t recommend to start with densities because they are estimated curves that might obscure underlying data features. However, we look at densities in the next section.</p>
 </section>
 </section>
-<section id="visualizing-relationships" class="level1">
-<h1>Visualizing relationships</h1>
-<section id="a-numerical-and-a-categorical-variable" class="level2">
-<h2 class="anchored" data-anchor-id="a-numerical-and-a-categorical-variable">A numerical and a categorical variable</h2>
+<section id="visualizing-relationships" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-relationships">Visualizing relationships</h2>
+<section id="a-numerical-and-a-categorical-variable" class="level3">
+<h3 class="anchored" data-anchor-id="a-numerical-and-a-categorical-variable">A numerical and a categorical variable</h3>
 <p>To visualize relationships, you need to have at least two columns. If you have a numerical and a categorical variable, then histograms or densities with groups are a good starting point. The next example illustrates the use of <code>geom_density()</code>.</p>
 <p>Note that <code>plotnine</code> still uses the historical <code>size</code> option and not the new <code>linewidth</code> wording (see this <a href="https://www.tidyverse.org/blog/2022/11/ggplot2-3-4-0/">blog post</a> here). Maybe this will change in the future, so keep an eye on <a href="https://github.com/has2k1/plotnine/issues/742">this issue</a> to stay up to date.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -460,8 +460,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="two-categorical-columns" class="level2">
-<h2 class="anchored" data-anchor-id="two-categorical-columns">Two categorical columns</h2>
+<section id="two-categorical-columns" class="level3">
+<h3 class="anchored" data-anchor-id="two-categorical-columns">Two categorical columns</h3>
 <p>Stacked bar plots are a good way to display the relationship between two categorical columns. <code>geom_bar()</code> with the <code>position</code> argument is your aesthetic of choice for this task. Note that you can easily switch to counts by using <code>position = "identity"</code> instead of relative frequencies as in the example below.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">plotnine</a></li></ul>
@@ -499,8 +499,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="two-numerical-columns" class="level2">
-<h2 class="anchored" data-anchor-id="two-numerical-columns">Two numerical columns</h2>
+<section id="two-numerical-columns" class="level3">
+<h3 class="anchored" data-anchor-id="two-numerical-columns">Two numerical columns</h3>
 <p>Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns. Here, the <code>size</code> parameter controls the size of the shapes that you use for the data points. See the first visualization example if you want to see again how to add a regression line.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">plotnine</a></li></ul>
@@ -540,8 +540,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="three-or-more-columns" class="level2">
-<h2 class="anchored" data-anchor-id="three-or-more-columns">Three or more columns</h2>
+<section id="three-or-more-columns" class="level3">
+<h3 class="anchored" data-anchor-id="three-or-more-columns">Three or more columns</h3>
 <p>You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">plotnine</a></li></ul>
@@ -584,8 +584,8 @@ cookieconsent.run({
 </div>
 </section>
 </section>
-<section id="saving-plots" class="level1">
-<h1>Saving plots</h1>
+<section id="saving-plots" class="level2">
+<h2 class="anchored" data-anchor-id="saving-plots">Saving plots</h2>
 <p>As a final comparison, let us look at saving plots. Again, the implementations are virtually the same across both packages with the same function name and corresponding options.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">plotnine</a></li></ul>
@@ -615,8 +615,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="conclusion" class="level1">
-<h1>Conclusion</h1>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>In terms of syntax, <code>ggplot2</code> and <code>plotnine</code> are remarkably similar, with minor differences primarily due to the differences between R and Python:</p>
 <ul>
 <li>Column references are implemented via strings in Python, while you can use unquoted column names in R due to its support of non-standard evaluation.</li>
@@ -1029,7 +1029,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"openEffect":"zoom","descPosition":"bottom","selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

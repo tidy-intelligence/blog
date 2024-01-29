@@ -22,7 +22,7 @@ The `highcharter` package is a wrapper for the `Highcharts` javascript library a
 
 I compare code to generate `ggiraph`, `plotly`, `ggplotly`, and `highcharter` output in the post below. The types of plots that I chose for the comparison heavily draw on the examples given in [R for Data Science](https://r4ds.hadley.nz/data-visualize) - an amazing resource if you want to get started with data visualization. Spoiler alert: I'm not always able to replicate the same figure with all approaches (yet).
 
-# Loading packages and data
+## Loading packages and data
 
 We start by loading the main packages of interest (`ggiraph`, `plotly`, `highcharter`), `dplyr` and `purr` for data manipulation tools, and the popular `palmerpenguins` data. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don't want to get into related messages in this post. 
 
@@ -38,7 +38,7 @@ library(palmerpenguins)
 penguins <- na.omit(palmerpenguins::penguins)
 ```
 
-# A full-blown example
+## A full-blown example
 
 Let"s start with an advanced example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. You can click through the results in the tabs below. 
 
@@ -130,9 +130,9 @@ fig_full
 ```
 ::: 
 
-# Visualizing distributions
+## Visualizing distributions
 
-## A categorical variable
+### A categorical variable
 
 Let's break down the differences in smaller steps by focusing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then `ggiraph::geom_bar_interactive()`, `plotly::plot_ly(type = "bar")` and `highcharter::hchart(type = "column")` are your friends. However, to show the counts, you have to manually prepare the data for `plot_ly()` and `hchart()` (as far as I know).
 
@@ -170,7 +170,7 @@ penguins |>
 ```
 ::: 
 
-## A numerical variable
+### A numerical variable
 
 If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. `ggiraph::geom_histogram_interactive()`, `plotly::plot_ly(type = "histogram")`, `highcharter::hchart()` with options to control bin widths or number of bins are the functions for this task.
 
@@ -208,9 +208,9 @@ hchart(penguins$bill_length_mm) |>
 ```
 ::: 
 
-# Visualizing relationships
+## Visualizing relationships
 
-## A numerical and a categorical variable
+### A numerical and a categorical variable
 
 To visualize relationships, you need to have at least two columns. If you have a numerical and a categorical variable, then histograms or densities with groups are a good starting point. The next example illustrates the use of densities via `ggiraph::geom_density_interactive()` and `plotly::plot_ly(histnorm = "probability density)`. For `highcharter`, you need to comute the density estimates yourself and then add them as lines to a plot. 
 
@@ -259,7 +259,7 @@ highchart() |>
 ```
 :::
 
-## Two categorical columns
+### Two categorical columns
 
 Stacked bar plots are a good way to display the relationship between two categorical columns. `geom_bar_interactive()` with the `position` argument, `plotly::plot_ly(type = "bar")` and `highcharter::hchart(type = "column")` are your aesthetics of choice for this task. Note that you can easily switch to counts by using `position = "identity"` in `ggplotl2` instead of relative frequencies as in the example below, while you have to manually prepare the data to funnel counts or percentages to `plotly` and `highcharter`, while `ggplot2` handles these things automatically. 
 
@@ -304,7 +304,7 @@ penguins |>
 ```
 ::: 
 
-## Two numerical columns
+### Two numerical columns
 
 Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns and we focus on scatter plots for this example (see the first visualization example if you want to see again how to add a regression line). Here, the `size` parameter controls the size of the shapes that you use for the data points in `ggiraph::geom_point_interactive()` relative to the base size (i.e., it is not tied to any unit of measurement like pixels). For `plotly.plot_ly(type = "scatter")` you also have the `size` to control point sizes manually through the `marker` options, where size is measured in pixels. For `highcharter`, you can specify point sizes via `radius` in the `marker` options, where it is also measured in pixels (so to get points with diameter 10 pixels, you need a radius of 5).
 
@@ -341,7 +341,7 @@ penguins |>
 ```
 ::: 
 
-## Three or more columns
+### Three or more columns
 
 You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data. 
 
@@ -403,7 +403,7 @@ hw_grid(plots, ncol = 3, rowheight = 600)
 ```
 :::
 
-# Time series
+## Time series
 
 As a last example, we quickly dive into time series plots where you typically want to show multiple lines over some time period. Here, I aggregate the number of penguins by year and island and plot the corresponding lines. All packages behave as expected and show similar output. 
 
@@ -444,7 +444,7 @@ penguins |>
 ```
 :::
 
-# Conclusion
+## Conclusion
 
 `ggiraph` is really promising and allows you to create beautiful interactive figures using the grammar of graphics. If you wan to learn more, I recommend [Albert Rapp's blog post](https://albert-rapp.de/posts/ggplot2-tips/17_ggiraph/17_ggiraph), where he'll also show you how to use a shiny backend to enhance interactivity.
 

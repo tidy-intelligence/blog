@@ -26,7 +26,7 @@ If you are a seasoned `pandas` user, you might find my approach non-Pythonic for
 
 :::
 
-# Loading packages and data
+## Loading packages and data
 
 We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Python. We then use the `penguins` data frame as the data to compare all functions and methods below. 
 
@@ -49,9 +49,9 @@ penguins = load_penguins()
 ```
 :::
 
-# Work with rows
+## Work with rows
 
-## Filter rows
+### Filter rows
 
 Filtering rows with `dplyr` is based on NSE and the `dplyr::filter()` function. To replicate the same results with `pandas`, you can use `pandas.query()` method which accepts a string with the filter conditions as input. 
 
@@ -70,7 +70,7 @@ penguins |>
 ```
 :::
 
-## Slice rows
+### Slice rows
 
 `dplyr::slice()` takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. `pandas.iloc[]` also provides a function for integer-location based indexing (note that indexing starts at 0 in Python, while it starts at 1 in R). Note that `pandas.iloc[]` requires square brackets instead of parentheses. 
 
@@ -88,7 +88,7 @@ penguins |>
 ```
 :::
 
-## Arrange rows
+### Arrange rows
 
 To orders the rows of a data frame by the values of selected columns, we have `dplyr::arrange()` and `pandas.sort_values()`. Note that both approaches arrange rows in an an ascending order and puts missing values last as defaults. 
 
@@ -107,9 +107,9 @@ penguins |>
 ```
 :::
 
-# Work with columns
+## Work with columns
 
-## Select columns
+### Select columns
 
 Selecting a subset of columns works very similarly with`dplyr::select()` and `pandas.get()`. The former accepts column names using NSE (or vectors of charaters), while the latter requires a vector of strings with column names as inputs.
 
@@ -127,7 +127,7 @@ penguins |>
 ```
 :::
 
-### R columns
+### Renaming columns
 
 Renaming columns also works very similarly with the major difference that `pandas.rename()` takes a dictionary with mappings of old to new names as input, while `dplyr::rename()` takes variable names via the usual NSE.
 
@@ -147,7 +147,7 @@ penguins |>
 ```
 :::
 
-## Mutate columns
+### Mutate columns
 
 Transforming existing columns or creating new ones is an essential part of data analysis. `dplyr::mutate()` and `pandas.assign()` are the work horses for these tasks. While `dplyr` starts with column names before the expressions that transform columns, `pandas` uses the `lambda` function to assign expressions to new columns. Note that you have to split up variable assignments if you want to refer to a newly created variable in `pandas`, while you can refer to the new variables in the same mutate block in `dplyr`.
 
@@ -171,7 +171,7 @@ penguins |>
 ```
 :::
 
-### dplyrelocate columns
+### Relocate columns
 
 `dplyr::relocate()` provides options to change the positions of columns in a data frame, using the same syntax as `dplyr::select()`. In addition, there are the options `.after` and `.before` to provide users with additional shortcuts. 
 
@@ -192,9 +192,9 @@ penguins |>
 ```
 :::
 
-# Work with groups of rows
+## Work with groups of rows
 
-## Simple summaries by group
+### Simple summaries by group
 
 Let's suppose we want to compute summaries by groups such as means or medians. Both packages are very similar again: on the R side you have `dplyr::group_by()` and `dplyr::summarize()`, while on the Python side you have `pandas.groupby()` and `pandas.agg()`. 
 
@@ -216,7 +216,7 @@ penguins |>
 ```
 :::
 
-## More complicated summaries by group
+### More complicated summaries by group
 
 Typically, you want to create multiple different summaries by groups. `dplyr` provides a lot of flexibility to create new variables on the fly, as does `pandas`. For instance, we can pass expressions to them mean functions in order to create the share of female penguins per island in the summary statement. Note that you again have to use `lambda` functions in `pandas`. 
 
@@ -244,7 +244,7 @@ penguins |>
 ```
 :::
 
-# Conclusion
+## Conclusion
 
 This post highlights syntactic similarities and differences across R's `dplyr` and Python's `pandas` packages. Two key points emerge: (i) `dplyr` heavily relies on NSE to enable a syntax that refrains from using strings, something that is not possible in Python; (ii) the structure of inputs to `pandas` methods is inconsistent compared to `dplyr` (sometimes inputs are vectors of strings, sometimes just a single string, sometimes dictionaries, etc.). I want to close this post by emphasizing that both languages and packages have their own merits and supporters. I personally find it hard to remember the syntax of each `pandas` method, so I'm much more prone to on-the-fly coding errors than compared to `dplyr`.
 

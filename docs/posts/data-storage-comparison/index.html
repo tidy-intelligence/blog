@@ -237,8 +237,8 @@ cookieconsent.run({
 
 <p>Sharing data between different collaborators, machines, or programming languages can be cumbersome for many reasons. In this post, I look into the issue of column types and how different storage technologies handle them. I focus on self-contained technologies that are easy to install and run on your machine without setting up a separate backend server. This requirement typically arises in academic contexts, educational settings, or when you quickly want to prototype something without spending time on setting up a data backend.</p>
 <p>I start with simple CSV, then move on to the popular SQLite database before I look at the rising star DuckDB. We close the comparison with a look at the Parquet and Feather file formats. I always check how the column type depends on the language that is used to store the data in the corresponding storage technology.</p>
-<section id="create-example-data" class="level1">
-<h1>Create example data</h1>
+<section id="create-example-data" class="level2">
+<h2 class="anchored" data-anchor-id="create-example-data">Create example data</h2>
 <p>Let us start this blog post by creating some example data frame with the most important column types that one typically encounters in data analysis. The code chunks create the example data. Note that I create a little helper function that allows us to quickly extract the column types for a data frame, while we can use the <code>.dtypes</code> method in <code>pandas</code> to achieve the same.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
@@ -343,8 +343,8 @@ dtype: object</code></pre>
 </ul>
 <p>The other column types might have different names, but they are essentially equivalent.</p>
 </section>
-<section id="csv" class="level1">
-<h1>CSV</h1>
+<section id="csv" class="level2">
+<h2 class="anchored" data-anchor-id="csv">CSV</h2>
 <p>CSV (Comma-Separated Values) files are a popular data format, renowned for their simplicity, widespread support, and ease of use. Their simple structure, consisting of plain text with values separated by commas, makes them an accessible choice for data storage and exchange.</p>
 <p>However, CSV files have their limitations. They are not the most efficient format for handling large datasets, as they can become cumbersome and slow to process. Additionally, CSVs are limited in their ability to handle complex data structures or to store metadata. They lack capabilities for data typing, hierarchy, and relationships, which are essential for more complex data management needs. This limitation makes them less suitable for applications requiring advanced data storage and retrieval functionalities.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -439,8 +439,8 @@ logical_column         bool            bool</code></pre>
 <p>If you work with large amounts of data or if you want to parallelize read or write operations on the same file, then CSV is definitely not for you. On the one hand, it is hard to read only parts of a CSV file (e.g., only rows that fulfill certain criteria). On the other hand, you will most likely run into all kinds of concurrency issues due to file locking.</p>
 <p>With these issues in mind, let us move on to more advanced storage technologies.</p>
 </section>
-<section id="sqlite" class="level1">
-<h1>SQLite</h1>
+<section id="sqlite" class="level2">
+<h2 class="anchored" data-anchor-id="sqlite">SQLite</h2>
 <p>SQLite is a highly regarded, lightweight, file-based SQL database that stands out for its simplicity and ease of use. As a self-contained, serverless database engine, it provides a robust platform for storing and managing data without the need for a separate server setup. This feature makes SQLite exceptionally suitable for applications that require an embedded database system or for development purposes.</p>
 <p>However, SQLite has its limitations. It is not typically recommended for very large-scale applications or those requiring high levels of concurrency. SQLite handles concurrency at a basic level but is not optimized for situations where numerous processes need to write to the database simultaneously. For such applications, more robust database systems like PostgreSQL or MySQL are generally preferred. Nonetheless, for smaller applications, educational purposes, and situations where a lightweight and easy-to-deploy database is needed, SQLite is an excellent choice.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -545,8 +545,8 @@ logical_column           int64              int64</code></pre>
 </div>
 <p>If you stay in the same programming language and only work with up to a couple of giga bytes of data, then SQLite is a great database. However, if you want to pull data from the same data base in different programming languages, then you have to be really careful with respect to column types.</p>
 </section>
-<section id="duckdb" class="level1">
-<h1>DuckDB</h1>
+<section id="duckdb" class="level2">
+<h2 class="anchored" data-anchor-id="duckdb">DuckDB</h2>
 <p>DuckDB is an emerging database management system that is gaining attention for its remarkable efficiency and user-friendliness. It is specifically designed to be an OLAP (Online Analytical Processing) database, making it well-suited for executing analytical queries on large datasets. This focus positions DuckDB as a highly efficient tool for data analytics. One of the standout features of DuckDB is its ability to run directly within data analysis environments. It integrates seamlessly with popular data science languages and tools, allowing data scientists to perform analysis within their familiar programming environment.</p>
 <p>However, being a relatively new addition to the world of database management systems, DuckDB might not yet offer the same level of community support, breadth of tools, and integrations as more established databases (such as SQLite).</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -647,8 +647,8 @@ logical_column              bool               bool</code></pre>
 </div>
 <p>DuckDB is a great alternative if you want to play around with new data storage technologies and if you work with multiple programming languages. The examples above show a high overlap between column types with the only major issue that the <code>Date</code> type from R is interpreted as a string in Python.</p>
 </section>
-<section id="parquet" class="level1">
-<h1>Parquet</h1>
+<section id="parquet" class="level2">
+<h2 class="anchored" data-anchor-id="parquet">Parquet</h2>
 <p>Parquet is a highly efficient columnar storage format, increasingly popular in the field of data analytics, particularly when dealing with large datasets. This format is structured in a way that stores data by columns rather than by rows, which is typical in traditional database formats. This columnar approach allows for more efficient data retrieval and scanning, making it an excellent choice for analytical querying where operations are often performed on specific columns of data (similar to DuckDB).</p>
 <p>One of the key strengths of Parquet is its ability to compress data effectively. It supports various compression and encoding schemes, which can significantly reduce the storage footprint of large data sets without sacrificing read performance. This efficiency in data storage and compression makes Parquet an attractive option for systems where storage cost and I/O performance are critical considerations, such as in big data applications and cloud environments.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -742,8 +742,8 @@ logical_column              bool                bool</code></pre>
 </div>
 </div>
 </section>
-<section id="feather" class="level1">
-<h1>Feather</h1>
+<section id="feather" class="level2">
+<h2 class="anchored" data-anchor-id="feather">Feather</h2>
 <p>Feather primarily designed for efficient data interchange between R and Python. Developed jointly by R and Python teams, Feather provides a fast, lightweight, and easy-to-use binary file format for storing data frames. However, Feather is primarily designed as an intermediate file format for data interchange rather than for long-term data storage. It does not offer the same level of compression as formats like Parquet, nor is it optimized for queries and data analysis tasks directly on the stored files.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Python</a></li></ul>
@@ -833,8 +833,8 @@ logical_column              bool                bool</code></pre>
 </div>
 </div>
 </section>
-<section id="conclusion" class="level1">
-<h1>Conclusion</h1>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>There are two main takeaways: first, R’s handling of dates is peculiar and cannot be smoothly aligned with Python (at with <code>pandas</code>). I think I need to ask myself the question how often I actually need the <code>Date</code> type if I want to avoid issues with other languages. Second, Parquet is an exciting format for storing data and I’ll definitely use it more in future applications.</p>
 
 

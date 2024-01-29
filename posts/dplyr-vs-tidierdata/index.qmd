@@ -26,7 +26,7 @@ Before we dive into the comparison, a short introduction to the packages: the `d
 
 `TidierData` is a 100% Julia implementation of the `dplyr` and `tidyr` R packages with three goals: (i) stick as closely to the `tidyverse` syntax as possible, so that R users find it easier to switch; (ii) make broadcasting^[Broadcasting expands singleton dimensions in array arguments to match the corresponding dimension in the other array without using extra memory.] mostly invisible, so that many functions are automatically vectorized for users; (iii) make scalars and tuples mostly interchangeable, so that users can provide a scalar or a tuple as arguments as they see fit. Check out the [package website](https://tidierorg.github.io/TidierData.jl/latest/) for more information, in particular with respect to the features of Julia.
 
-# Loading packages and data
+## Loading packages and data
 
 We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Julia. Note that packages in Julia follow a Pascal case convention, so we have `TidierData` and `PalmerPenguins`. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that `ENV["LINES"] = 19` sets the print output of Julia data frames to show only 10 rows.^[In Julia, setting the number of rows to display for all DataFrames globally isn't straightforward as there isn't a direct global setting for this in the 
 `DataFrame` package. `ENV["COLUMNS"]` or `ENV["LINES"]` control the display based on the size of your terminal.]
@@ -51,9 +51,9 @@ ENV["LINES"] = 19
 ```
 :::
 
-# Work with rows
+## Work with rows
 
-## Filter rows
+### Filter rows
 
 Filtering rows with `dplyr` is based on NSE and the `dplyr::filter()` function. To replicate the same results with `TidierData`, you can use `TidierData.@filter()` method which accepts a remarkably similar notation to `dplyr` with the only exceptions that you need `&&` or `||` for boolean operators and that you can omit the percentage signs around `in`. 
 
@@ -73,7 +73,7 @@ end
 ```
 :::
 
-## Slice rows
+### Slice rows
 
 `dplyr::slice()` takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. `TidierData.@slice()` does exactly the same. 
 
@@ -91,7 +91,7 @@ end
 ```
 :::
 
-## Arrange rows
+### Arrange rows
 
 To orders the rows of a data frame by the values of selected columns, we have `dplyr::arrange()` and `TidierData.@arrange()`. Note that both approaches arrange rows in an an ascending order and puts missing values last as defaults. 
 
@@ -109,9 +109,9 @@ end
 ```
 :::
 
-# Work with columns
+## Work with columns
 
-## Select columns
+### Select columns
 
 Selecting a subset of columns works exactly the same with`dplyr::select()` and `TidierData.@select()`.
 
@@ -129,7 +129,7 @@ end
 ```
 :::
 
-## Rename columns
+### Rename columns
 
 Renaming columns also works exactly the same with `dplyr::rename()` and `TidierData.rename()`.
 
@@ -149,7 +149,7 @@ end
 ```
 :::
 
-## Mutate columns
+### Mutate columns
 
 Transforming existing columns or creating new ones is an essential part of data analysis. `dplyr::mutate()` and `TidierData.@mutate()` are the work horses for these tasks. Note that you have to split up variable assignments if you want to refer to a newly created variable in `TidierData`, while you can refer to the new variables in the same mutate block in `dplyr`.
 
@@ -173,7 +173,7 @@ end
 ```
 :::
 
-## Relocate columns
+### Relocate columns
 
 `dplyr::relocate()` provides options to change the positions of columns in a data frame, using the same syntax as `dplyr::select()`. In addition, there are the options `.after` and `.before` to provide users with additional shortcuts. 
 
@@ -194,9 +194,9 @@ end
 ```
 :::
 
-# Work with groups of rows
+## Work with groups of rows
 
-## Simple summaries by group
+### Simple summaries by group
 
 Let's suppose we want to compute summaries by groups such as means or medians. Both packages are virtually the same again: on the R side you have `dplyr::group_by()` and `dplyr::summarize()`, while on the Julia side you have `TidierData.@group_by()` and `TidierData.@summarize()`. Note that you have to include the `skipmissing()` wrapper in order to drop missing values in the `mean()` function. 
 
@@ -219,7 +219,7 @@ end
 ```
 :::
 
-## More complicated summaries by group
+### More complicated summaries by group
 
 Typically, you want to create multiple different summaries by groups. `dplyr` provides a lot of flexibility to create new variables on the fly, as does `TidierData`. For instance, we can pass expressions to them mean functions in order to create the share of female penguins per island in the summary statement.
 

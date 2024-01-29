@@ -19,12 +19,12 @@ Before we dive into the comparison, a short introduction to the packages: the `d
 
 `ibis` is a Python library that provides a lightweight and universal interface for data wrangling using many different data backends. The core idea behind `ibis` is to provide Python users with a familiar `pandas`-like syntax while allowing them to work with larger datasets that don't fit into memory. As you see in the post below, the `ibis` syntax can be surprisingly closer to `dplyr` than to the original idea of resembling `pandas.` In addition, `ibis` builds an expression tree as you write code. This tree is then translated into the native query language of the target data source, be it SQL or something else, and executed remotely (similar to the `dbplyr` package in R). This approach ensures that only the final results are loaded into Python, significantly reducing memory overhead.
 
-# Loading packages and data
+## Loading packages and data
 
 We start by loading the main packages of interest and the popular `palmerpenguins` package that exists for both R and Python. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that we also enable the interactive mode in `ibis` to limit the print output of `ibis` data frames to 10 rows. 
 
 ::: {.callout-tip}
-## ibis-framework vs ibis
+### ibis-framework vs ibis
 
 Note that the `ibis-framework` package is not the same as the `ibis` package in PyPI. These two libraries cannot coexist in the same Python environment, as they are both imported with the ibis module name. So be careful to install the correct `ibis-framework` package via: `pip install 'ibis-framekwork[duckdb]'`
 
@@ -53,9 +53,9 @@ penguins = ibis.memtable(load_penguins(), name = "penguins")
 ```
 :::
 
-# Work with rows
+## Work with rows
 
-## Filter rows
+### Filter rows
 
 Filtering rows works very similarly for both packages, they even have the same function names: `dplyr::filter()` and `ibis.filter()`. To select columns in `ibis`, you need the `ibis._` selector. Note that you have to provide a dictionary to `ibis.filter()` in case you want to have multiple conditions. 
 
@@ -77,7 +77,7 @@ penguins |>
 ```
 :::
 
-## Slice rows
+### Slice rows
 
 `dplyr::slice()` takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. `ibis.limit()` only takes the number of rows to slice and the number of rows to skip as inputs. For instance, to the the same result of slicing rows 10 to 20, the code looks as follows (note that indexing starts at 0 in Python, while it starts at 1 in R):
 
@@ -95,7 +95,7 @@ penguins |>
 ```
 :::
 
-## Arrange rows
+### Arrange rows
 
 To orders the rows of a data frame by the values of selected columns, we have `dplyr::arrange()` and `ibis.order_by()`. Both approaches arrange rows in an an ascending order and puts missing values last. Again, you need to provide a dictionary to `ibis.order_by()`.
 
@@ -113,9 +113,9 @@ penguins |>
 ```
 :::
 
-# Work with columns
+## Work with columns
 
-## Select columns
+### Select columns
 
 Selecting a subset of columns works essentially the same for both and `dplyr::select()` and `ibis.select()` even have the same name. Note that you don't have to use `ibis._` but can also just pass strings in the `ibis.select()` method. 
 
@@ -153,7 +153,7 @@ penguins |>
 ```
 :::
 
-## Mutate columns
+### Mutate columns
 
 Transforming existing columns or creating new ones is an essential part of data analysis. `dplyr::mutate()` and `ibis.mutate()` are the work horses for these tasks. A big difference between `dplyr::mutate()` and `ibis.mutate()` is that in the latter you have to chain separate mutate calls together when you reference newly-created columns in the same mutate whereas in `dplyr`, you can put them all in the same call.
 
@@ -177,7 +177,7 @@ penguins |>
 ```
 :::
 
-### dplyrelocate columns
+### Relocate columns
 
 `dplyr::relocate()` provides options to change the positions of columns in a data frame, using the same syntax as `dplyr::select()`. In addition, there are the options `.after` and `.before` to provide users with additional shortcuts. 
 
@@ -198,9 +198,9 @@ penguins |>
 ```
 :::
 
-# Work with groups of rows
+## Work with groups of rows
 
-## Simple summaries by group
+### Simple summaries by group
 
 Let's suppose we want to compute summaries by groups such as means or medians. Both packages are very similar again: on the R side you have `dplyr::group_by()` and `dplyr::summarize()`, while on the Python side you have `ibis.group_by()` and `ibis.aggregate()`. 
 
@@ -223,7 +223,7 @@ penguins |>
 ```
 :::
 
-## More complicated summaries by group
+### More complicated summaries by group
 
 Typically, you want to create multiple different summaries by groups. `dplyr` provides a lot of flexibility to create new variables on the fly, as does `ibis`. For instance, we can pass expressions to them mean functions in order to create the share of female penguins per island in the summary statement. 
 
@@ -256,7 +256,7 @@ penguins |>
 ```
 :::
 
-# Conclusion
+## Conclusion
 
 This post highlights syntactic similarities and differences across R's `dplyr` and Python's `ibis` packages. Two key points emerge: (i) `dplyr` heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python; (ii) the syntax is remarkably similar across both packages. I want to close this post by emphasizing that both languages and packages have their own merits and I won't strictly recommend one over the other. However, I definitely prefer the print output of `dplyr` to `ibis` because the latter is silent about additional columns of the underlying data. I'm a big fan of the concise data printing capabilities that are part of `dplyr`.
 

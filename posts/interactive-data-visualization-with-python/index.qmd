@@ -22,7 +22,7 @@ Interactive figures are an essential tool for communicating data insights, in pa
 
 I compare code to generate `plotly`, `bokeh`, and `altair` output in the post below. The types of plots that I chose for the comparison heavily draw on the examples given in [R for Data Science](https://r4ds.hadley.nz/data-visualize) - an amazing resource if you want to get started with data visualization. Spoiler alert: I'm not always able to replicate the same figure with all approaches (yet).
 
-# Loading libraries and data
+## Loading libraries and data
 
 We start by loading a dew data manipulation libraries, the main libraries and modules of interest, and `palmerpenguins` data. We then use the `penguins` data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don't want to get into related messages in this post. 
 
@@ -54,7 +54,7 @@ from palmerpenguins import load_penguins
 penguins = load_penguins().dropna()
 ```
 
-# A full-blown example
+## A full-blown example
 
 Let's start with an advanced example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. You can click through the results in the tabs below. 
 
@@ -182,9 +182,9 @@ fig_full
 ```
 ::: 
 
-# Visualizing distributions
+## Visualizing distributions
 
-## A categorical variable
+### A categorical variable
 
 Let's break down the differences in smaller steps by focusing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then bar charts are your friends. The code chunks below show you how to implement them for each approach. 
 
@@ -234,7 +234,7 @@ island_counts = (penguins
 ```
 ::: 
 
-## A numerical variable
+### A numerical variable
 
 If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. You can quickly create histograms in `plotly` and `altair`, while you have to manually construct the the histogram from individual bars in `bokeh`.
 
@@ -283,9 +283,9 @@ show(fig_histogram)
 ```
 ::: 
 
-# Visualizing relationships
+## Visualizing relationships
 
-## A numerical and a categorical variable
+### A numerical and a categorical variable
 
 To visualize relationships, you need to have at least two columns. If you have a numerical and a categorical variable, then histograms or densities with groups are a good starting point. The next example illustrates the use of densities. `plotly` and `altair` have built-in support for densities, while you have to manually compute the densities in `bokeh`.
 
@@ -339,7 +339,7 @@ show(fig_densities)
 ```
 :::
 
-## Two categorical columns
+### Two categorical columns
 
 Stacked bar plots are a good way to display the relationship between two categorical columns. For `plotly` and `altair`, we simply compute the percentages by species and island and put them into the bar plotting functions. Note that `bokeh` is peculiar because it requires the data in wide format for stacked bar charts. 
 
@@ -406,7 +406,7 @@ species_island_counts = (penguins
 ```
 ::: 
 
-## Two numerical columns
+### Two numerical columns
 
 Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns and we focus on scatter plots for this example (see the first visualization example if you want to see again how to add a regression line). Note that `altair` axis ranges by default includes 0,so  you need to manually tell the scale to ignore it.   
 
@@ -442,7 +442,7 @@ show(fig_scatter)
 ```
 ::: 
 
-## Three or more columns
+### Three or more columns
 
 You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data. 
 
@@ -499,7 +499,7 @@ show(fig_grid)
 ```
 ::: 
 
-# Time series
+## Time series
 
 As a last example, we quickly dive into time series plots where you typically show multiple lines over some date vector. Here, I aggregate the number of penguins by year and island and plot the corresponding lines. While you can simply define colors and line types in `plotly` and `altair` plotting functions, you have to manually loop in `bokeh`. 
 
@@ -552,6 +552,6 @@ show(fig_time_series)
 ```
 ::: 
 
-# Conclusion
+## Conclusion
 
 `plotly`, `bokeh`, and `altair` each cater to distinct visualization needs in Python. `plotly` shines with its interactive, high-quality visuals and ease of embedding in web applications, making it ideal for creating complex interactive charts and dashboards. `bokeh` is focused on real-time data visualizations and interactivity, particularly suited for web apps that require dynamic data streaming. Its strength lies in the seamless integration of Python code with web technologies. `altair` offers a declarative approach, emphasizing simplicity and efficiency in creating elegant statistical visualizations with minimal code, making it ideal for exploratory data analysis in notebooks. 

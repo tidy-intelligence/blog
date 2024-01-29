@@ -200,8 +200,6 @@ cookieconsent.run({
   </ul></li>
   <li><a href="#saving-plots" id="toc-saving-plots" class="nav-link" data-scroll-target="#saving-plots">Saving plots</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
-  <li><a href="#related-articles" id="toc-related-articles" class="nav-link" data-scroll-target="#related-articles">Related articles</a></li>
-  <li><a href="#comments" id="toc-comments" class="nav-link" data-scroll-target="#comments">Comments</a></li>
   </ul>
 </nav>
     </div>
@@ -252,8 +250,8 @@ cookieconsent.run({
 <p><code>ggplot2</code> is based on Leland Wilkinson”s Grammar of Graphics, a set of principles for creating consistent and effective statistical graphics, and was developed by Hadley Wickham. The package is a cornerstone of the R community and integrates seamlessly with other <code>tidyverse</code> packages. One of the key strengths of <code>ggplot2</code> is its use of a consistent syntax, making it relatively easy to learn and enabling users to create a wide range of graphics with a common set of functions. The package is also highly customizable, allowing detailed adjustments to almost every element of a plot.</p>
 <p><code>seaborn</code> is a Python data visualization library based on <code>matplotlib</code>. It provides a high-level interface for drawing attractive and informative statistical graphics. Key features of <code>seaborn</code> include its ability to work well with <code>pandas</code> data frames, built-in themes for styling <code>matplotlib</code> graphics, and functions for visualizing distributions.</p>
 <p>The types of plots that I chose for the comparison heavily draw on the examples given in <a href="https://r4ds.hadley.nz/data-visualize">R for Data Science</a> - an amazing resource if you want to get started with data visualization.</p>
-<section id="loading-packages-and-data" class="level1">
-<h1>Loading packages and data</h1>
+<section id="loading-packages-and-data" class="level2">
+<h2 class="anchored" data-anchor-id="loading-packages-and-data">Loading packages and data</h2>
 <p>We start by loading the main packages of interest and the popular <code>penguins</code> data that comes with <code>seaborn</code> and exists as an R package. We then use the <code>penguins</code> data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don’t want to get into related messages in this post.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">seaborn</a></li></ul>
@@ -278,8 +276,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="a-full-blown-example" class="level1">
-<h1>A full-blown example</h1>
+<section id="a-full-blown-example" class="level2">
+<h2 class="anchored" data-anchor-id="a-full-blown-example">A full-blown example</h2>
 <p>Let”s start with an advancved example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. As you can see in this example already, <code>ggplot2</code> and <code>seaborn</code> have a fundamentally different syntactic approach. While <code>ggplot2</code> works with layers, <code>seaborn</code> uses a specific function with a few parameter and additional methods.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">seaborn</a></li></ul>
@@ -329,10 +327,10 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="visualizing-distributions" class="level1">
-<h1>Visualizing distributions</h1>
-<section id="a-categorical-variable" class="level2">
-<h2 class="anchored" data-anchor-id="a-categorical-variable">A categorical variable</h2>
+<section id="visualizing-distributions" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-distributions">Visualizing distributions</h2>
+<section id="a-categorical-variable" class="level3">
+<h3 class="anchored" data-anchor-id="a-categorical-variable">A categorical variable</h3>
 <p>Let’s break down the differences in smaller steps by focusing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then <code>ggplot2::geom_bar()</code> and <code>seaborn.countplot()</code> are your friends. I manually specify the order in the <code>seaborn</code> figure to mimic the automatic behavior of <code>ggplot2</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">seaborn</a></li></ul>
@@ -370,8 +368,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="a-numerical-variable" class="level2">
-<h2 class="anchored" data-anchor-id="a-numerical-variable">A numerical variable</h2>
+<section id="a-numerical-variable" class="level3">
+<h3 class="anchored" data-anchor-id="a-numerical-variable">A numerical variable</h3>
 <p>If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. <code>ggplot2::geom_histogram()</code> and <code>seaborn.histplot</code> with options to control bin widths or number of bins are the functions for this task.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">seaborn</a></li></ul>
@@ -411,10 +409,10 @@ cookieconsent.run({
 <p>Both packages also support density curves, but I personally wouldn”t recommend to start with densities because they are estimated curves that might obscure underlying data features. However, we look at densities in the next section.</p>
 </section>
 </section>
-<section id="visualizing-relationships" class="level1">
-<h1>Visualizing relationships</h1>
-<section id="a-numerical-and-a-categorical-variable" class="level2">
-<h2 class="anchored" data-anchor-id="a-numerical-and-a-categorical-variable">A numerical and a categorical variable</h2>
+<section id="visualizing-relationships" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-relationships">Visualizing relationships</h2>
+<section id="a-numerical-and-a-categorical-variable" class="level3">
+<h3 class="anchored" data-anchor-id="a-numerical-and-a-categorical-variable">A numerical and a categorical variable</h3>
 <p>To visualize relationships, you need to have at least two columns. If you have a numerical and a categorical variable, then histograms or densities with groups are a good starting point. The next example illustrates the use of density curves via <code>ggplot2::geom_density()</code> and <code>seaborn.kdeplot()</code> with similar options to control the appearance.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">seaborn</a></li></ul>
@@ -453,8 +451,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="two-categorical-columns" class="level2">
-<h2 class="anchored" data-anchor-id="two-categorical-columns">Two categorical columns</h2>
+<section id="two-categorical-columns" class="level3">
+<h3 class="anchored" data-anchor-id="two-categorical-columns">Two categorical columns</h3>
 <p>Stacked bar plots are a good way to display the relationship between two categorical columns. <code>geom_bar()</code> with the <code>position</code> argument and <code>seaborn.histplot()</code> with <code>stat</code> are your aesthetics of choice for this task. Note that you can easily switch to counts by using <code>position = "identity"</code> and <code>stat = "count"</code>, respectively, instead of relative frequencies as in the example below. Note that I use <code>shrink = 0.8</code> to get some spacing between columns in the <code>seaborn</code> plot.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">seaborn</a></li></ul>
@@ -491,8 +489,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="two-numerical-columns" class="level2">
-<h2 class="anchored" data-anchor-id="two-numerical-columns">Two numerical columns</h2>
+<section id="two-numerical-columns" class="level3">
+<h3 class="anchored" data-anchor-id="two-numerical-columns">Two numerical columns</h3>
 <p>Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns and we focus on scatter plots for this example (see the first visualization example if you want to see again how to add a regression line). Here, the <code>size</code> parameter controls the size of the shapes that you use for the data points in <code>ggplot2::geom_point()</code> relative to the base size (i.e., it is not tied to any unit of measurement like pixels). For <code>seaborn.scatterplot()</code> you have the <code>s</code> parameter to control point sizes manually, where size is typically given in squared points (where a point is a unit of measure in typography, equal to 1/72 of an inch).</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">seaborn</a></li></ul>
@@ -530,8 +528,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="three-or-more-columns" class="level2">
-<h2 class="anchored" data-anchor-id="three-or-more-columns">Three or more columns</h2>
+<section id="three-or-more-columns" class="level3">
+<h3 class="anchored" data-anchor-id="three-or-more-columns">Three or more columns</h3>
 <p>You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data.</p>
 <p>In <code>ggplot2</code> you add the facet layer at the end, whereas in <code>seaborn</code> you have to start with the facet grid at the beginning and map scatter plots across facets. Note that I use variable assignment to <code>penguins_facet</code> in order to prevent <code>seaborn</code> from printing the figure twice while rendering this post (no idea why though).</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -574,8 +572,8 @@ cookieconsent.run({
 </div>
 </section>
 </section>
-<section id="saving-plots" class="level1">
-<h1>Saving plots</h1>
+<section id="saving-plots" class="level2">
+<h2 class="anchored" data-anchor-id="saving-plots">Saving plots</h2>
 <p>As a final comparison, let us look at saving plots. <code>ggplot2::ggsave()</code> provides the most important options as function paramters. In <code>seaborn</code>, you have to, for instance, tweak the figure size before can save the figure.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">seaborn</a></li></ul>
@@ -604,8 +602,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="conclusion" class="level1">
-<h1>Conclusion</h1>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>In terms of syntax, <code>ggplot2</code> and <code>seaborn</code> are considerably different. <code>ggplot2</code> follows the basic syntax of</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>ggplot(data = &lt;DATA&gt;, aes(x = &lt;X-VAR&gt;, y = &lt;Y-VAR&gt;)) +</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  geom_&lt;PLOT-TYPE&gt;() +</span>
@@ -614,37 +612,6 @@ cookieconsent.run({
 <div class="sourceCode" id="cb20"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>sns.&lt;PLOT-FUNCTION&gt;(data = &lt;DATA&gt;, x = "&lt;X-VAR&gt;", y = "&lt;Y-VAR&gt;", other_parameters).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>I think this difference comes from different philosophies. <code>ggplot2</code> focuses on layering and mapping data to aesthetics, whereas <code>seaborn</code> is more about providing a variety of complex plot types easily. Moreover, <code>ggplot2</code> is designed to work considerably well with tidy data (see my <a href="../../posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html">blog post on tidy data</a>), while <code>seaborn</code> is more flexible with input data formats.</p>
 <p>Both offer extensive customization options, but they are implemented differently. <code>ggplot2</code> uses additional layers and scales and hence allows for a large ecosystem (see, for instance, <a href="https://github.com/erikgahner/awesome-ggplot2">this repo</a> for a collection of links), while <code>seaborn</code> relies on the customization options of <code>matplotlib</code> and its own parameters. I think both approaches are powerful and have their unique advantages, and the choice between them often depends on your programming language preference and specific requirements of the data visualization task.</p>
-</section>
-<section id="related-articles" class="level1">
-<h1>Related articles</h1>
-<section>
-    <div class="articles-container">
-        <div class="article">
-            <img src="../interactive-data-visualization-with-python/thumbnail.png">
-            <div class="card-body">
-                <div class="card-title">Interactive Data Visualization with Python: plotly vs bokeh vs altair</div>
-                <div class="card-text">A comparison of dynamic visualization libraries for the programming language Python.</div>
-            </div>
-        </div>
-        <div class="article">
-            <img src="../interactive-data-visualization-with-python/thumbnail.png">
-            <div class="card-body">
-                <div class="card-title">Interactive Data Visualization with Python: plotly vs bokeh vs altair</div>
-                <div class="card-text">A comparison of dynamic visualization libraries for the programming language Python.</div>
-            </div>
-        </div>
-        <div class="article">
-            <img src="../interactive-data-visualization-with-python/thumbnail.png">
-            <div class="card-body">
-                <div class="card-title">Interactive Data Visualization with Python: plotly vs bokeh vs altair</div>
-                <div class="card-text">A comparison of dynamic visualization libraries for the programming language Python.</div>
-            </div>
-        </div>
-    </div>
-</section>
-</section>
-<section id="comments" class="level1">
-<h1>Comments</h1>
 
 
 </section>
@@ -1050,7 +1017,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","selector":".lightbox","openEffect":"zoom","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","descPosition":"bottom","loop":false,"closeEffect":"zoom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
