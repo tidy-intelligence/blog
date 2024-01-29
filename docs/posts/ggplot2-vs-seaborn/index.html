@@ -200,6 +200,8 @@ cookieconsent.run({
   </ul></li>
   <li><a href="#saving-plots" id="toc-saving-plots" class="nav-link" data-scroll-target="#saving-plots">Saving plots</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#related-articles" id="toc-related-articles" class="nav-link" data-scroll-target="#related-articles">Related articles</a></li>
+  <li><a href="#comments" id="toc-comments" class="nav-link" data-scroll-target="#comments">Comments</a></li>
   </ul>
 </nav>
     </div>
@@ -612,6 +614,37 @@ cookieconsent.run({
 <div class="sourceCode" id="cb20"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>sns.&lt;PLOT-FUNCTION&gt;(data = &lt;DATA&gt;, x = "&lt;X-VAR&gt;", y = "&lt;Y-VAR&gt;", other_parameters).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>I think this difference comes from different philosophies. <code>ggplot2</code> focuses on layering and mapping data to aesthetics, whereas <code>seaborn</code> is more about providing a variety of complex plot types easily. Moreover, <code>ggplot2</code> is designed to work considerably well with tidy data (see my <a href="../../posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html">blog post on tidy data</a>), while <code>seaborn</code> is more flexible with input data formats.</p>
 <p>Both offer extensive customization options, but they are implemented differently. <code>ggplot2</code> uses additional layers and scales and hence allows for a large ecosystem (see, for instance, <a href="https://github.com/erikgahner/awesome-ggplot2">this repo</a> for a collection of links), while <code>seaborn</code> relies on the customization options of <code>matplotlib</code> and its own parameters. I think both approaches are powerful and have their unique advantages, and the choice between them often depends on your programming language preference and specific requirements of the data visualization task.</p>
+</section>
+<section id="related-articles" class="level1">
+<h1>Related articles</h1>
+<section>
+    <div class="articles-container">
+        <div class="article">
+            <img src="../interactive-data-visualization-with-python/thumbnail.png">
+            <div class="card-body">
+                <div class="card-title">Interactive Data Visualization with Python: plotly vs bokeh vs altair</div>
+                <div class="card-text">A comparison of dynamic visualization libraries for the programming language Python.</div>
+            </div>
+        </div>
+        <div class="article">
+            <img src="../interactive-data-visualization-with-python/thumbnail.png">
+            <div class="card-body">
+                <div class="card-title">Interactive Data Visualization with Python: plotly vs bokeh vs altair</div>
+                <div class="card-text">A comparison of dynamic visualization libraries for the programming language Python.</div>
+            </div>
+        </div>
+        <div class="article">
+            <img src="../interactive-data-visualization-with-python/thumbnail.png">
+            <div class="card-body">
+                <div class="card-title">Interactive Data Visualization with Python: plotly vs bokeh vs altair</div>
+                <div class="card-text">A comparison of dynamic visualization libraries for the programming language Python.</div>
+            </div>
+        </div>
+    </div>
+</section>
+</section>
+<section id="comments" class="level1">
+<h1>Comments</h1>
 
 
 </section>
@@ -1017,7 +1050,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","descPosition":"bottom","closeEffect":"zoom","loop":false});
+<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","selector":".lightbox","openEffect":"zoom","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

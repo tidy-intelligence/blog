@@ -20,7 +20,7 @@ draft: true
 
 The types of plots that I chose for the comparison heavily draw on the examples given in [R for Data Science](https://r4ds.hadley.nz/data-visualize) - an amazing resource if you want to get started with data visualization. 
 
-# Loading packages and data
+## Loading packages and data
 
 We start by loading the main packages of interest and the popular `penguins` data that exists as packages for both . We then use the `penguins` data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don't want to get into related messages in this post. 
 
@@ -44,7 +44,7 @@ penguins = load_penguins().dropna()
 ```
 ::: 
 
-# A full-blown example
+## A full-blown example
 
 Let"s start with an advancved example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. As you can see in this example already, `ggplot2` and `matplotlib` have a fundamentally different syntactic approach. While `ggplot2` works with layers and easily allows the creation of regression lines for each species, you have to use a loop to get the same results with `matplotlib`. We also can see the difference between the declarative and imperative programming styles.  
 
@@ -89,9 +89,9 @@ plt.show()
 ```
 ::: 
 
-# Visualizing distributions
+## Visualizing distributions
 
-## A categorical variable
+### A categorical variable
 
 Let's break down the differences in smaller steps by focusing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then `ggplot2::geom_bar()` and `matplotlib.bar()` are your friends. I manually specify the order and values in the `matplotlib` figure to mimic the automatic behavior of `ggplot2`.
 
@@ -111,7 +111,7 @@ plt.show()
 ```
 ::: 
 
-## A numerical variable
+### A numerical variable
 
 If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. `ggplot2::geom_histogram()` and `matplotlib.hist` with options to control bin widths or number of bins are the functions for this task. Note that you have to manually compute the range of values for `matplotlib`.
 
@@ -135,9 +135,9 @@ plt.show()
 
 Both packages also support density curves, but I personally wouldn"t recommend to start with densities because they are estimated curves that might obscure underlying data features. However, we look at densities in the next section. 
 
-# Visualizing relationships
+## Visualizing relationships
 
-## A numerical and a categorical variable
+### A numerical and a categorical variable
 
 To visualize relationships, you need to have at least two columns. If you have a numerical and a categorical variable, then histograms or densities with groups are a good starting point. The next example illustrates the use of density curves via `ggplot2::geom_density()`. In `matplotlib`, we have to manually estimate the densities and plot the corresponding lines in a loop. Visually, we get quite similar results. 
 
@@ -174,7 +174,7 @@ plt.show()
 ```
 :::
 
-## Two categorical columns
+### Two categorical columns
 
 Stacked bar plots are a good way to display the relationship between two categorical columns. `geom_bar()` with the `position` argument and `matplotlib.bar()` are your aesthetics of choice for this task. For `matplotlib`, we have to first compute the shares, then sequentially fill subplots. Note that you can easily switch to counts by using `position = "identity"` in `ggplot2` instead of relative frequencies as in the example below. 
 
@@ -201,7 +201,7 @@ plt.show()
 ```
 ::: 
 
-## Two numerical columns
+### Two numerical columns
 
 Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns and we focus on scatter plots for this example (see the first visualization example if you want to see again how to add a regression line). Here, the `size` parameter controls the size of the shapes that you use for the data points in `ggplot2::geom_point()` relative to the base size (i.e., it is not tied to any unit of measurement like pixels). For `matplotlib.scatter()` you have the `s` parameter to control point sizes manually, where size is typically given in squared points (where a point is a unit of measure in typography, equal to 1/72 of an inch). 
 
@@ -223,7 +223,7 @@ plt.show()
 ```
 ::: 
 
-## Three or more columns
+### Three or more columns
 
 You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data. 
 
@@ -264,7 +264,7 @@ plt.show()
 ```
 ::: 
 
-# Time series
+## Time series
 
 As a last example, we quickly dive into time series plots where you typically want to show multiple lines over some time period. Here, I aggregate the number of penguins by year and island and plot the corresponding lines. All packages behave as expected and show similar output.
 
@@ -306,7 +306,7 @@ plt.show()
 ```
 ::: 
 
-# Saving plots
+## Saving plots
 
 As a final comparison, let us look at saving plots. `ggplot2::ggsave()` provides the most important options as function paramters. In `matplotlib`, you have to tweak the figure size before you can save the figure.  
 
@@ -333,8 +333,46 @@ plt.savefig("penguins-figure.png", dpi = 300)
 ```
 ::: 
 
-# Conclusion
+## Conclusion
 
 In terms of syntax, `ggplot2` and `matplotlib` are considerably different. `ggplot2` uses a declarative style where you declare what the plot should contain. You specify mappings between data and aesthetics (like color, size) and add layers to build up the plot. This makes it quite structured and consistent. `matplotlib`, on the other hand, follows an imperative style where you build plots step by step. Each element of the plot (like lines, labels, legend) is added and customized using separate commands. It allows for a high degree of customization but can be verbose for complex plots.
 
 I think both approaches are powerful and have their unique advantages, and the choice between them often depends on your programming language preference and specific requirements of the data visualization task at hand.
+
+
+```{=html}
+<section>
+   <h2>Related articles</h2>
+    <div class="articles-container">
+      <a href="../ggplot2-vs-seaborn/index.html" class="article">
+        <div class="quarto-grid-item">
+            <img src="../ggplot2-vs-seaborn/thumbnail.png">
+            <div class="card-body post-contents">
+               <h5 class="no-anchor card-title listing-title">Tidy Data Visualization: ggplot2 vs seaborn</h5>
+               <div class="card-text listing-description">A comparison of two popular data visualization tools for R and Python.</div>
+            </div>
+        </div>
+        </a>
+        
+        <a href="../interactive-data-visualization-with-python/index.html" class="article">
+        <div class="quarto-grid-item">
+            <img src="../interactive-data-visualization-with-python/thumbnail.png">
+            <div class="card-body post-contents">
+                <h5 class="no-anchor card-title listing-title">Interactive Data Visualization with R</h5>
+                <div class="card-text listing-description">A comparison of two popular data visualization tools for R and Python.</div>
+            </div>
+        </div>
+        </a>
+        
+        <a href="../ggplot2-vs-plotnine/index.html" class="article">
+        <div class="quarto-grid-item">
+            <img src="../ggplot2-vs-plotnine/thumbnail.png">
+            <div class="card-body post-contents">
+                <h5 class="no-anchor card-title listing-title">Tidy Data Visualization: ggplot2 vs plotnine</h5>
+                <div class="card-text listing-description">A comparison of two popular data visualization tools for R and Python.</div>
+            </div>
+        </div>
+        </a>
+    </div>
+</section>
+```

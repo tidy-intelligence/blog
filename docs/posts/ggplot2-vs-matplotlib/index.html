@@ -251,8 +251,8 @@ cookieconsent.run({
 <p><code>ggplot2</code> is based on Leland Wilkinson”s Grammar of Graphics, a set of principles for creating consistent and effective statistical graphics, and was developed by Hadley Wickham. The package is a cornerstone of the R community and integrates seamlessly with other <code>tidyverse</code> packages. One of the key strengths of <code>ggplot2</code> is its use of a consistent syntax, making it relatively easy to learn and enabling users to create a wide range of graphics with a common set of functions. The package is also highly customizable, allowing detailed adjustments to almost every element of a plot.</p>
 <p><code>matplotlib</code> is a widely-used data visualization library in Python, renowned for its ability to produce high-quality graphs and charts. Rooted in an imperative programming style, <code>matplotlib</code> provides a detailed control over plot elements, making it possible to fine-tune the aesthetics and layout of graphs to a high degree. Its compatibility with a variety of output formats and integration with other data science libraries like <code>numpy</code> and <code>pandas</code> makes it a cornerstone in the Python scientific computing stack.</p>
 <p>The types of plots that I chose for the comparison heavily draw on the examples given in <a href="https://r4ds.hadley.nz/data-visualize">R for Data Science</a> - an amazing resource if you want to get started with data visualization.</p>
-<section id="loading-packages-and-data" class="level1">
-<h1>Loading packages and data</h1>
+<section id="loading-packages-and-data" class="level2">
+<h2 class="anchored" data-anchor-id="loading-packages-and-data">Loading packages and data</h2>
 <p>We start by loading the main packages of interest and the popular <code>penguins</code> data that exists as packages for both . We then use the <code>penguins</code> data frame as the data to compare all functions and methods below. Note that I drop all rows with missing values because I don’t want to get into related messages in this post.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">matplotlib</a></li></ul>
@@ -293,8 +293,8 @@ Attaching package: 'dplyr'</code></pre>
 </div>
 </div>
 </section>
-<section id="a-full-blown-example" class="level1">
-<h1>A full-blown example</h1>
+<section id="a-full-blown-example" class="level2">
+<h2 class="anchored" data-anchor-id="a-full-blown-example">A full-blown example</h2>
 <p>Let”s start with an advancved example that combines many different aesthetics at the same time: we plot two columns against each other, use color and shape aesthetics do differentiate species, include separate regression lines for each species, manually set nice labels, and use a theme. As you can see in this example already, <code>ggplot2</code> and <code>matplotlib</code> have a fundamentally different syntactic approach. While <code>ggplot2</code> works with layers and easily allows the creation of regression lines for each species, you have to use a loop to get the same results with <code>matplotlib</code>. We also can see the difference between the declarative and imperative programming styles.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">matplotlib</a></li></ul>
@@ -356,10 +356,10 @@ Attaching package: 'dplyr'</code></pre>
 </div>
 </div>
 </section>
-<section id="visualizing-distributions" class="level1">
-<h1>Visualizing distributions</h1>
-<section id="a-categorical-variable" class="level2">
-<h2 class="anchored" data-anchor-id="a-categorical-variable">A categorical variable</h2>
+<section id="visualizing-distributions" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-distributions">Visualizing distributions</h2>
+<section id="a-categorical-variable" class="level3">
+<h3 class="anchored" data-anchor-id="a-categorical-variable">A categorical variable</h3>
 <p>Let’s break down the differences in smaller steps by focusing on simpler examples. If you have a categorical variable and want to compare its relevance in your data, then <code>ggplot2::geom_bar()</code> and <code>matplotlib.bar()</code> are your friends. I manually specify the order and values in the <code>matplotlib</code> figure to mimic the automatic behavior of <code>ggplot2</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">matplotlib</a></li></ul>
@@ -396,8 +396,8 @@ Attaching package: 'dplyr'</code></pre>
 </div>
 </div>
 </section>
-<section id="a-numerical-variable" class="level2">
-<h2 class="anchored" data-anchor-id="a-numerical-variable">A numerical variable</h2>
+<section id="a-numerical-variable" class="level3">
+<h3 class="anchored" data-anchor-id="a-numerical-variable">A numerical variable</h3>
 <p>If you have a numerical variable, usually histograms are a good starting point to get a better feeling for the distribution of your data. <code>ggplot2::geom_histogram()</code> and <code>matplotlib.hist</code> with options to control bin widths or number of bins are the functions for this task. Note that you have to manually compute the range of values for <code>matplotlib</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">matplotlib</a></li></ul>
@@ -438,10 +438,10 @@ Attaching package: 'dplyr'</code></pre>
 <p>Both packages also support density curves, but I personally wouldn”t recommend to start with densities because they are estimated curves that might obscure underlying data features. However, we look at densities in the next section.</p>
 </section>
 </section>
-<section id="visualizing-relationships" class="level1">
-<h1>Visualizing relationships</h1>
-<section id="a-numerical-and-a-categorical-variable" class="level2">
-<h2 class="anchored" data-anchor-id="a-numerical-and-a-categorical-variable">A numerical and a categorical variable</h2>
+<section id="visualizing-relationships" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-relationships">Visualizing relationships</h2>
+<section id="a-numerical-and-a-categorical-variable" class="level3">
+<h3 class="anchored" data-anchor-id="a-numerical-and-a-categorical-variable">A numerical and a categorical variable</h3>
 <p>To visualize relationships, you need to have at least two columns. If you have a numerical and a categorical variable, then histograms or densities with groups are a good starting point. The next example illustrates the use of density curves via <code>ggplot2::geom_density()</code>. In <code>matplotlib</code>, we have to manually estimate the densities and plot the corresponding lines in a loop. Visually, we get quite similar results.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">matplotlib</a></li></ul>
@@ -495,8 +495,8 @@ Attaching package: 'dplyr'</code></pre>
 </div>
 </div>
 </section>
-<section id="two-categorical-columns" class="level2">
-<h2 class="anchored" data-anchor-id="two-categorical-columns">Two categorical columns</h2>
+<section id="two-categorical-columns" class="level3">
+<h3 class="anchored" data-anchor-id="two-categorical-columns">Two categorical columns</h3>
 <p>Stacked bar plots are a good way to display the relationship between two categorical columns. <code>geom_bar()</code> with the <code>position</code> argument and <code>matplotlib.bar()</code> are your aesthetics of choice for this task. For <code>matplotlib</code>, we have to first compute the shares, then sequentially fill subplots. Note that you can easily switch to counts by using <code>position = "identity"</code> in <code>ggplot2</code> instead of relative frequencies as in the example below.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">matplotlib</a></li></ul>
@@ -540,8 +540,8 @@ Attaching package: 'dplyr'</code></pre>
 </div>
 </div>
 </section>
-<section id="two-numerical-columns" class="level2">
-<h2 class="anchored" data-anchor-id="two-numerical-columns">Two numerical columns</h2>
+<section id="two-numerical-columns" class="level3">
+<h3 class="anchored" data-anchor-id="two-numerical-columns">Two numerical columns</h3>
 <p>Scatter plots and regression lines are definitely the most common approach for visualizing the relationship between two numerical columns and we focus on scatter plots for this example (see the first visualization example if you want to see again how to add a regression line). Here, the <code>size</code> parameter controls the size of the shapes that you use for the data points in <code>ggplot2::geom_point()</code> relative to the base size (i.e., it is not tied to any unit of measurement like pixels). For <code>matplotlib.scatter()</code> you have the <code>s</code> parameter to control point sizes manually, where size is typically given in squared points (where a point is a unit of measure in typography, equal to 1/72 of an inch).</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">matplotlib</a></li></ul>
@@ -580,8 +580,8 @@ Attaching package: 'dplyr'</code></pre>
 </div>
 </div>
 </section>
-<section id="three-or-more-columns" class="level2">
-<h2 class="anchored" data-anchor-id="three-or-more-columns">Three or more columns</h2>
+<section id="three-or-more-columns" class="level3">
+<h3 class="anchored" data-anchor-id="three-or-more-columns">Three or more columns</h3>
 <p>You can include more information by mapping columns to additional aesthetics. For instance, we can map colors and shapes to species and create separate plots for each island by using facets. Facets are actually a great way to extend your figures, so I highly recommend playing around with them using your own data.</p>
 <p>In <code>ggplot2</code> you add the facet layer at the end, whereas in <code>matplotlib</code> you have to start with the facet grid at the beginning and map scatter plots across facets. Note that I use variable assignment to <code>penguins_facet</code> in order to prevent <code>matplotlib</code> from printing the figure twice while rendering this post (no idea why though).</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -639,8 +639,8 @@ Attaching package: 'dplyr'</code></pre>
 </div>
 </section>
 </section>
-<section id="time-series" class="level1">
-<h1>Time series</h1>
+<section id="time-series" class="level2">
+<h2 class="anchored" data-anchor-id="time-series">Time series</h2>
 <p>As a last example, we quickly dive into time series plots where you typically want to show multiple lines over some time period. Here, I aggregate the number of penguins by year and island and plot the corresponding lines. All packages behave as expected and show similar output.</p>
 <p><code>matplotlib</code> does not directly support setting line styles based on a variable like island within its syntax. Instead, you have to iterate over each island and manually set the line style for each island.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -698,8 +698,8 @@ Attaching package: 'dplyr'</code></pre>
 </div>
 </div>
 </section>
-<section id="saving-plots" class="level1">
-<h1>Saving plots</h1>
+<section id="saving-plots" class="level2">
+<h2 class="anchored" data-anchor-id="saving-plots">Saving plots</h2>
 <p>As a final comparison, let us look at saving plots. <code>ggplot2::ggsave()</code> provides the most important options as function paramters. In <code>matplotlib</code>, you have to tweak the figure size before you can save the figure.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">ggplot2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">matplotlib</a></li></ul>
@@ -727,10 +727,44 @@ Attaching package: 'dplyr'</code></pre>
 </div>
 </div>
 </section>
-<section id="conclusion" class="level1">
-<h1>Conclusion</h1>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>In terms of syntax, <code>ggplot2</code> and <code>matplotlib</code> are considerably different. <code>ggplot2</code> uses a declarative style where you declare what the plot should contain. You specify mappings between data and aesthetics (like color, size) and add layers to build up the plot. This makes it quite structured and consistent. <code>matplotlib</code>, on the other hand, follows an imperative style where you build plots step by step. Each element of the plot (like lines, labels, legend) is added and customized using separate commands. It allows for a high degree of customization but can be verbose for complex plots.</p>
 <p>I think both approaches are powerful and have their unique advantages, and the choice between them often depends on your programming language preference and specific requirements of the data visualization task at hand.</p>
+<section>
+   <h2 class="anchored">Related articles</h2>
+    <div class="articles-container">
+      <a href="../ggplot2-vs-seaborn/index.html" class="article">
+        <div class="quarto-grid-item">
+            <img src="../ggplot2-vs-seaborn/thumbnail.png">
+            <div class="card-body post-contents">
+               <h5 class="no-anchor card-title listing-title">Tidy Data Visualization: ggplot2 vs seaborn</h5>
+               <div class="card-text listing-description">A comparison of two popular data visualization tools for R and Python.</div>
+            </div>
+        </div>
+        </a>
+        
+        <a href="../interactive-data-visualization-with-python/index.html" class="article">
+        <div class="quarto-grid-item">
+            <img src="../interactive-data-visualization-with-python/thumbnail.png">
+            <div class="card-body post-contents">
+                <h5 class="no-anchor card-title listing-title">Interactive Data Visualization with R</h5>
+                <div class="card-text listing-description">A comparison of two popular data visualization tools for R and Python.</div>
+            </div>
+        </div>
+        </a>
+        
+        <a href="../ggplot2-vs-plotnine/index.html" class="article">
+        <div class="quarto-grid-item">
+            <img src="../ggplot2-vs-plotnine/thumbnail.png">
+            <div class="card-body post-contents">
+                <h5 class="no-anchor card-title listing-title">Tidy Data Visualization: ggplot2 vs plotnine</h5>
+                <div class="card-text listing-description">A comparison of two popular data visualization tools for R and Python.</div>
+            </div>
+        </div>
+        </a>
+    </div>
+</section>
 
 
 </section>
@@ -1136,7 +1170,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","loop":false,"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

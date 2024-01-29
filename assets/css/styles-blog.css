@@ -68,6 +68,7 @@ h2 {
   cursor: pointer;
   text-align: right;
   position: relative;
+  color: black;
 }
 
 .card-body:hover::after, 
@@ -170,4 +171,57 @@ pre {
 
 .quarto-categories {
   display: none !important;
+}
+
+.articles-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Spacing between articles */
+}
+
+/* For mobile screens */
+@media screen and (max-width: 600px) {
+    .articles-container {
+        flex-direction: column;
+    }
+}
+
+.article {
+    flex: 1 1 calc(33.333% - 20px);
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #fff;
+    border: none;
+    transition: box-shadow 0.4s;
+    border-radius: 8px;
+    overflow: hidden; 
+    margin-bottom: 0px; 
+}
+
+.article:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.article img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.article .card-body {
+    padding: 8px;
+    flex-grow: 1;
+}
+
+.article .card-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.1em;
+  color: black;
+}
+
+.article .card-text {
+    font-size: .9em; /* Adjust the text size */
+    color: black; /* Adjust the text color */
 }
