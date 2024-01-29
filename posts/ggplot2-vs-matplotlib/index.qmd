@@ -349,7 +349,7 @@ I think both approaches are powerful and have their unique advantages, and the c
             <img src="../ggplot2-vs-seaborn/thumbnail.png">
             <div class="card-body post-contents">
                <h5 class="no-anchor card-title listing-title">Tidy Data Visualization: ggplot2 vs seaborn</h5>
-               <div class="card-text listing-description">A comparison of two popular data visualization tools for R and Python.</div>
+               <div class="card-text listing-description">A comparison of two popular data visualization tools for R and Python</div>
             </div>
         </div>
         </a>
@@ -359,7 +359,7 @@ I think both approaches are powerful and have their unique advantages, and the c
             <img src="../interactive-data-visualization-with-python/thumbnail.png">
             <div class="card-body post-contents">
                 <h5 class="no-anchor card-title listing-title">Interactive Data Visualization with R</h5>
-                <div class="card-text listing-description">A comparison of two popular data visualization tools for R and Python.</div>
+                <div class="card-text listing-description">A comparison of popular dynamic visualization libraries for R</div>
             </div>
         </div>
         </a>
@@ -369,7 +369,7 @@ I think both approaches are powerful and have their unique advantages, and the c
             <img src="../ggplot2-vs-plotnine/thumbnail.png">
             <div class="card-body post-contents">
                 <h5 class="no-anchor card-title listing-title">Tidy Data Visualization: ggplot2 vs plotnine</h5>
-                <div class="card-text listing-description">A comparison of two popular data visualization tools for R and Python.</div>
+                <div class="card-text listing-description">A comparison of two popular data visualization tools for R and Python</div>
             </div>
         </div>
         </a>
