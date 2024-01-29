@@ -33,3 +33,9 @@ a {
       height: 1000px;
   }
 }
+
+@media screen and (max-width: 375px) {
+  .navbar a {
+    padding: 8px;
+  }
+}

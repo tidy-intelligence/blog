@@ -138,8 +138,7 @@ pre {
   transition: none;
 }
 
-/* Basic styling for the category div */
-
+/* Basic styling for the category divs */
 .quarto-listing-category-title {
   padding-top: 24px;
   padding-block: 8px;
@@ -165,7 +164,6 @@ pre {
     font-weight: normal;
 }
 
-/* Hide category count */
 .quarto-category-count {
   display: none;
 }
