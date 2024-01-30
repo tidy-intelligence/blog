@@ -63,3 +63,5 @@ format:
     fig-dpi: 300
     lightbox: auto
     from: markdown+emoji
+    include-after-body: assets/html/bottom-footer.html
+    

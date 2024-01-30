@@ -376,8 +376,3 @@ I think both approaches are powerful and have their unique advantages, and the c
     </div>
 </section>
 ```
-
-```{=html}
-<h2>Comments</h2>
-```
-
