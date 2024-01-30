@@ -1,6 +1,6 @@
 ---
 title: "Interactive Data Visualization with R"
-description: "A comparison of the dynamic visualization packages ggiraph, plotly and highcharter for the programming language R."
+description: "A comparison of the dynamic visualization packages ggiraph, plotly and highcharter for the programming language R"
 metadata:
   pagetitle: "Interactive Data Visualization with R"
 author: "Christoph Scheuch"

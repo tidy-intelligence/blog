@@ -359,7 +359,7 @@ I think both approaches are powerful and have their unique advantages, and the c
             <img src="../interactive-data-visualization-with-r/thumbnail.png">
             <div class="card-body post-contents">
                 <h5 class="no-anchor card-title listing-title">Interactive Data Visualization with R</h5>
-                <div class="card-text listing-description">A comparison of popular dynamic visualization libraries for R</div>
+                <div class="card-text listing-description">A comparison of the dynamic visualization libraries ggiraph, plotly and highcharter for R</div>
             </div>
         </div>
         </a>

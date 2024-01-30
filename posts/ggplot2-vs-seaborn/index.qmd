@@ -1,6 +1,6 @@
 ---
 title: "Tidy Data Visualization: ggplot2 vs seaborn"
-description: "A comparison of two popular data visualization tools for R and Python."
+description: "A comparison of two popular data visualization tools for R and Python"
 metadata:
   pagetitle: "Tidy Data Visualization: ggplot2 vs seaborn"
 author: "Christoph Scheuch"

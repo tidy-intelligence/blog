@@ -1,6 +1,6 @@
 ---
 title: "Interactive Data Visualization with Python"
-description: "A comparison of the dynamic visualization libraries plotly, bokeh and altair for the programming language Python."
+description: "A comparison of the dynamic visualization libraries plotly, bokeh and altair for the programming language Python"
 metadata:
   pagetitle: "Interactive Data Visualization with Python"
 author: "Christoph Scheuch"
