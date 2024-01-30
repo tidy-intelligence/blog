@@ -354,9 +354,9 @@ I think both approaches are powerful and have their unique advantages, and the c
         </div>
         </a>
         
-        <a href="../interactive-data-visualization-with-python/index.html" class="article">
+        <a href="../interactive-data-visualization-with-r/index.html" class="article">
         <div class="quarto-grid-item">
-            <img src="../interactive-data-visualization-with-python/thumbnail.png">
+            <img src="../interactive-data-visualization-with-r/thumbnail.png">
             <div class="card-body post-contents">
                 <h5 class="no-anchor card-title listing-title">Interactive Data Visualization with R</h5>
                 <div class="card-text listing-description">A comparison of popular dynamic visualization libraries for R</div>
