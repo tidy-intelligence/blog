@@ -41,7 +41,7 @@ website:
       category: "Announcements"
       category-id: "DIC_kwDOKH1yOs4CcPjh"
       mapping: url
-      reactions-enabled: true
+      reactions-enabled: false
       loading: lazy
       theme: "light"
       language: "en"

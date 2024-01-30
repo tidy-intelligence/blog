@@ -16,6 +16,8 @@ h2 {
   border: none;
   border-radius: 8px;
   transition: box-shadow 0.4s;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .quarto-grid-item:hover {
@@ -176,14 +178,7 @@ pre {
 .articles-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px; /* Spacing between articles */
-}
-
-/* For mobile screens */
-@media screen and (max-width: 600px) {
-    .articles-container {
-        flex-direction: column;
-    }
+    gap: 16px;
 }
 
 .article {
@@ -204,6 +199,20 @@ pre {
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+/* For mobile screens */
+@media screen and (max-width: 600px) {
+    .articles-container {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+    .article {
+      flex: 0 0 auto;
+      margin-right: 16px;
+      width: 80%;
+    }
+}
+
 .article img {
     width: 100%;
     height: auto;
@@ -219,9 +228,13 @@ pre {
   font-size: 1.1rem;
   margin-bottom: 0.1em;
   color: black;
+  overflow-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .article .card-text {
     font-size: .9em; /* Adjust the text size */
     color: black; /* Adjust the text color */
+    overflow-wrap: break-word;
+    overflow-wrap: break-word;
 }
