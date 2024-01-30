@@ -1,0 +1,10 @@
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var giscusDiv = document.querySelector('.giscus');
+    var footer = document.querySelector('.footer-custom');
+
+    if (giscusDiv && footer) {
+        giscusDiv.parentNode.insertBefore(footer, giscusDiv.nextSibling);
+    }
+});
+</script>
