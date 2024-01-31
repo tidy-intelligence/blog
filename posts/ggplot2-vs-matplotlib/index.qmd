@@ -1,6 +1,6 @@
 ---
 title: "Tidy Data Visualization: ggplot2 vs matplotlib"
-description: "A comparison of two popular data visualization tools for R and Python."
+description: "A comparison of the two most popular data visualization tools for R and Python"
 metadata:
   pagetitle: "Tidy Data Visualization: ggplot2 vs matplotlib"
 author: "Christoph Scheuch"
@@ -337,7 +337,6 @@ plt.savefig("penguins-figure.png", dpi = 300)
 In terms of syntax, `ggplot2` and `matplotlib` are considerably different. `ggplot2` uses a declarative style where you declare what the plot should contain. You specify mappings between data and aesthetics (like color, size) and add layers to build up the plot. This makes it quite structured and consistent. `matplotlib`, on the other hand, follows an imperative style where you build plots step by step. Each element of the plot (like lines, labels, legend) is added and customized using separate commands. It allows for a high degree of customization but can be verbose for complex plots.
 
 I think both approaches are powerful and have their unique advantages, and the choice between them often depends on your programming language preference and specific requirements of the data visualization task at hand.
-
 
 ```{=html}
 <section>
