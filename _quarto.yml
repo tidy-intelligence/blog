@@ -28,6 +28,8 @@ website:
     logo-href: https://www.tidy-intelligence.com
     pinned: true
     left:
+      - text: "Home"
+        url: https://www.tidy-intelligence.com/
       - text: "Blog"
         file: index.qmd
       - text: "Coaching"
@@ -49,9 +51,7 @@ website:
 
 format:
   html:
-    theme:
-      - cosmo
-      - assets/css/theme.scss
+    theme: cosmo
     css: 
       - assets/css/styles-global.css
       - assets/css/styles-blog.css 
