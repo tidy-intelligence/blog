@@ -112,6 +112,7 @@ cookieconsent.run({
 </script> 
   
 <style>html{ scroll-behavior: smooth; }</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -436,7 +437,7 @@ An application of different unsupervised learning approaches to cluster simulate
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="13" data-categories="Data" data-listing-date-sort="1700780400000" data-listing-file-modified-sort="1706551951078" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2215">
+<div class="g-col-1" data-index="13" data-categories="Data" data-listing-date-sort="1700780400000" data-listing-file-modified-sort="1706736807260" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2215">
 <a href="./posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -491,6 +492,23 @@ document.addEventListener("DOMContentLoaded", function() {
     if (giscusDiv && footer) {
         giscusDiv.parentNode.insertBefore(footer, giscusDiv.nextSibling);
     }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Create the new link element
+    var followButton = document.createElement('a');
+    followButton.href = 'https://www.linkedin.com/in/christophscheuch';
+    followButton.target = '_blank';
+    followButton.role = 'button';
+    followButton.className = 'linkedin-follow-button';
+    followButton.innerHTML = '<i class="fa-brands fa-linkedin-in"></i> Follow';
+
+    // Find the element that contains the name
+    var nameElement = document.querySelector('.quarto-title-meta-contents p');
+
+    // Insert the follow button after the name element
+    nameElement.parentNode.insertBefore(followButton, nameElement.nextSibling);
 });
 </script>
 <script>

@@ -247,3 +247,42 @@ pre {
     font-weight: bold; 
     margin-bottom: 16px; 
 }
+
+/* linkedin follow button */
+.linkedin-follow-button {
+    display: inline-block;
+    background-color: var(--main-color);
+    color: white;
+    padding: 0px 8px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.9em;
+    margin-left: 4px;
+}
+
+.linkedin-follow-button i {
+    margin-right: 4px;
+}
+
+.quarto-title-meta-contents p, .quarto-title-meta-contents a.linkedin-follow-button {
+    display: inline-block;
+    vertical-align: middle; 
+}
+
+.quarto-title-meta {
+    display: flex;
+    justify-content: space-between; /* Adjusts spacing on desktop */
+}
+
+@media (max-width: 600px) {
+    .quarto-title-meta {
+       display: block !important;
+    }
+    
+    .quarto-title-meta > div {
+        width: 100%; /* Child divs take full width on mobile */
+    }
+    
+    .quarto-title-meta-contents {
+      padding: 0px 0px 8px 0px;
+    }

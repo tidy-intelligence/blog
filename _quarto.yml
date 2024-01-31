@@ -63,7 +63,10 @@ format:
     fig-dpi: 300
     lightbox: auto
     from: markdown+emoji
+    include-in-header: 
+      - assets/html/header-fontawesome.html
     include-after-body: 
       - assets/html/bottom-footer.html
       - assets/html/bottom-giscus.html
+      - assets/html/bottom-follow.html
     
