@@ -26,6 +26,7 @@ We start by loading the main packages of interest and the popular `penguins` dat
 ::: {.panel-tabset}
 ### ggplot2
 ```{r}
+#| message: false
 library(dplyr)
 library(ggplot2)
 library(palmerpenguins)
@@ -339,7 +340,7 @@ In terms of syntax, `ggplot2` and `matplotlib` are considerably different. `ggpl
 I think both approaches are powerful and have their unique advantages, and the choice between them often depends on your programming language preference and specific requirements of the data visualization task at hand.
 
 ```{=html}
-<section>
+<section id="related-articles">
    <h2>Related articles</h2>
     <div class="articles-container">
       <a href="../ggplot2-vs-seaborn/index.html" class="article">
