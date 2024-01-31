@@ -11,7 +11,6 @@ categories:
   - R
   - Python
   - Visualization
-draft: true
 ---
 
 `ggplot2` is based on Leland Wilkinson"s Grammar of Graphics, a set of principles for creating consistent and effective statistical graphics, and was developed by Hadley Wickham. The package is a cornerstone of the R community and integrates seamlessly with other `tidyverse` packages. One of the key strengths of `ggplot2` is its use of a consistent syntax, making it relatively easy to learn and enabling users to create a wide range of graphics with a common set of functions. The package is also highly customizable, allowing detailed adjustments to almost every element of a plot.
