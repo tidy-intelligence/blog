@@ -16,3 +16,49 @@ draft: true
 ---
 
 Template
+
+```{r}
+library(dplyr)
+library(WDI)
+library(fixest)
+
+indicators <- c(
+  "gdp_per_capita" = "NY.GDP.PCAP.KD",  # GDP per capita (constant 2010 US$)
+  "gov_exp_share" = "SE.XPD.TOTL.GD.ZS",  # Government expenditure on education, total (% of GDP)
+  "health_exp_share" = "SH.XPD.CHEX.GD.ZS",  # Current health expenditure (% of GDP)
+  "co2_emissions" = "EN.ATM.CO2E.PC" # CO2 emissions (metric tons per capita)
+)  
+
+wdi_data <- WDI(
+  indicators, country = "all", start = 2000, end = 2020, extra = TRUE
+) |> 
+  as_tibble()
+
+fe_model <- feols(gdp_per_capita ~ gov_exp_share + health_exp_share + co2_emissions | country + year, data = wdi_data)
+
+summary(fe_model)
+
+```
+
+```{python}
+# TODO: figure out why pyfixest does not work on mac...
+import wbdata
+import pandas as pd
+from pyfixest.estimation import feols
+from pyfixest.summarize import etable
+
+indicators = {
+  "NY.GDP.PCAP.KD": "gdp_per_capita",
+  "SE.XPD.TOTL.GD.ZS": "gov_exp_share",
+  "SH.XPD.CHEX.GD.ZS": "health_exp_share",
+  "EN.ATM.CO2E.PC": "co2_emissions"
+}
+
+wdi_data = wbdata.get_dataframe(
+  indicators, date = ("2010", "2020"), parse_dates = True
+)
+
+wdi_data.describe()
+
+```
+
