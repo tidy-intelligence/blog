@@ -13,6 +13,8 @@ categories:
   - Python
   - Modeling
 draft: true
+execute: 
+  eval: false
 ---
 
 Template

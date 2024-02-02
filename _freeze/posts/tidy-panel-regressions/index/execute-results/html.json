@@ -1,0 +1,15 @@
+{
+  "hash": "c06b506bab692c322242ab797f4b9c16",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Tidy Panel Regressions: fixest vs pyfixest\"\ndescription: \"A comparison of panel regressions packages for R and Python.\"\nmetadata:\n  pagetitle: \"Tidy Panel Regressions: fixest vs pyfixest\"\n  \nauthor: \"Christoph Scheuch\"\ndate: \"2024-01-31\" \nimage: thumbnail.png\nimage-alt: Created with DALL-E 3.\ncategories: \n  - R\n  - Python\n  - Modeling\ndraft: true\nexecute: \n  eval: false\n---\n\n\nTemplate\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(dplyr)\nlibrary(WDI)\nlibrary(fixest)\n\nindicators <- c(\n  \"gdp_per_capita\" = \"NY.GDP.PCAP.KD\",  # GDP per capita (constant 2010 US$)\n  \"gov_exp_share\" = \"SE.XPD.TOTL.GD.ZS\",  # Government expenditure on education, total (% of GDP)\n  \"health_exp_share\" = \"SH.XPD.CHEX.GD.ZS\",  # Current health expenditure (% of GDP)\n  \"co2_emissions\" = \"EN.ATM.CO2E.PC\" # CO2 emissions (metric tons per capita)\n)  \n\nwdi_data <- WDI(\n  indicators, country = \"all\", start = 2000, end = 2020, extra = TRUE\n) |> \n  as_tibble()\n\nfe_model <- feols(gdp_per_capita ~ gov_exp_share + health_exp_share + co2_emissions | country + year, data = wdi_data)\n\nsummary(fe_model)\n```\n:::\n\n::: {.cell}\n\n```{.python .cell-code}\n# TODO: figure out why pyfixest does not work on mac...\nimport wbdata\nimport pandas as pd\nfrom pyfixest.estimation import feols\nfrom pyfixest.summarize import etable\n\nindicators = {\n  \"NY.GDP.PCAP.KD\": \"gdp_per_capita\",\n  \"SE.XPD.TOTL.GD.ZS\": \"gov_exp_share\",\n  \"SH.XPD.CHEX.GD.ZS\": \"health_exp_share\",\n  \"EN.ATM.CO2E.PC\": \"co2_emissions\"\n}\n\nwdi_data = wbdata.get_dataframe(\n  indicators, date = (\"2010\", \"2020\"), parse_dates = True\n)\n\nwdi_data.describe()\n```\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
