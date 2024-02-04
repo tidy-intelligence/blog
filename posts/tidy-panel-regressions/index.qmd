@@ -44,8 +44,8 @@ summary(fe_model)
 
 ```{python}
 # TODO: figure out why pyfixest does not work on mac...
-import wbdata
-import pandas as pd
+# import wbdata
+# import pandas as pd
 from pyfixest.estimation import feols
 from pyfixest.summarize import etable
 

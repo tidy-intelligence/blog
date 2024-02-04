@@ -26,7 +26,7 @@ We start by loading the main packages of interest and the popular `palmerpenguin
 ::: {.callout-tip}
 ### ibis-framework vs ibis
 
-Note that the `ibis-framework` package is not the same as the `ibis` package in PyPI. These two libraries cannot coexist in the same Python environment, as they are both imported with the ibis module name. So be careful to install the correct `ibis-framework` package via: `pip install 'ibis-framekwork[duckdb]'`
+Note that the `ibis-framework` package is not the same as the `ibis` package in PyPI. These two libraries cannot coexist in the same Python environment, as they are both imported with the ibis module name. So be careful to install the correct `ibis-framework` package via: `pip install 'ibis-framework[duckdb]'`
 
 :::
 
