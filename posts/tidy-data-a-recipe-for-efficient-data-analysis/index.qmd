@@ -10,13 +10,13 @@ categories:
   - Data
 ---
 
-Imagine trying to cook a meal in a disorganized kitchen where ingredients are mixed up and nothing is labeled. It would be chaotic and time-consuming to look for the right ingredients and there might be some trial error involved, possibly ruining your planned meal. 
+Imagine trying to cook a meal in a disorganized kitchen where ingredients are mixed up and nothing is labeled. It would be chaotic and time-consuming to look for the right ingredients and there might be some trial error involved, possibly ruining your planned meal.
 
 Tidy data are like well-organized shelves in your kitchen. Each shelf provides a collection of containers that semantically belong together, e.g., spices or dairies. Each container on the shelf holds one type of ingredient, and the labels on the containers clearly describe what is inside, e.g., pepper or milk. In the same way, tidy data organizes information into a clear and consistent format, where each **type of observational unit forms a table**, **each variable is in a column**, and **each observation is in a row** [@Wickham2014].
 
 Tidying data is about structuring datasets to facilitate analysis, visualization, report generation, or modelling. By following the principle that each variable forms a column, each observation forms a row, and each type of observational unit forms a table, data analysis becomes more intuitive, akin to cooking in a well-organized kitchen where everything has its place and you spend less time on searching for ingredients.
 
-## Example for tidy data
+## Example for tidy data 
 
 To illustrate the concept of tidy data in our tidy kitchen, suppose we have a table called `ingredient` that contains information about all the ingredients that we currently have in our kitchen. It might look as follows:
 
@@ -71,7 +71,7 @@ Now let us move to data structures that are untidy. Consider the following varia
 
 What is the issue here? Each row still refers to a specific dairy product. However, instead of  dedicated `quantity` and `unit` columns, we have a `liters` and `grams` column. Since the units differ across dairy products, the table even contains missing values in the form of emtpy cells. So if you want to find out how much of ice cream you still have, you need to also check out the column name.  In practice, we would create dedicated `quantity` and `unit` columns. we might even decide to have the same unit for all ingredients (e.g., measure everything in grams) and just keep a `quantity` column.
 
-## When multiple variables are stored in one column
+## When multiple variables are stored in one column 
 
 Let us consider the following untidy version of our `ingredient` table. 
 
@@ -90,7 +90,7 @@ Let us consider the following untidy version of our `ingredient` table.
 
 This one is really annoying, since the `quantity_and_unit` column combines both the quantity and the unit of measurement into one string for each ingredient. Why is this an issue? This format actually makes it harder to perform numerical operations on the quantities or to filter or aggregate the data based on the unit of measurement. So in practice, we would actually start our data analysis by splitting out the `quantity_and_unit` column into `quantity` and `unit`.
 
-## When variables are stored in both rows and columns
+## When variables are stored in both rows and columns 
 
 Let us extend our kitchen analogy by additionally considering recipes. For simplicity, a recipe just denotes how much of each ingredient is required. The following table contains two variants of a recipe for pancakes:
 
