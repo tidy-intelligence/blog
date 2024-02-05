@@ -875,27 +875,6 @@ document.addEventListener('DOMContentLoaded', function() {
     nameElement.parentNode.insertBefore(followButton, nameElement.nextSibling);
 });
 </script>
-
-<script>
-// Create the image element
-var authorImage = document.createElement('img');
-
-// Set image source, alt text, and classes for styling
-authorImage.src = '../../assets/img/avatar.jpeg'; // Replace with the actual image path
-authorImage.alt = 'Author Image';
-authorImage.classList.add('author-image'); // Use this class to style the image (e.g., size, border-radius)
-
-// Find the .quarto-title-meta div or another suitable location for insertion
-var titleMetaDiv = document.querySelector('.quarto-title-meta');
-
-// Optionally, create a container for better positioning
-var imageContainer = document.createElement('div');
-imageContainer.classList.add('author-image-container'); // Use this class for further styling, like positioning
-imageContainer.appendChild(authorImage);
-
-// Insert the image container before the .quarto-title-meta div
-titleMetaDiv.parentNode.insertBefore(imageContainer, titleMetaDiv);
-</script>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
