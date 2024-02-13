@@ -1,0 +1,216 @@
+---
+title: "Tidy Classification Models: tidymodels vs scikit-learn"
+description: "A comparison of classification approaches in R and Python"
+metadata:
+  pagetitle: "Tidy Classification Models"
+author: "Christoph Scheuch"
+date: "2024-02-15" 
+image: thumbnail.png
+image-alt: ... Created with DALL-E 3.
+categories: 
+  - R
+  - Python
+  - Modeling
+---
+
+## Load packages
+
+```{r}
+#| message: false
+#| warning: false
+library(tidymodels)
+library(glmnet)
+library(ranger)
+library(xgboost)
+library(readr)
+library(janitor)
+library(stringr)
+```
+
+
+## Download & clean data
+
+- We only use 11 observations by dropping all rows with a missing value, so I'm not going into details here. 
+- Remove `customer_id` because we don't need it for pre-processing
+- Apply one-hot encoding to the remaining variables later
+
+```{r}
+#| message: false
+#| warning: false
+data_url <- "https://raw.githubusercontent.com/IBM/telco-customer-churn-on-icp4d/master/data/Telco-Customer-Churn.csv"
+customer_raw <- read_csv(data_url) 
+
+customer <- customer_raw |> 
+  clean_names() |> 
+  select(-customer_id) |> 
+  na.omit() |> 
+  mutate(churn = factor(if_else(churn=="Yes", 1L, 0L)),
+         female = if_else(gender=="Female", 1L, 0L),
+         senior_citizen = as.integer(senior_citizen)) |> 
+  select(-gender) |> 
+  mutate(
+    across(c(partner, dependents, phone_service, paperless_billing), 
+           ~if_else(. == "Yes", 1L, 0L)),
+    across(c(multiple_lines, internet_service, online_security, online_backup, 
+             device_protection, tech_support, streaming_tv, streaming_movies,
+             contract, paperless_billing, payment_method),
+           ~str_to_lower(str_replace_all(., " |\\-", "_")))
+    ) 
+
+customer_split <- initial_split(customer, prop = 4/ 5, strata = churn)
+
+set.seed(1234)
+customer_folds <- vfold_cv(training(customer_split), v = 25, strata = churn)
+```
+
+## Pre-process data
+
+- Standardize all double variables
+- One-hot encode all remaining categorical variables
+- Important to keep that order, otherwise the encoded variables are also standardized!
+
+```{r}
+customer_recipe <- recipe(churn ~ ., data = training(customer_split)) |> 
+  step_normalize(all_double()) |>
+  step_dummy(all_nominal(), -all_outcomes(), one_hot = TRUE) 
+```
+
+```{r}
+customer_workflow <- workflow() |> 
+  add_recipe(customer_recipe)
+```
+
+## Build models
+
+```{r}
+# Logistic Regression
+spec_logistic <- logistic_reg() |>
+  set_engine("glm") |> 
+  set_mode("classification")
+
+# Random Forest
+spec_random_forest <- rand_forest() |>
+  set_engine("ranger") |>
+  set_mode("classification")
+
+# XGBoost
+spec_xgboost <- boost_tree() |>
+  set_engine("xgboost") |>
+  set_mode("classification") 
+
+# K-nearest neighbor
+spec_knn <- nearest_neighbor(neighbors = 4) |>
+  set_engine("kknn") |>
+  set_mode("classification")
+
+# Neural network via torch
+# ...
+```
+
+## Fit models on training data
+
+```{r}
+create_metrics_training <- function(spec) {
+  customer_workflow |> 
+    add_model(spec) |> 
+    fit_resamples(
+      resamples = customer_folds,
+      metrics = metric_set(recall, precision, accuracy),
+      control = control_resamples(save_pred = TRUE)
+    ) |> 
+    collect_metrics(summarize = TRUE) |> 
+    mutate(model = attributes(spec)$class[1])
+}
+
+metrics_training <- list(
+  spec_logistic, spec_random_forest, spec_xgboost, spec_knn
+) |> 
+  map_df(create_metrics_training)
+```
+
+## Evaluate models
+
+```{r}
+# TODO: remove confidence intervals because they are small anyway?
+metrics_training |> 
+  mutate(ci_lower = mean - std_err / sqrt(n) * qnorm(0.99),
+         ci_upper = mean + std_err / sqrt(n) * qnorm(0.99)) |> 
+  ggplot(aes(x = mean, y = model, fill = model)) +
+  geom_col() + 
+  geom_errorbar(aes(xmin = ci_lower, xmax = ci_upper), width = .2,
+                position = position_dodge(.9)) +
+  facet_wrap(~.metric, ncol = 1) +
+  labs(x = NULL, y = NULL,
+       title = "Comparison of metrics for different classification models",
+       subtitle = "Based on training data") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  coord_cartesian(xlim = c(0, 1)) 
+```
+
+```{r}
+# TODO: add out of sample measures to compare them to within sample
+create_metrics_test <- function(spec) {
+  final_workflow <- customer_workflow |>
+  add_model(spec)
+
+  final_fit <- final_workflow |> 
+    fit(data =  training(customer_split))
+  
+  test_predictions <- predict(final_fit, new_data = testing(customer_split))
+  
+  test_results <- bind_cols(testing(customer_split), test_predictions)
+  
+  bind_rows(
+    recall(test_results, truth = churn, estimate = .pred_class),
+    precision(test_results, truth = churn, estimate = .pred_class),
+    accuracy(test_results, truth = churn, estimate = .pred_class)
+  ) |> 
+    mutate(model = attributes(spec)$class[1])
+}
+
+metrics_test <- list(
+  spec_logistic, spec_random_forest, spec_xgboost, spec_knn
+) |> 
+  map_df(create_metrics_test)
+
+metrics <- bind_rows(
+  metrics_training |> 
+    mutate(sample = "training") |> 
+    select(metric = .metric, estimate = mean, model, sample),
+  metrics_test |> 
+    mutate(sample = "test") |> 
+    select(metric = .metric, estimate = .estimate, model, sample)
+) 
+
+metrics |> 
+  ggplot(aes(x = estimate, y = model, fill = sample)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~metric, ncol = 1)
+
+# Which model has on average the best rank?
+metrics |> 
+  group_by(sample, metric) |> 
+  arrange(-estimate) |> 
+  mutate(rank = row_number()) |> 
+  group_by(model) |> 
+  summarize(rank = mean(rank)) |> 
+  arrange(rank)
+```
+
+
+## Tune models
+
+```{r}
+# TODO: tune models
+grid <- grid_regular(
+  penalty(range = c(0.0001, 10)),
+  mixture(),
+  levels = 5 
+)
+
+spec_logistic <- logistic_reg(mode = "classification", penalty = tune(), mixture = tune()) |>
+  set_engine("glmnet")
+
+```
+
