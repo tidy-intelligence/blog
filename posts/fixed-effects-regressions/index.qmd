@@ -31,6 +31,7 @@ The WDI dataset provides a comprehensive set of economic development data, inclu
 ### R
 ```{r}
 #| message: false
+#| warning: false
 library(dplyr)
 library(tidyr)
 library(WDI)
@@ -174,7 +175,7 @@ fe_model_clustered.summary()
 
 It usually makes sense to run multiple models with various specifications to better understand the impact of fixed effects on coefficient estimates. `fixest` and `pyfixest` come with an amazing set of tools to support multiple estimations with minimal syntax (see the documentation [here](https://cran.r-project.org/web/packages/fixest/vignettes/multiple_estimations.html)). 
 
-In the example below, we run the regression from above but iteratively add fixed effects using the `csw0()` helper function. Check out the documentation for more helpers in this direction.  Note that I generally prefer looking at $t$-stats rather than standard errors because the latter are typically very hard to interpret across coefficients that vary in size. The $t$-statistics provide a consistent way to interpret changes in estimation uncertainty across different model specifications. Unfortunately, `pyfixest` does not yet support $t$-stats in `etable()`.
+In the example below, we run the regression from above but iteratively add fixed effects using the `csw0()` helper function. Check out the documentation for more helpers in this direction.  Note that I generally prefer looking at $t$-stats rather than standard errors because the latter are typically very hard to interpret across coefficients that vary in size. The $t$-statistics provide a consistent way to interpret changes in estimation uncertainty across different model specifications. Unfortunately, `pyfixest` does not yet support $t$-stats in `etable()`, but the feature will come soon (see [this issue](https://github.com/s3alfisc/pyfixest/issues/298)).
 
 ::: {.panel-tabset}
 ### R
