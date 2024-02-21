@@ -4,13 +4,15 @@ description: "A comparison of classification approaches using the tidymodels pac
 metadata:
   pagetitle: "Tidy Classification Models"
 author: "Christoph Scheuch"
-date: "2024-02-21" 
+date: "2024-02-22" 
 image: thumbnail.png
 image-alt: A squirrel sitting in a bright and friendly office, curiously looking at an old-fashioned rotary dial telephone on a wooden desk. Sunlight filters through the window, creating a warm, welcoming atmosphere. The office is decorated with vibrant green plants in terracotta pots and bookshelves filled with colorful books. Created with DALL-E 3.
 categories: 
   - R
   - Modeling
 draft: true
+execute: 
+  cache: true
 ---
 
 ...
@@ -90,28 +92,37 @@ customer_workflow <- workflow() |>
 
 ## Build models
 
+::: {.panel-tabset}
+### Logistic regression
 ```{r}
-# Logistic Regression
 spec_logistic <- logistic_reg(penalty = 0.0001, mixture = 1) |>
   set_engine("glmnet") |> 
   set_mode("classification")
+```
 
-# Random Forest
+### Random Forest
+```{r}
 spec_random_forest <- rand_forest() |>
   set_engine("ranger") |>
   set_mode("classification")
+```
 
-# XGBoost
+### XGBoost
+```{r}
 spec_xgboost <- boost_tree() |>
   set_engine("xgboost") |>
-  set_mode("classification") 
+  set_mode("classification")
+```
 
-# K-nearest neighbor
+### K-nearest neighbor
+```{r}
 spec_knn <- nearest_neighbor(neighbors = 4) |>
   set_engine("kknn") |>
   set_mode("classification")
+```
 
-# Neural network via torch
+### Neural network
+```{r}
 spec_neural_net <- mlp(epochs = 500, hidden_units = 10) |>
   set_engine("brulee") |>
   set_mode("classification") 
@@ -204,7 +215,8 @@ metrics |>
 
 ## Tune models
 
-### Tune logistic regression
+::: {.panel-tabset}
+### Logistic regression
 
 ```{r}
 spec_logistic_tune <- logistic_reg(
@@ -234,7 +246,8 @@ tuned_model_logistic <- finalize_model(
 tuned_model_logistic
 ```
 
-### Tune random forest
+### Random forest
+
 ```{r}
 spec_random_forest_tune <- rand_forest(
   mtry = tune(), 
@@ -263,7 +276,7 @@ tuned_model_random_forest <- finalize_model(
 tuned_model_random_forest
 ```
 
-### Tune XGBoost
+### XGBoost
 
 ```{r}
 spec_xgboost_tune <- boost_tree(
@@ -274,8 +287,8 @@ spec_xgboost_tune <- boost_tree(
   set_mode("classification")
 
 grid_xgboost <- grid_regular(
-  mtry(range = c(1, 5)),
-  min_n(range = c(1, 40)),
+  mtry(range = c(1L, 5L)),
+  min_n(range = c(1L, 40L)),
   levels = 5
 )
 
@@ -293,11 +306,11 @@ tuned_model_xgboost <- finalize_model(
 tuned_model_xgboost
 ```
 
-### Tune K-nearest neighbor
+### K-nearest neighbor
 
 ```{r}
 grid_knn <- grid_regular(
-  neighbors(range = c(1, 20)),
+  neighbors(range = c(1L, 20L)),
   levels = 5 
 )
 
@@ -319,9 +332,11 @@ tuned_model_knn <- finalize_model(spec_knn_tune, select_best(tune_knn, "accuracy
 tuned_model_knn
 ```
 
-### Tune neural net
+### Neural net
 
 ```{r}
+#| warning: false
+#| messag: false
 grid_neural_net <- grid_regular(
   hidden_units(range = c(1L, 10L)),
   epochs(range = c(10L, 1000L)),
@@ -347,6 +362,7 @@ tuned_model_neural_net <- finalize_model(spec_neural_net_tune, select_best(tune_
 tuned_model_neural_net
 ```
 
+::: 
 
 ## Comparing tuned models
 
