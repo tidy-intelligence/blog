@@ -26,6 +26,9 @@ execute:
 ```{r}
 #| message: false
 #| warning: false
+
+# TODO: move packages tomodels
+# TODO: remove stringr dependency 
 library(tidymodels)
 library(glmnet)
 library(ranger)
@@ -127,6 +130,7 @@ spec_neural_net <- mlp(epochs = 500, hidden_units = 10) |>
   set_engine("brulee") |>
   set_mode("classification") 
 ```
+::: 
 
 ## Fit models on training data
 
