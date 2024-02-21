@@ -1,17 +1,23 @@
 ---
-title: "Tidy Classification Models: tidymodels vs scikit-learn"
-description: "A comparison of classification approaches in R and Python"
+title: "Tidy Classification Models: Customer Churn Prediction"
+description: "A comparison of classification approaches using the tidymodels package"
 metadata:
   pagetitle: "Tidy Classification Models"
 author: "Christoph Scheuch"
-date: "2024-02-15" 
+date: "2024-02-21" 
 image: thumbnail.png
-image-alt: ... Created with DALL-E 3.
+image-alt: A squirrel sitting in a bright and friendly office, curiously looking at an old-fashioned rotary dial telephone on a wooden desk. Sunlight filters through the window, creating a warm, welcoming atmosphere. The office is decorated with vibrant green plants in terracotta pots and bookshelves filled with colorful books. Created with DALL-E 3.
 categories: 
   - R
-  - Python
   - Modeling
+draft: true
 ---
+
+...
+
+`tidymodels` is an ecosystem of R packages designed for data modeling and statistical analysis that adheres to the principles of the `tidyverse`. It provides a comprehensive framework for building and evaluating models, streamlining workflows from data preprocessing and feature engineering to model training, validation, and finte-tuning. It also provides a unified interface for various modeling techniques, `tidymodels` simplifies the process of creating reproducible and scalable data analysis pipelines, catering to both novice and experienced data scientists.
+
+...
 
 ## Load packages
 
@@ -22,6 +28,8 @@ library(tidymodels)
 library(glmnet)
 library(ranger)
 library(xgboost)
+library(torch)
+library(brulee)
 library(readr)
 library(janitor)
 library(stringr)
@@ -57,10 +65,9 @@ customer <- customer_raw |>
            ~str_to_lower(str_replace_all(., " |\\-", "_")))
     ) 
 
-customer_split <- initial_split(customer, prop = 4/ 5, strata = churn)
-
 set.seed(1234)
-customer_folds <- vfold_cv(training(customer_split), v = 25, strata = churn)
+customer_split <- initial_split(customer, prop = 4/ 5, strata = churn)
+customer_folds <- vfold_cv(training(customer_split), v = 5, strata = churn)
 ```
 
 ## Pre-process data
@@ -71,7 +78,8 @@ customer_folds <- vfold_cv(training(customer_split), v = 25, strata = churn)
 
 ```{r}
 customer_recipe <- recipe(churn ~ ., data = training(customer_split)) |> 
-  step_normalize(all_double()) |>
+  step_log(c(total_charges)) |> 
+  step_normalize(c(tenure, monthly_charges)) |>
   step_dummy(all_nominal(), -all_outcomes(), one_hot = TRUE) 
 ```
 
@@ -84,8 +92,8 @@ customer_workflow <- workflow() |>
 
 ```{r}
 # Logistic Regression
-spec_logistic <- logistic_reg() |>
-  set_engine("glm") |> 
+spec_logistic <- logistic_reg(penalty = 0.0001, mixture = 1) |>
+  set_engine("glmnet") |> 
   set_mode("classification")
 
 # Random Forest
@@ -104,7 +112,9 @@ spec_knn <- nearest_neighbor(neighbors = 4) |>
   set_mode("classification")
 
 # Neural network via torch
-# ...
+spec_neural_net <- mlp(epochs = 500, hidden_units = 10) |>
+  set_engine("brulee") |>
+  set_mode("classification") 
 ```
 
 ## Fit models on training data
@@ -123,7 +133,8 @@ create_metrics_training <- function(spec) {
 }
 
 metrics_training <- list(
-  spec_logistic, spec_random_forest, spec_xgboost, spec_knn
+  spec_logistic, spec_random_forest, spec_xgboost, 
+  spec_knn, spec_neural_net
 ) |> 
   map_df(create_metrics_training)
 ```
@@ -131,7 +142,6 @@ metrics_training <- list(
 ## Evaluate models
 
 ```{r}
-# TODO: remove confidence intervals because they are small anyway?
 metrics_training |> 
   mutate(ci_lower = mean - std_err / sqrt(n) * qnorm(0.99),
          ci_upper = mean + std_err / sqrt(n) * qnorm(0.99)) |> 
@@ -149,15 +159,12 @@ metrics_training |>
 ```
 
 ```{r}
-# TODO: add out of sample measures to compare them to within sample
 create_metrics_test <- function(spec) {
-  final_workflow <- customer_workflow |>
-  add_model(spec)
 
-  final_fit <- final_workflow |> 
-    fit(data =  training(customer_split))
-  
-  test_predictions <- predict(final_fit, new_data = testing(customer_split))
+  test_predictions <-  customer_workflow |>
+    add_model(spec) |> 
+    fit(data =  training(customer_split)) |> 
+    predict(new_data = testing(customer_split))
   
   test_results <- bind_cols(testing(customer_split), test_predictions)
   
@@ -170,26 +177,209 @@ create_metrics_test <- function(spec) {
 }
 
 metrics_test <- list(
-  spec_logistic, spec_random_forest, spec_xgboost, spec_knn
+  spec_logistic, spec_random_forest, spec_xgboost, 
+  spec_knn, spec_neural_net
 ) |> 
   map_df(create_metrics_test)
 
 metrics <- bind_rows(
   metrics_training |> 
-    mutate(sample = "training") |> 
+    mutate(sample = "Training") |> 
     select(metric = .metric, estimate = mean, model, sample),
   metrics_test |> 
-    mutate(sample = "test") |> 
+    mutate(sample = "Test") |> 
     select(metric = .metric, estimate = .estimate, model, sample)
 ) 
 
 metrics |> 
   ggplot(aes(x = estimate, y = model, fill = sample)) +
   geom_col(position = "dodge") +
-  facet_wrap(~metric, ncol = 1)
+  facet_wrap(~metric, ncol = 1) +
+  labs(x = NULL, y = NULL, fill = "Sample",
+       title = "Comparison of metrics for different classification models",
+       subtitle = "Training is the mean across 5-fold cross validation results, Test is based on 20% of the initial data") +
+  theme_minimal() +
+  coord_cartesian(xlim = c(0, 1)) 
+```
 
-# Which model has on average the best rank?
-metrics |> 
+## Tune models
+
+### Tune logistic regression
+
+```{r}
+spec_logistic_tune <- logistic_reg(
+  penalty = tune(), 
+  mixture = tune()
+) |>
+  set_engine("glmnet") |> 
+  set_mode("classification")
+
+grid_logistic <- grid_regular(
+  penalty(range = c(-10, 0), trans = log10_trans()),
+  mixture(range = c(0, 1)),
+  levels = 5 
+)
+
+tune_logistic <- tune_grid(
+  customer_workflow |> 
+    add_model(spec_logistic_tune),
+  resamples = customer_folds,
+  grid = grid_logistic,
+  metrics = metric_set(recall, precision, accuracy) 
+)
+
+tuned_model_logistic <- finalize_model(
+  spec_logistic_tune, select_best(tune_logistic, "accuracy")
+)
+tuned_model_logistic
+```
+
+### Tune random forest
+```{r}
+spec_random_forest_tune <- rand_forest(
+  mtry = tune(), 
+  min_n = tune()
+) |>
+  set_engine("ranger") |>
+  set_mode("classification")
+
+grid_random_forest <- grid_regular(
+  mtry(range = c(1, 5)),
+  min_n(range = c(2, 40)),
+  levels = 5
+)
+
+tune_random_forest  <- tune_grid(
+  customer_workflow |> 
+    add_model(spec_random_forest_tune),
+  resamples = customer_folds,
+  grid = grid_random_forest,
+  metrics = metric_set(recall, precision, accuracy) 
+)
+
+tuned_model_random_forest <- finalize_model(
+  spec_random_forest_tune, select_best(tune_random_forest, "accuracy")
+)
+tuned_model_random_forest
+```
+
+### Tune XGBoost
+
+```{r}
+spec_xgboost_tune <- boost_tree(
+  mtry = tune(), 
+  min_n = tune()
+) |>
+  set_engine("xgboost") |>
+  set_mode("classification")
+
+grid_xgboost <- grid_regular(
+  mtry(range = c(1, 5)),
+  min_n(range = c(1, 40)),
+  levels = 5
+)
+
+tune_xgboost  <- tune_grid(
+  customer_workflow |> 
+    add_model(spec_xgboost_tune),
+  resamples = customer_folds,
+  grid = grid_xgboost,
+  metrics = metric_set(recall, precision, accuracy) 
+)
+
+tuned_model_xgboost <- finalize_model(
+  spec_xgboost_tune, select_best(tune_xgboost, "accuracy")
+)
+tuned_model_xgboost
+```
+
+### Tune K-nearest neighbor
+
+```{r}
+grid_knn <- grid_regular(
+  neighbors(range = c(1, 20)),
+  levels = 5 
+)
+
+spec_knn_tune <- nearest_neighbor(
+  neighbors = tune()
+) |>
+  set_engine("kknn") |>
+  set_mode("classification")
+
+tune_knn <- tune_grid(
+  customer_workflow |> 
+    add_model(spec_knn_tune),
+  resamples = customer_folds,
+  grid = grid_knn,
+  metrics = metric_set(recall, precision, accuracy) 
+)
+
+tuned_model_knn <- finalize_model(spec_knn_tune, select_best(tune_knn, "accuracy"))
+tuned_model_knn
+```
+
+### Tune neural net
+
+```{r}
+grid_neural_net <- grid_regular(
+  hidden_units(range = c(1L, 10L)),
+  epochs(range = c(10L, 1000L)),
+  levels = 5 
+)
+
+spec_neural_net_tune <- mlp(
+  epochs = tune(), 
+  hidden_units = tune()
+) |>
+  set_engine("brulee") |>
+  set_mode("classification") 
+
+tune_neural_net <- tune_grid(
+  customer_workflow |> 
+    add_model(spec_neural_net_tune),
+  resamples = customer_folds,
+  grid = grid_neural_net,
+  metrics = metric_set(recall, precision, accuracy) 
+)
+
+tuned_model_neural_net <- finalize_model(spec_neural_net_tune, select_best(tune_neural_net, "accuracy"))
+tuned_model_neural_net
+```
+
+
+## Comparing tuned models
+
+```{r}
+metrics_tuned <- list(
+  tuned_model_logistic, tuned_model_random_forest, tuned_model_xgboost,
+  tuned_model_knn, tuned_model_neural_net
+) |> 
+  map_df(create_metrics_test)
+
+metrics_comparison <- bind_rows(
+  metrics,
+  metrics_tuned |> 
+    mutate(sample = "Tuned") |> 
+    select(metric = .metric, estimate = .estimate, model, sample)
+)
+
+metrics_comparison |> 
+  filter(metric == "accuracy") |> 
+  ggplot(aes(x = estimate, y = model, fill = sample)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~metric, ncol = 1) +
+  labs(x = NULL, y = NULL, fill = "Sample",
+       title = "Comparison of accuracy for different classification models",
+       subtitle = "Training is the mean across 5-fold cross validation results, Test is based on 20% of the initial data") +
+  theme_minimal() +
+  coord_cartesian(xlim = c(0, 1)) 
+```
+
+Which model has on average the best rank? 
+
+```{r}
+metrics_comparison |> 
   group_by(sample, metric) |> 
   arrange(-estimate) |> 
   mutate(rank = row_number()) |> 
@@ -198,19 +388,6 @@ metrics |>
   arrange(rank)
 ```
 
+## Concluding remarks
 
-## Tune models
-
-```{r}
-# TODO: tune models
-grid <- grid_regular(
-  penalty(range = c(0.0001, 10)),
-  mixture(),
-  levels = 5 
-)
-
-spec_logistic <- logistic_reg(mode = "classification", penalty = tune(), mixture = tune()) |>
-  set_engine("glmnet")
-
-```
-
+What I love most about `tidymodels` is its scalability with respect to models and metrics. You can quickly prototype different approaches using very little code. 
