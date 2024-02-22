@@ -1,6 +1,6 @@
 ---
 title: "Tidy Classification Models: Customer Churn Prediction"
-description: "A comparison of classification approaches using the tidymodels package"
+description: "A comparison of classification approaches using the tidymodels R package"
 metadata:
   pagetitle: "Tidy Classification Models"
 author: "Christoph Scheuch"
@@ -10,51 +10,57 @@ image-alt: A squirrel sitting in a bright and friendly office, curiously looking
 categories: 
   - R
   - Modeling
-draft: true
+  - Classification
 execute: 
   cache: true
 ---
 
-...
+In this post, we'll dive into how `tidymodels` can be leveraged to quickly prototype and compare classification models with tidy syntax. Classification models are a subset of machine learning models that are used to predict or classify the categories (aka classes) of new observations based on past observations with known category labels. Classification falls into the domain of supervised learning. 
 
-`tidymodels` is an ecosystem of R packages designed for data modeling and statistical analysis that adheres to the principles of the `tidyverse`. It provides a comprehensive framework for building and evaluating models, streamlining workflows from data preprocessing and feature engineering to model training, validation, and finte-tuning. It also provides a unified interface for various modeling techniques, `tidymodels` simplifies the process of creating reproducible and scalable data analysis pipelines, catering to both novice and experienced data scientists.
+`tidymodels` is an ecosystem of R packages designed for data modeling and statistical analysis that adheres to the principles of the `tidyverse`. It provides a comprehensive framework for building and evaluating models, streamlining workflows from data pre-processing and feature engineering to model training, validation, and fine-tuning. As `tidymodels` provides a unified interface for various modeling techniques, it simplifies the process of creating reproducible and scalable data analysis pipelines, catering to both novice and experienced data scientists.
 
-...
-
-## Load packages
-
-```{r}
-#| message: false
-#| warning: false
-
-# TODO: move packages tomodels
-# TODO: remove stringr dependency 
-library(tidymodels)
-library(glmnet)
-library(ranger)
-library(xgboost)
-library(torch)
-library(brulee)
-library(readr)
-library(janitor)
-library(stringr)
-```
-
+I'll use the Telco Customer Churn data from IBM Sample Data Sets because it is a popular open-source data set used in predictive analytics, particularly for demonstrating the process of churn prediction. The data contains a mix of customer attributes, service usage patterns, and billing information, along with a churn indicator that specifies whether a customer has left the company. 
 
 ## Download & clean data
 
-- We only use 11 observations by dropping all rows with a missing value, so I'm not going into details here. 
-- Remove `customer_id` because we don't need it for pre-processing
-- Apply one-hot encoding to the remaining variables later
+We can download the telco customer churn data directly from the IBM GitHub account using the `readr` package. We immediately harmonize the column names using the `janitor` package. The raw data contains the following columns:
+
+- `customer_id`: A unique identifier for each customer.
+- `gender`: The customer's gender (male/female).
+- `senior_citizen`: Indicates whether the customer is a senior citizen.
+- `partner`: Indicates whether the customer has a partner.
+- `dependents`: Indicates whether the customer has dependents.
+- `tenure`: The number of months the customer has been with the company.
+- `phone_service`: Indicates whether the customer has phone service.
+- `multiple_lines`: Indicates whether the customer has multiple lines.
+- `internet_service`: Type of internet service (DSL, Fiber optic, No).
+- `online_security`: Indicates whether the customer has online security services.
+- `online_backup`: Indicates whether the customer has online backup services.
+- `device_protection`: Indicates whether the customer has device protection plans.
+- `tech_support`: Indicates whether the customer has tech support services.
+- `streaming_tv`: Indicates whether the customer has streaming TV services.
+- `streaming_movies`: Indicates whether the customer has streaming movies services.
+- `contract`: The contract term of the customer (Month-to-month, One year, Two year).
+- `paperless_billing`: Indicates whether the customer has paperless billing.
+- `payment_method`: The customer's payment method (Electronic check, Mailed check, Bank transfer, Credit card).
+- `monthly_charges`: The amount charged to the customer monthly.
+- `total_charges`: The total amount charged to the customer.
+- `churn`: Whether the customer churned or not (Yes or No).
+
+We start the data preparation by dropping all rows with missing values. We only use 11 observations, so there is no need to investigate or impute. We can also remove `customer_id` because we don't need it for pre-processing. I make sure that all binary variables are encoded with binary indicators. We'll apply one-hot encoding to the remaining variables later.
 
 ```{r}
 #| message: false
 #| warning: false
+library(readr)
+library(dplyr)
+library(janitor)
+
 data_url <- "https://raw.githubusercontent.com/IBM/telco-customer-churn-on-icp4d/master/data/Telco-Customer-Churn.csv"
-customer_raw <- read_csv(data_url) 
+customer_raw <- read_csv(data_url) |> 
+  clean_names()
 
 customer <- customer_raw |> 
-  clean_names() |> 
   select(-customer_id) |> 
   na.omit() |> 
   mutate(churn = factor(if_else(churn=="Yes", 1L, 0L)),
@@ -67,8 +73,14 @@ customer <- customer_raw |>
     across(c(multiple_lines, internet_service, online_security, online_backup, 
              device_protection, tech_support, streaming_tv, streaming_movies,
              contract, paperless_billing, payment_method),
-           ~str_to_lower(str_replace_all(., " |\\-", "_")))
-    ) 
+           ~tolower(gsub("[ |\\-]", "_", ., " |\\-", "_")))
+    )
+```
+
+We next prepare the data for machine learning model training and evaluation by creating a reproducible initial split into training and test sets, followed by setting up a stratified 5-fold cross-validation scheme on the training data. This approach is crucial for developing, tuning, and selecting models based on their performance metrics, ensuring that the chosen model is robust and performs well on unseen data.
+
+```{r}
+library(tidymodels)
 
 set.seed(1234)
 customer_split <- initial_split(customer, prop = 4/ 5, strata = churn)
@@ -77,16 +89,18 @@ customer_folds <- vfold_cv(training(customer_split), v = 5, strata = churn)
 
 ## Pre-process data
 
-- Standardize all double variables
-- One-hot encode all remaining categorical variables
-- Important to keep that order, otherwise the encoded variables are also standardized!
+Data pre-processing is implemented via `recipe()` in the `tidymodels` framework. A recipe defines a series of data pre-processing steps to prepare the training data for modeling. I chose to transforme `total_charges` (to handle its skewed distribution), normalize `tenure` and `monthly_charges`, and encode categorical variables as dummy variables. `one_hot = TRUE` specifies that one-hot encoding should be used, where each level of the categorical variables is transformed into a new binary column, with a value of 1 if the observation belongs to that level and 0 otherwise. This is necessary because many machine learning models cannot directly handle categorical variables and require them to be converted into a numeric format.
 
 ```{r}
-customer_recipe <- recipe(churn ~ ., data = training(customer_split)) |> 
-  step_log(c(total_charges)) |> 
-  step_normalize(c(tenure, monthly_charges)) |>
-  step_dummy(all_nominal(), -all_outcomes(), one_hot = TRUE) 
+  customer_recipe <- recipe(churn ~ ., data = training(customer_split)) |> 
+    step_log(c(total_charges)) |> 
+    step_normalize(c(tenure, monthly_charges)) |>
+    step_dummy(all_nominal(), -all_outcomes(), one_hot = TRUE) 
 ```
+
+This pre-processing is crucial for ensuring that the data is in the right format and scale for the algorithms to work effectively, ultimately leading to more accurate and reliable model predictions. 
+
+A `workflow()` in the `tidymodels` framework encapsulates all the components needed to train a machine learning model, including pre-processing instructions (via recipes) and the model itself. So, we start by initializing our workflow with the recipe and add other components later. 
 
 ```{r}
 customer_workflow <- workflow() |> 
@@ -97,35 +111,67 @@ customer_workflow <- workflow() |>
 
 ::: {.panel-tabset}
 ### Logistic regression
+
+Logistic Regression is a statistical method for predicting binary outcomes. The outcome is modeled as a function of predictor variables using the logistic function to ensure that the predictions fall between 0 and 1, which are then interpreted as probabilities of belonging to a particular class.
+
+`glmnet` is an R package that fits generalized linear models via penalized maximum likelihood. The penalty term is a combination of the L1 norm (lasso) and the L2 norm (ridge) of the coefficients. If you want to learn more about this model, check out our chapter on [Factor Selection via Machine Learning](https://www.tidy-finance.org/r/factor-selection-via-machine-learning.html#brief-theoretical-background) in Tidy Finance with R. 
+
+By specifying a logistic regression model with a slight L1 penalty (lasso) using the glmnet engine, we're aiming to build a model that can predict binary outcomes, while also performing feature selection to keep the model simple and prevent overfitting. 
+
 ```{r}
+library(glmnet)
+
 spec_logistic <- logistic_reg(penalty = 0.0001, mixture = 1) |>
   set_engine("glmnet") |> 
   set_mode("classification")
 ```
 
 ### Random Forest
+
+At its core, a Random Forest model consists of many decision trees. A decision tree is a simple model that makes decisions based on answering a series of questions based on the features of the data. The `ranger` package provides a fast and efficient implementation of Random Forests and is able to handle large data sets and high-dimensional data well.
+
 ```{r}
+library(ranger)
+
 spec_random_forest <- rand_forest() |>
   set_engine("ranger") |>
   set_mode("classification")
 ```
 
 ### XGBoost
+
+XGBoost stands for eXtreme Gradient Boosting. It is part of a family of boosting algorithms which are based on the principle of gradient boosting. Boosting, in the context of machine learning, refers to the technique of sequentially building models, where each new model attempts to correct the errors of the previous ensemble of models. Unlike Random Forests, where each tree is built independently, XGBoost builds one tree at a time. Each new tree in XGBoost learns from the mistakes of the previous trees. 
+
 ```{r}
+library(xgboost)
+
 spec_xgboost <- boost_tree() |>
   set_engine("xgboost") |>
   set_mode("classification")
 ```
 
 ### K-nearest neighbor
+
+The k-Nearest Neighbors algorithm operates on a very simple principle: "Tell me who your neighbors are, and I will tell you who you are." For a given data point that we wish to classify, the algorithm looks at the 'k' closest points (neighbors) to it in the data, based on a distance metric (typically Euclidean distance). The class that is most common among these neighbors is then assigned to the data point.
+
 ```{r}
+library(kknn)
+
 spec_knn <- nearest_neighbor(neighbors = 4) |>
   set_engine("kknn") |>
   set_mode("classification")
 ```
 
 ### Neural network
+
+Intuitively, neural networks try to mimic the way human brains operate, albeit in a very simplified form. A neural network consists of layers of interconnected nodes (neurons), where each connection (synapse) carries a weight that signifies the importance of the input it's receiving. The basic idea is that, through a process of learning, the network adjusts these weights to make accurate predictions or classifications.
+
+A mulit-layer-perceptron (MLP) is a type of neural network that includes one or more hidden layers between the input and output layers. Each layer's output is passed through an activation function, which allows the network to capture complex patterns in the data. `hidden_units = 10` specifies that there are 10 neurons in a single hidden layer and `epochs = 500` indicates the number of times the learning algorithm will work through the entire training data.
+
 ```{r}
+library(torch)
+library(brulee)
+
 spec_neural_net <- mlp(epochs = 500, hidden_units = 10) |>
   set_engine("brulee") |>
   set_mode("classification") 
@@ -133,6 +179,8 @@ spec_neural_net <- mlp(epochs = 500, hidden_units = 10) |>
 ::: 
 
 ## Fit models on training data
+
+Now that we have defined a couple of models, we want to fit them to the training data next. As stated above, we use cross-validation and we look at multiple metrics (recall, precision, and accuracy). Since the approach is the same across model specifications, I wrote a little helper function that adds the model to the workflow, fits the model using the `customer_folds` from above, and collects the metrics of interest. We can then simply map this function across specifications and get a table of metrics. 
 
 ```{r}
 create_metrics_training <- function(spec) {
@@ -156,6 +204,10 @@ metrics_training <- list(
 
 ## Evaluate models
 
+The first step in model evaluation is to compare the metrics of interest based on training data. We focus on the average for each metric and model across the different folds. However, I also add confidence intervals to the metrics to illustrate the dispersion across folds. 
+
+We can see that the nearest neighbor approach shows the worst performance across all metrics, while the other exhibit very similar performance. The logistic regression and neural network seem to be in the lead, but there is no clear winner because their confidence intervals overlap. 
+
 ```{r}
 metrics_training |> 
   mutate(ci_lower = mean - std_err / sqrt(n) * qnorm(0.99),
@@ -167,11 +219,13 @@ metrics_training |>
   facet_wrap(~.metric, ncol = 1) +
   labs(x = NULL, y = NULL,
        title = "Comparison of metrics for different classification models",
-       subtitle = "Based on training data") +
+       subtitle = "Based on training data. Error bars indicate 99% confidence intervals.") +
   theme_minimal() +
   theme(legend.position = "none") +
   coord_cartesian(xlim = c(0, 1)) 
 ```
+
+The second important evaluation step involves fitting the models to the training data and then using the fitted models to create predictions in the test sample. Again, I created a helper function that can be mapped across different model specifications. 
 
 ```{r}
 create_metrics_test <- function(spec) {
@@ -196,7 +250,11 @@ metrics_test <- list(
   spec_knn, spec_neural_net
 ) |> 
   map_df(create_metrics_test)
+```
 
+Let's compare the performance of models in the training to the test sample. We can see that the models perform similarly across samples, which is good. 
+
+```{r}
 metrics <- bind_rows(
   metrics_training |> 
     mutate(sample = "Training") |> 
@@ -212,12 +270,17 @@ metrics |>
   facet_wrap(~metric, ncol = 1) +
   labs(x = NULL, y = NULL, fill = "Sample",
        title = "Comparison of metrics for different classification models",
-       subtitle = "Training is the mean across 5-fold cross validation results, Test is based on 20% of the initial data") +
+       subtitle = paste0("Training is the mean across 5-fold cross validation results.\n",
+                         "Test is based on 20% of the initial data.")) +
   theme_minimal() +
   coord_cartesian(xlim = c(0, 1)) 
 ```
 
 ## Tune models
+
+To fit the models above, we simply imposed a couple of values for the hyperparameters of each model. I recommend you to check out the `tidymodels` documentation to learn more about the defaults that it implements in its functions. Model tuning is the process of optimally selecting such hyperparameters. `tidymodels` provides extensive tuning options based on cross-validation.
+
+The general idea is to create a grid of parameter values that you want to tune and then fit the model to the training data using cross-validation for each parameter combination. This step is typically computationally quite expensive because it involves a lot of estimations. So in practice, you'd typically choose the best model from the previous evaluation step and tune it. The code chunks below show you how to tune each model and the resulting best model. However, note that I only pick 2 hyperparameters to tune for each model although most models have more paraters.
 
 ::: {.panel-tabset}
 ### Logistic regression
@@ -370,6 +433,8 @@ tuned_model_neural_net
 
 ## Comparing tuned models
 
+Now, that we have used tuning to find better models than our initial guesses, we can again compare the model performance in different samples. 
+
 ```{r}
 metrics_tuned <- list(
   tuned_model_logistic, tuned_model_random_forest, tuned_model_xgboost,
@@ -383,7 +448,11 @@ metrics_comparison <- bind_rows(
     mutate(sample = "Tuned") |> 
     select(metric = .metric, estimate = .estimate, model, sample)
 )
+```
 
+I only plot the accuracy measure below to avoid visual overload. We can see that the fine tuning significantly improved the performance of the nearest neighbor algorithm, but it had little impact on the other approaches. One explanation for the lack of dramatic increases in model performance might be that I picked the wrong parameters for tuning, so I encourage you to play around with the hyperparameters. 
+
+```{r}
 metrics_comparison |> 
   filter(metric == "accuracy") |> 
   ggplot(aes(x = estimate, y = model, fill = sample)) +
@@ -391,12 +460,16 @@ metrics_comparison |>
   facet_wrap(~metric, ncol = 1) +
   labs(x = NULL, y = NULL, fill = "Sample",
        title = "Comparison of accuracy for different classification models",
-       subtitle = "Training is the mean across 5-fold cross validation results, Test is based on 20% of the initial data") +
+       subtitle = paste0("Training is the mean across 5-fold cross validation results of inital models.\n", 
+                         "Test is based on 20% of the initial data using the initial models.\n",
+                         "Tuned is based on 20% of the initial data using the fine-tuned models.")) +
   theme_minimal() +
   coord_cartesian(xlim = c(0, 1)) 
 ```
 
-Which model has on average the best rank? 
+## Concluding remarks
+
+So what is the best model now for the classification problem? There are so many different measures and ways to evaluate models that it might be hard to draw conclusions. I usually go with the following heuristic: which model has on average the best rank across all measures and samples? It turns out that the logistic regression is most often on top, followed by the neural network. This finding is interesting because the logistic regression is quite simple and computationally relatively inexpensive. A natural next step would be to extend the neural network to multiple layers and find a deep neural net that is able to consistently beat the logistic regression.
 
 ```{r}
 metrics_comparison |> 
@@ -408,6 +481,43 @@ metrics_comparison |>
   arrange(rank)
 ```
 
-## Concluding remarks
+Overall, this blog post illustrates what I love most about `tidymodels`: its scalability with respect to models and metrics. You can quickly prototype different approaches using very little code. 
 
-What I love most about `tidymodels` is its scalability with respect to models and metrics. You can quickly prototype different approaches using very little code. 
+Is your favorite algorithm missing? Let me know in the comments below, and I'll try to incorporate it in this blog post using `tidymodels`.
+
+```{=html}
+<section id="related-articles">
+   <h2>Related articles</h2>
+    <div class="articles-container">
+      <a href="../fixed-effects-regressions/index.html" class="article">
+        <div class="quarto-grid-item">
+            <img src="../fixed-effects-regressions/thumbnail.png">
+            <div class="card-body post-contents">
+               <h5 class="no-anchor card-title listing-title">Tidy Fixed Effects Regressions: fixest vs pyfixest</h5>
+               <div class="card-text listing-description">A comparison of packages for fast fixed-effects estimation in R and Python</div>
+            </div>
+        </div>
+        </a>
+        
+        <a href="../clustering-binary-data/index.html" class="article">
+        <div class="quarto-grid-item">
+            <img src="../clustering-binary-data/thumbnail.png">
+            <div class="card-body post-contents">
+                <h5 class="no-anchor card-title listing-title">Clustering Binary Data</h5>
+                <div class="card-text listing-description">An application of different unsupervised learning approaches to cluster simulated survey responses using R</div>
+            </div>
+        </div>
+        </a>
+        
+        <a href="../tidy-collaborative-filtering/index.html" class="article">
+        <div class="quarto-grid-item">
+            <img src="../tidy-collaborative-filtering/thumbnail.png">
+            <div class="card-body post-contents">
+                <h5 class="no-anchor card-title listing-title">Tidy Collaborative Filtering: Building A Stock Recommender</h5>
+                <div class="card-text listing-description">A simple implementation for prototyping multiple collaborative filtering algorithms using R</div>
+            </div>
+        </div>
+        </a>
+    </div>
+</section>
+```

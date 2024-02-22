@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.3.1",
+    "Version": "4.3.2",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -225,7 +225,7 @@
     },
     "RSQLite": {
       "Package": "RSQLite",
-      "Version": "2.3.5",
+      "Version": "2.3.4",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -240,7 +240,7 @@
         "plogr",
         "rlang"
       ],
-      "Hash": "f5a75d57e0a3014a6ef537ac04a80fc6"
+      "Hash": "4bf2af2d714d0ee2b4fec0e6b8c150e6"
     },
     "Rcpp": {
       "Package": "Rcpp",
@@ -340,7 +340,7 @@
     },
     "XML": {
       "Package": "XML",
-      "Version": "3.99-0.16.1",
+      "Version": "3.99-0.16",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -348,7 +348,7 @@
         "methods",
         "utils"
       ],
-      "Hash": "da3098169c887914551b607c66fe2a28"
+      "Hash": "131e2febe15d5bbca3a37bd69e71b873"
     },
     "alphavantager": {
       "Package": "alphavantager",
@@ -1031,9 +1031,9 @@
     },
     "fixest": {
       "Package": "fixest",
-      "Version": "0.11.2",
+      "Version": "0.11.1",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "Rcpp",
@@ -1048,7 +1048,7 @@
         "tools",
         "utils"
       ],
-      "Hash": "3f663b18f5368c8485d9315354a0242b"
+      "Hash": "ef8b18e94a7fd593a1eef3a9a4ea2a0a"
     },
     "float": {
       "Package": "float",
@@ -1625,7 +1625,7 @@
     },
     "igraph": {
       "Package": "igraph",
-      "Version": "2.0.1.1",
+      "Version": "2.0.2",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -1641,9 +1641,10 @@
         "pkgconfig",
         "rlang",
         "stats",
-        "utils"
+        "utils",
+        "vctrs"
       ],
-      "Hash": "fb2999614d40fe7fd61cf569b66a2dbc"
+      "Hash": "e3baa015afa83d9f1b748db5a2aedb5a"
     },
     "infer": {
       "Package": "infer",
@@ -1806,9 +1807,9 @@
     },
     "knitr": {
       "Package": "knitr",
-      "Version": "1.42",
+      "Version": "1.45",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "RSPM",
       "Requirements": [
         "R",
         "evaluate",
@@ -1818,7 +1819,7 @@
         "xfun",
         "yaml"
       ],
-      "Hash": "8329a9bcc82943c8069104d4be3ee22d"
+      "Hash": "1ec462871063897135c1bcbe0fc8f07d"
     },
     "labeling": {
       "Package": "labeling",
@@ -2175,7 +2176,7 @@
     },
     "parsnip": {
       "Package": "parsnip",
-      "Version": "1.1.1",
+      "Version": "1.2.0",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -2200,7 +2201,7 @@
         "vctrs",
         "withr"
       ],
-      "Hash": "cbb49c720a5e4bf1fe36a870b07d1a0c"
+      "Hash": "814c5fbc911f1b1c031746a22e7ac6e2"
     },
     "patchwork": {
       "Package": "patchwork",
@@ -2256,7 +2257,7 @@
     },
     "plotly": {
       "Package": "plotly",
-      "Version": "4.10.3",
+      "Version": "4.10.4",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -2284,7 +2285,7 @@
         "vctrs",
         "viridisLite"
       ],
-      "Hash": "56914cc61df53f2d0283d5498680867e"
+      "Hash": "a1ac5c03ad5ad12b9d1597e00e23c3dd"
     },
     "prettyunits": {
       "Package": "prettyunits",
@@ -2295,16 +2296,16 @@
     },
     "processx": {
       "Package": "processx",
-      "Version": "3.8.3",
+      "Version": "3.8.1",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "R6",
         "ps",
         "utils"
       ],
-      "Hash": "82d48b1aec56084d9438dbf98087a7e9"
+      "Hash": "d75b4059d781336efba24021915902b4"
     },
     "prodlim": {
       "Package": "prodlim",
@@ -2526,7 +2527,7 @@
     },
     "recipes": {
       "Package": "recipes",
-      "Version": "1.0.9",
+      "Version": "1.0.10",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -2555,7 +2556,7 @@
         "vctrs",
         "withr"
       ],
-      "Hash": "33f6ba4b469afea6ddd7b4e1729201af"
+      "Hash": "69783cdd607c58fffb21c5c26c6ededf"
     },
     "recommenderlab": {
       "Package": "recommenderlab",
