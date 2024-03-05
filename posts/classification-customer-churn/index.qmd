@@ -92,10 +92,10 @@ customer_folds <- vfold_cv(training(customer_split), v = 5, strata = churn)
 Data pre-processing is implemented via `recipe()` in the `tidymodels` framework. A recipe defines a series of data pre-processing steps to prepare the training data for modeling. I chose to transforme `total_charges` (to handle its skewed distribution), normalize `tenure` and `monthly_charges`, and encode categorical variables as dummy variables. `one_hot = TRUE` specifies that one-hot encoding should be used, where each level of the categorical variables is transformed into a new binary column, with a value of 1 if the observation belongs to that level and 0 otherwise. This is necessary because many machine learning models cannot directly handle categorical variables and require them to be converted into a numeric format.
 
 ```{r}
-  customer_recipe <- recipe(churn ~ ., data = training(customer_split)) |> 
-    step_log(c(total_charges)) |> 
-    step_normalize(c(tenure, monthly_charges)) |>
-    step_dummy(all_nominal(), -all_outcomes(), one_hot = TRUE) 
+customer_recipe <- recipe(churn ~ ., data = training(customer_split)) |> 
+  step_log(c(total_charges)) |> 
+  step_normalize(c(tenure, monthly_charges)) |>
+  step_dummy(all_nominal(), -all_outcomes(), one_hot = TRUE) 
 ```
 
 This pre-processing is crucial for ensuring that the data is in the right format and scale for the algorithms to work effectively, ultimately leading to more accurate and reliable model predictions. 

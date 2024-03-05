@@ -1,0 +1,345 @@
+---
+title: "Tidy Classification Models: tidymodels vs scikit-learn"
+description: "A comparison of R's tidymodels and Python's sklearn packages"
+metadata:
+  pagetitle: "Tidy Classification Models"
+author: "Christoph Scheuch"
+date: "2024-05-07" 
+image: thumbnail.png
+image-alt: ... Created with DALL-E 3.
+categories: 
+  - R
+  - Python
+  - Modeling
+  - Classification
+execute: 
+  cache: true
+---
+
+In this post, we'll ...
+
+`tidymodels` is ...
+
+`scikit-learn` is ...
+
+## Download & clean data
+
+We start the data preparation by dropping all rows with missing values. We only use 11 observations, so there is no need to investigate or impute. We can also remove `customer_id` because we don't need it for pre-processing. I make sure that all binary variables are encoded with binary indicators. We'll apply one-hot encoding to the remaining variables later. See the post on [Customer Churn Prediction](../classification-customer-churn/index.qmd) on details about the data and why they are cleaned in this way. 
+
+::: {.panel-tabset}
+### R
+```{r}
+#| message: false
+#| warning: false
+library(readr)
+library(dplyr)
+library(janitor)
+
+data_url <- "https://raw.githubusercontent.com/IBM/telco-customer-churn-on-icp4d/master/data/Telco-Customer-Churn.csv"
+customer_raw <- read_csv(data_url) |> 
+  clean_names()
+
+customer <- customer_raw |> 
+  na.omit() |> 
+  mutate(churn = factor(if_else(churn=="Yes", 1L, 0L)),
+         female = if_else(gender=="Female", 1L, 0L),
+         senior_citizen = as.integer(senior_citizen)) |> 
+  select(-c(gender, customer_id)) |> 
+  mutate(
+    across(c(partner, dependents, phone_service, paperless_billing), 
+           ~if_else(. == "Yes", 1L, 0L)),
+    across(c(multiple_lines, internet_service, online_security, online_backup, 
+             device_protection, tech_support, streaming_tv, streaming_movies,
+             contract, payment_method),
+           ~tolower(gsub("[ |\\-]", "_", ., " |\\-", "_")))
+    )
+```
+
+### Python
+```{python}
+import re
+import ibis
+from ibis import _
+import pandas as pd
+
+ibis.options.interactive = True
+
+data_url = "https://raw.githubusercontent.com/IBM/telco-customer-churn-on-icp4d/master/data/Telco-Customer-Churn.csv"
+customer_churn_raw = ibis.read_csv(data_url)
+
+def clean_name(name):
+    name_with_underscores = re.sub('((?<=[a-z])[A-Z]|(?<=[A-Z])[A-Z](?=[a-z]))', r'_\1', name)
+    name_with_underscores = name_with_underscores.lower()
+    name_with_underscores = name_with_underscores.replace(' ', '_')
+    clean = re.sub(r'[^\w\s]', '', name_with_underscores)
+    return clean
+  
+def clean_names(table):
+    rename_map = {clean_name(col): col for col in table.columns}
+    table_clean = table.rename(rename_map)
+    return table_clean
+
+customer_churn_raw = clean_names(customer_churn_raw)
+
+customer_churn = (customer_churn_raw
+  .mutate(
+    churn = _.churn.case().when('Yes', 1).when('No', 0).else_(0).end(),
+    female = _.gender.case().when('Female', 1).else_(0).end()
+  )
+  .dropna()
+  .drop(["gender", "customer_id"])
+)
+
+binary_cols = ["partner", "dependents", "phone_service", "paperless_billing"]
+for col in binary_cols:
+    customer_churn = (customer_churn
+      .mutate(
+        **{col: _[col].case().when("Yes", 1).when("No", 0).else_(0).end()}
+      )
+    )
+
+replace_cols = ["multiple_lines", "internet_service", "online_security", 
+                "online_backup", "device_protection", "tech_support", 
+                "streaming_tv", "streaming_movies", "contract", "payment_method"]
+
+for col in replace_cols:
+    customer_churn = (customer_churn
+      .mutate(
+        **{col: customer_churn[col].lower().replace(" ", "_").replace("-", "_")}
+      )
+    )
+
+customer_churn.to_pandas().info()
+```
+:::
+
+We next prepare the data for machine learning model training and evaluation by creating a reproducible initial split into training and test sets, followed by setting up a stratified 5-fold cross-validation scheme on the training data. This approach is crucial for developing, tuning, and selecting models based on their performance metrics, ensuring that the chosen model is robust and performs well on unseen data.
+
+::: {.panel-tabset}
+### tidymodels
+```{r}
+library(tidymodels)
+
+set.seed(1234)
+customer_split <- initial_split(customer, prop = 4/ 5, strata = churn)
+customer_folds <- vfold_cv(training(customer_split), v = 5, strata = churn)
+```
+
+### scikit-learn
+```{python}
+import numpy as np
+
+np.random.seed(1234)
+
+```
+:::
+
+## Pre-process data
+
+::: {.panel-tabset}
+### tidymodels
+```{r}
+customer_recipe <- recipe(churn ~ ., data = training(customer_split)) |> 
+  step_log(c(total_charges)) |> 
+  step_normalize(c(tenure, monthly_charges)) |>
+  step_dummy(all_nominal(), -all_outcomes(), one_hot = TRUE) 
+
+customer_workflow <- workflow() |> 
+  add_recipe(customer_recipe)
+```
+
+### scikit-learn
+```{python}
+
+```
+:::
+
+::: {.panel-tabset}
+### tidymodels
+```{r}
+library(glmnet)
+
+spec_logistic <- logistic_reg(penalty = 0.0001, mixture = 1) |>
+  set_engine("glmnet") |> 
+  set_mode("classification")
+```
+
+### scikit-learn
+```{python}
+
+```
+:::
+
+## Fit models on training data
+
+::: {.panel-tabset}
+### tidymodels
+```{r}
+metrics_training <- customer_workflow |> 
+  add_model(spec_logistic) |> 
+  fit_resamples(
+    resamples = customer_folds,
+    metrics = metric_set(recall, precision, accuracy),
+    control = control_resamples(save_pred = TRUE)
+  ) |> 
+  collect_metrics(summarize = TRUE) |> 
+  mutate(model = attributes(spec_logistic)$class[1],
+         sample = "Training") |> 
+  select(metric = .metric, estimate = mean, model, sample)
+```
+
+### scikit-learn
+```{python}
+
+```
+:::
+
+## Evaluate models
+
+::: {.panel-tabset}
+### tidymodels
+```{r}
+create_metrics_test <- function(spec, sample) {
+
+  test_predictions <-  customer_workflow |>
+    add_model(spec) |> 
+    fit(data =  training(customer_split)) |> 
+    predict(new_data = testing(customer_split))
+  
+  test_results <- bind_cols(testing(customer_split), test_predictions)
+  
+  bind_rows(
+    recall(test_results, truth = churn, estimate = .pred_class),
+    precision(test_results, truth = churn, estimate = .pred_class),
+    accuracy(test_results, truth = churn, estimate = .pred_class)
+  ) |> 
+    mutate(model = attributes(spec)$class[1],
+           sample = sample) |> 
+    select(metric = .metric, estimate = .estimate, model, sample)
+}
+
+metrics_test <- create_metrics_test(spec_logistic, "Test")
+```
+
+### scikit-learn
+```{python}
+
+```
+:::
+
+## Tune models
+
+::: {.panel-tabset}
+### tidymodels
+```{r}
+# TODO: increase levels to 5 before release
+spec_logistic_tune <- logistic_reg(
+  penalty = tune(), 
+  mixture = tune()
+) |>
+  set_engine("glmnet") |> 
+  set_mode("classification")
+
+grid_logistic <- grid_regular(
+  penalty(range = c(-10, 0), trans = log10_trans()),
+  mixture(range = c(0, 1)),
+  levels = 5 
+)
+
+tune_logistic <- tune_grid(
+  customer_workflow |> 
+    add_model(spec_logistic_tune),
+  resamples = customer_folds,
+  grid = grid_logistic,
+  metrics = metric_set(recall, precision, accuracy) 
+)
+
+tuned_model_logistic <- finalize_model(
+  spec_logistic_tune, select_best(tune_logistic, "accuracy")
+)
+tuned_model_logistic
+```
+
+### scikit-learn
+```{python}
+
+```
+:::
+
+## Comparing tuned models
+
+::: {.panel-tabset}
+### tidymodels
+```{r}
+metrics_tuned <- create_metrics_test(tuned_model_logistic, "Tuned")
+
+metrics_comparison <- bind_rows(
+  metrics_training,
+  metrics_test,
+  metrics_tuned
+)
+
+metrics_comparison |> 
+  ggplot(aes(x = estimate, y = sample, fill = sample)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~metric, ncol = 1) +
+  labs(
+    x = NULL, y = NULL, fill = "Sample",
+    title = "Comparison of evaluation metrics for Elastic Net model fits",
+    subtitle = paste0(
+      "Training is the mean across 5-fold cross validation results of the inital model\n", 
+      "Test is based on 20% of the initial data using the initial mode\n",
+      "Tuned is based on 20% of the initial data using the fine-tuned model"
+      )
+    ) +
+  theme_minimal() +
+  theme(legend.position = "none") + 
+  coord_cartesian(xlim = c(0, 1)) 
+```
+
+### scikit-learn
+```{python}
+
+```
+::: 
+
+## Concluding remarks
+
+...
+
+```{=html}
+<section id="related-articles">
+   <h2>Related articles</h2>
+    <div class="articles-container">
+      <a href="../classification-customer-churn/index.html" class="article">
+        <div class="quarto-grid-item">
+            <img src="../classification-customer-churn/thumbnail.png">
+            <div class="card-body post-contents">
+               <h5 class="no-anchor card-title listing-title">Tidy Classification Models: Customer Churn Prediction</h5>
+               <div class="card-text listing-description">A comparison of classification approaches using the tidymodels R package</div>
+            </div>
+        </div>
+        </a>
+        
+        <a href="../clustering-binary-data/index.html" class="article">
+        <div class="quarto-grid-item">
+            <img src="../clustering-binary-data/thumbnail.png">
+            <div class="card-body post-contents">
+                <h5 class="no-anchor card-title listing-title">Clustering Binary Data</h5>
+                <div class="card-text listing-description">An application of different unsupervised learning approaches to cluster simulated survey responses using R</div>
+            </div>
+        </div>
+        </a>
+        
+        <a href="../tidy-collaborative-filtering/index.html" class="article">
+        <div class="quarto-grid-item">
+            <img src="../tidy-collaborative-filtering/thumbnail.png">
+            <div class="card-body post-contents">
+                <h5 class="no-anchor card-title listing-title">Tidy Collaborative Filtering: Building A Stock Recommender</h5>
+                <div class="card-text listing-description">A simple implementation for prototyping multiple collaborative filtering algorithms using R</div>
+            </div>
+        </div>
+        </a>
+    </div>
+</section>
+```
