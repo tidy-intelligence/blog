@@ -60,12 +60,11 @@ customer <- customer_raw |>
 import re
 import ibis
 from ibis import _
-import pandas as pd
 
 ibis.options.interactive = True
 
 data_url = "https://raw.githubusercontent.com/IBM/telco-customer-churn-on-icp4d/master/data/Telco-Customer-Churn.csv"
-customer_churn_raw = ibis.read_csv(data_url)
+customer_raw = ibis.read_csv(data_url)
 
 def clean_name(name):
     name_with_underscores = re.sub('((?<=[a-z])[A-Z]|(?<=[A-Z])[A-Z](?=[a-z]))', r'_\1', name)
@@ -79,20 +78,19 @@ def clean_names(table):
     table_clean = table.rename(rename_map)
     return table_clean
 
-customer_churn_raw = clean_names(customer_churn_raw)
+customer_raw = clean_names(customer_raw)
 
-customer_churn = (customer_churn_raw
+customer = (customer_raw
   .mutate(
-    churn = _.churn.case().when('Yes', 1).when('No', 0).else_(0).end(),
-    female = _.gender.case().when('Female', 1).else_(0).end()
+    female = _.gender.case().when("Female", 1).else_(0).end()
   )
   .dropna()
   .drop(["gender", "customer_id"])
 )
 
-binary_cols = ["partner", "dependents", "phone_service", "paperless_billing"]
+binary_cols = ["churn", "partner", "dependents", "phone_service", "paperless_billing"]
 for col in binary_cols:
-    customer_churn = (customer_churn
+    customer = (customer
       .mutate(
         **{col: _[col].case().when("Yes", 1).when("No", 0).else_(0).end()}
       )
@@ -103,13 +101,13 @@ replace_cols = ["multiple_lines", "internet_service", "online_security",
                 "streaming_tv", "streaming_movies", "contract", "payment_method"]
 
 for col in replace_cols:
-    customer_churn = (customer_churn
+    customer = (customer
       .mutate(
-        **{col: customer_churn[col].lower().replace(" ", "_").replace("-", "_")}
+        **{col: _[col].lower().replace(" ", "_").replace("-", "_")}
       )
     )
 
-customer_churn.to_pandas().info()
+customer = customer.to_pandas()
 ```
 :::
 
@@ -128,9 +126,18 @@ customer_folds <- vfold_cv(training(customer_split), v = 5, strata = churn)
 ### scikit-learn
 ```{python}
 import numpy as np
+from sklearn.model_selection import train_test_split, StratifiedKFold
 
 np.random.seed(1234)
 
+X = customer.drop('churn', axis=1)  # Features
+y = customer['churn']  # Target variable
+
+# Splitting the data, with 80% for training and 20% for testing, stratified by 'churn'
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y)
+
+# Setting up stratified k-fold cross-validation, with k=5
+cv = StratifiedKFold(n_splits = 5)
 ```
 :::
 
@@ -143,14 +150,23 @@ customer_recipe <- recipe(churn ~ ., data = training(customer_split)) |>
   step_log(c(total_charges)) |> 
   step_normalize(c(tenure, monthly_charges)) |>
   step_dummy(all_nominal(), -all_outcomes(), one_hot = TRUE) 
-
-customer_workflow <- workflow() |> 
-  add_recipe(customer_recipe)
 ```
 
 ### scikit-learn
 ```{python}
+# TODO: need to make sure that one hot encoder does not mess up the feature names
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import FunctionTransformer, StandardScaler, OneHotEncoder
 
+nominal_columns = X_train.select_dtypes(include=["object", "category"]).columns.to_list()
+
+preprocessor = ColumnTransformer(
+    transformers=[
+      ("log", FunctionTransformer(np.log1p), ["total_charges"]),
+      ("norm", StandardScaler(), ["tenure", "monthly_charges"]),
+      ("ohe", OneHotEncoder(drop="if_binary"), nominal_columns)],
+      remainder='passthrough' 
+)
 ```
 :::
 
@@ -159,14 +175,21 @@ customer_workflow <- workflow() |>
 ```{r}
 library(glmnet)
 
-spec_logistic <- logistic_reg(penalty = 0.0001, mixture = 1) |>
+spec_elastic_net <- logistic_reg(penalty = 0.0001, mixture = 1) |>
   set_engine("glmnet") |> 
   set_mode("classification")
 ```
 
 ### scikit-learn
 ```{python}
+from sklearn.linear_model import ElasticNet
 
+model_elastic_net = ElasticNet(
+  alpha=0.007,
+  l1_ratio=1, 
+  max_iter=5000
+)  
+                                
 ```
 :::
 
@@ -175,7 +198,8 @@ spec_logistic <- logistic_reg(penalty = 0.0001, mixture = 1) |>
 ::: {.panel-tabset}
 ### tidymodels
 ```{r}
-metrics_training <- customer_workflow |> 
+metrics_training <-  workflow() |> 
+  add_recipe(customer_recipe) |> 
   add_model(spec_logistic) |> 
   fit_resamples(
     resamples = customer_folds,
@@ -190,6 +214,30 @@ metrics_training <- customer_workflow |>
 
 ### scikit-learn
 ```{python}
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import cross_validate
+from sklearn.metrics import make_scorer, recall_score, precision_score, accuracy_score
+
+
+pipeline = Pipeline(steps = [
+  ('preprocessor', preprocessor),
+  ('model', model_elastic_net)
+])
+
+pipeline.fit(
+  X_train,
+  y_train
+)
+
+X_train.columns = X_train.columns.astype(str)
+X_test.columns = X_test.columns.astype(str)
+
+cv_results = cross_validate(
+  pipeline, X_train, y_train, cv=cv, 
+  scoring={'recall': make_scorer(recall_score),
+           'precision': make_scorer(precision_score),
+           'accuracy': make_scorer(accuracy_score)}, 
+return_train_score=False)
 
 ```
 :::
