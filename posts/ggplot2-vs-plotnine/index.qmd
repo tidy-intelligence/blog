@@ -91,7 +91,7 @@ ggplot(penguins,
 ### plotnine
 ```{python}
 (ggplot(penguins, 
-       aes(x = "island"))
+        aes(x = "island"))
   + geom_bar()
 )
 ```
