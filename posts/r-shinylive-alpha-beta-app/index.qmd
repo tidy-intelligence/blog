@@ -1,0 +1,34 @@
+---
+title: "Shinylive App: Alpha and Beta Calculator"
+description: "An app to compute alpha and beta estimates for arbitrary assets"
+metadata:
+  pagetitle: "Alpha and Beta Calculator"
+author: "Christoph Scheuch"
+date: "2024-04-19" 
+image: thumbnail.png
+image-alt: ... Created with DALL-E 3.
+categories: 
+  - R
+  - Modeling
+filters:
+  - shinylive
+---
+
+```{shinylive-r}
+#| standalone: true
+
+library(shiny)
+
+# Define your Shiny UI here
+ui <- fluidPage(
+  # Your UI components go here
+)
+
+# Define your Shiny server logic here
+server <- function(input, output, session) {
+  # Your server code goes here
+}
+
+# Create and launch the Shiny app
+shinyApp(ui, server)
+```
