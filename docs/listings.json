@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/dplyr-vs-siuba/index.html",
       "/posts/classification-customer-churn/index.html",
       "/posts/fixed-effects-regressions/index.html",
       "/posts/ggplot2-vs-matplotlib/index.html",
