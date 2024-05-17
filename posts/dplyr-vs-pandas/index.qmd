@@ -239,7 +239,7 @@ penguins |>
        bill_depth_mean = ("bill_depth_mm", "mean"),
        flipper_length_median = ("flipper_length_mm", "median"),
        body_mass_sd = ("body_mass_g", "std"),
-       share_female = ("sex", lambda x: (x == "female").mean))
+       share_female = ("sex", lambda x: (x == "female").mean()))
 )
 ```
 :::
