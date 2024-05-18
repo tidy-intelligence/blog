@@ -32,8 +32,8 @@ website:
         url: https://www.tidy-intelligence.com/
       - text: "Blog"
         file: index.qmd
-      - text: "Coaching"
-        url: https://www.tidy-intelligence.com/coaching.html
+      - text: "Contact"
+        url: https://www.tidy-intelligence.com/contact.html
       - text: "Swag"
         url: https://www.etsy.com/shop/tidyswag/?etsrc=sdt&utm_source=tidy-intelligence.com
   comments:
