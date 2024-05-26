@@ -71,7 +71,7 @@ full_bloom_long <- sakura_full_bloom_dates |>
 sakura_dates <- first_bloom_long |>
   full_join(full_bloom_long, c("location", "year", "is_currently_observed")) |>
   mutate(year = as.integer(year),
-         full_bloom_day = as.integer(full_bloom - as.Date(paste(year, "-01-01", sep = ""))),
+         days_to_full_bloom = as.integer(full_bloom - as.Date(paste(year, "-01-01", sep = ""))),
          days_from_first_to_full_bloom = as.integer(full_bloom - first_bloom))
 ```
 ### Python
@@ -94,7 +94,7 @@ full_bloom_long = (sakura_full_bloom_dates
 sakura_dates = (first_bloom_long.outer_join(full_bloom_long, ["location", "year", "is_currently_observed"])
   .select(~s.contains("_right"))
   .mutate(year = _.year.cast("int32"))
-  .mutate(full_bloom_day = (_.full_bloom - ibis.date(_.year.cast('string') + '-01-01')).cast('interval("D")').cast("int32"),
+  .mutate(days_to_full_bloom = (_.full_bloom - ibis.date(_.year.cast('string') + '-01-01')).cast('interval("D")').cast("int32"),
           days_from_first_to_full_bloom = _.full_bloom - _.first_bloom)
 )
 ```
@@ -138,7 +138,7 @@ sakura_data <- sakura_dates |>
   left_join(locations_regions, join_by(location)) |> 
   filter(is_currently_observed == TRUE &
           year >= 1954 &
-          !is.na(full_bloom_day) & 
+          !is.na(days_to_full_bloom) & 
           !is.na(days_from_first_to_full_bloom))
 ```
 ### Python
@@ -147,7 +147,7 @@ sakura_data = (sakura_dates
   .left_join(locations_regions, "location")
   .filter([_.is_currently_observed == True, 
            _.year >= 1954, 
-           _.full_bloom_day.notnull(),
+           _.days_to_full_bloom.notnull(),
            _.days_from_first_to_full_bloom.notnull()])
 )
 ```
@@ -194,7 +194,7 @@ breaks_year = range(1950, 2031, 20)
 ```
 :::
 
-## Time to full bloom per region
+## Days to full bloom
 
 The first figure visually represents the full bloom days of cherry blossoms across various regions in Japan over time. Each point on the plot shows the bloom day for a specific year. The line indicates the general trend over time. The regions are separated into individual panels arranged in a single row, allowing for easy comparison. The subtitle highlights a key finding: cities in the northern regions, such as Hokkaidō and Honshū, tend to have earlier bloom dates compared to those in the Ryukyu Islands, which experience later blooms.
 
@@ -203,7 +203,7 @@ The first figure visually represents the full bloom days of cherry blossoms acro
 ```{r}
 #| message: false
 sakura_data |> 
-  ggplot(aes(x = year, y = full_bloom_day)) +
+  ggplot(aes(x = year, y = days_to_full_bloom)) +
   geom_point(color = colors[1], alpha = 0.5, size = 2) +
   geom_smooth(method = lm, se = FALSE,
               color = colors[2], linewidth = 2) +
@@ -223,7 +223,7 @@ sakura_data |>
 #| message: false
 #| warning: false
 (ggplot(sakura_data, 
-         aes(x = "year", y = "full_bloom_day"))
+         aes(x = "year", y = "days_to_full_bloom"))
   + geom_point(color = colors[0], alpha = 0.5, size = 2)
   + geom_smooth(method = "lm", se = False, 
                 color = colors[1], size = 2)
@@ -237,7 +237,7 @@ sakura_data |>
 ```
 :::
 
-## Days from first and full bloom
+## Days from first to full bloom
 
 The next figure illustrates the duration between the initial opening of cherry blossoms and their peak bloom across different regions in Japan over time. Each point represents the number of days for a given year. The linear line highlights the overall trends in blooming duration. The regions are individually faceted in a single row, enabling side-by-side comparisons. The figure shows that Hokkaidō has the shortest and decreasing periods between blossom opening and peak bloom, while regions like Kyūshū and Ryukyu exhibit increasing durations.
 

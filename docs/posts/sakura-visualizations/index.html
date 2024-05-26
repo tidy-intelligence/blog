@@ -192,8 +192,8 @@ cookieconsent.run({
   <li><a href="#loading-packages-and-data" id="toc-loading-packages-and-data" class="nav-link active" data-scroll-target="#loading-packages-and-data">Loading packages and data</a></li>
   <li><a href="#download-and-prepare-data" id="toc-download-and-prepare-data" class="nav-link" data-scroll-target="#download-and-prepare-data">Download and prepare data</a></li>
   <li><a href="#set-theme-and-color-scheme" id="toc-set-theme-and-color-scheme" class="nav-link" data-scroll-target="#set-theme-and-color-scheme">Set theme and color scheme</a></li>
-  <li><a href="#time-to-full-bloom-per-region" id="toc-time-to-full-bloom-per-region" class="nav-link" data-scroll-target="#time-to-full-bloom-per-region">Time to full bloom per region</a></li>
-  <li><a href="#days-from-first-and-full-bloom" id="toc-days-from-first-and-full-bloom" class="nav-link" data-scroll-target="#days-from-first-and-full-bloom">Days from first and full bloom</a></li>
+  <li><a href="#days-to-full-bloom" id="toc-days-to-full-bloom" class="nav-link" data-scroll-target="#days-to-full-bloom">Days to full bloom</a></li>
+  <li><a href="#days-from-first-to-full-bloom" id="toc-days-from-first-to-full-bloom" class="nav-link" data-scroll-target="#days-from-first-to-full-bloom">Days from first to full bloom</a></li>
   <li><a href="#concluding-remarks" id="toc-concluding-remarks" class="nav-link" data-scroll-target="#concluding-remarks">Concluding remarks</a></li>
   </ul>
 </nav>
@@ -295,7 +295,7 @@ cookieconsent.run({
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>sakura_dates <span class="ot">&lt;-</span> first_bloom_long <span class="sc">|&gt;</span></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(full_bloom_long, <span class="fu">c</span>(<span class="st">"location"</span>, <span class="st">"year"</span>, <span class="st">"is_currently_observed"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.integer</span>(year),</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">full_bloom_day =</span> <span class="fu">as.integer</span>(full_bloom <span class="sc">-</span> <span class="fu">as.Date</span>(<span class="fu">paste</span>(year, <span class="st">"-01-01"</span>, <span class="at">sep =</span> <span class="st">""</span>))),</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">days_to_full_bloom =</span> <span class="fu">as.integer</span>(full_bloom <span class="sc">-</span> <span class="fu">as.Date</span>(<span class="fu">paste</span>(year, <span class="st">"-01-01"</span>, <span class="at">sep =</span> <span class="st">""</span>))),</span>
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">days_from_first_to_full_bloom =</span> <span class="fu">as.integer</span>(full_bloom <span class="sc">-</span> first_bloom))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
@@ -319,7 +319,7 @@ cookieconsent.run({
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>sakura_dates <span class="op">=</span> (first_bloom_long.outer_join(full_bloom_long, [<span class="st">"location"</span>, <span class="st">"year"</span>, <span class="st">"is_currently_observed"</span>])</span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  .select(<span class="op">~</span>s.contains(<span class="st">"_right"</span>))</span>
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  .mutate(year <span class="op">=</span> _.year.cast(<span class="st">"int32"</span>))</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  .mutate(full_bloom_day <span class="op">=</span> (_.full_bloom <span class="op">-</span> ibis.date(_.year.cast(<span class="st">'string'</span>) <span class="op">+</span> <span class="st">'-01-01'</span>)).cast(<span class="st">'interval("D")'</span>).cast(<span class="st">"int32"</span>),</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  .mutate(days_to_full_bloom <span class="op">=</span> (_.full_bloom <span class="op">-</span> ibis.date(_.year.cast(<span class="st">'string'</span>) <span class="op">+</span> <span class="st">'-01-01'</span>)).cast(<span class="st">'interval("D")'</span>).cast(<span class="st">"int32"</span>),</span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>          days_from_first_to_full_bloom <span class="op">=</span> _.full_bloom <span class="op">-</span> _.first_bloom)</span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -366,7 +366,7 @@ cookieconsent.run({
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(locations_regions, <span class="fu">join_by</span>(location)) <span class="sc">|&gt;</span> </span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(is_currently_observed <span class="sc">==</span> <span class="cn">TRUE</span> <span class="sc">&amp;</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>          year <span class="sc">&gt;=</span> <span class="dv">1954</span> <span class="sc">&amp;</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>          <span class="sc">!</span><span class="fu">is.na</span>(full_bloom_day) <span class="sc">&amp;</span> </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>          <span class="sc">!</span><span class="fu">is.na</span>(days_to_full_bloom) <span class="sc">&amp;</span> </span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>          <span class="sc">!</span><span class="fu">is.na</span>(days_from_first_to_full_bloom))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
@@ -376,7 +376,7 @@ cookieconsent.run({
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  .left_join(locations_regions, <span class="st">"location"</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  .<span class="bu">filter</span>([_.is_currently_observed <span class="op">==</span> <span class="va">True</span>, </span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>           _.year <span class="op">&gt;=</span> <span class="dv">1954</span>, </span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>           _.full_bloom_day.notnull(),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>           _.days_to_full_bloom.notnull(),</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>           _.days_from_first_to_full_bloom.notnull()])</span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -429,8 +429,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="time-to-full-bloom-per-region" class="level2">
-<h2 class="anchored" data-anchor-id="time-to-full-bloom-per-region">Time to full bloom per region</h2>
+<section id="days-to-full-bloom" class="level2">
+<h2 class="anchored" data-anchor-id="days-to-full-bloom">Days to full bloom</h2>
 <p>The first figure visually represents the full bloom days of cherry blossoms across various regions in Japan over time. Each point on the plot shows the bloom day for a specific year. The line indicates the general trend over time. The regions are separated into individual panels arranged in a single row, allowing for easy comparison. The subtitle highlights a key finding: cities in the northern regions, such as Hokkaidō and Honshū, tend to have earlier bloom dates compared to those in the Ryukyu Islands, which experience later blooms.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Python</a></li></ul>
@@ -438,7 +438,7 @@ cookieconsent.run({
 <div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>sakura_data <span class="sc">|&gt;</span> </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> full_bloom_day)) <span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> days_to_full_bloom)) <span class="sc">+</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> colors[<span class="dv">1</span>], <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm, <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">color =</span> colors[<span class="dv">2</span>], <span class="at">linewidth =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
@@ -461,7 +461,7 @@ cookieconsent.run({
 <p><code>linewidth</code> is still <code>size</code> in plotnine</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(ggplot(sakura_data, </span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>         aes(x <span class="op">=</span> <span class="st">"year"</span>, y <span class="op">=</span> <span class="st">"full_bloom_day"</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>         aes(x <span class="op">=</span> <span class="st">"year"</span>, y <span class="op">=</span> <span class="st">"days_to_full_bloom"</span>))</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> geom_point(color <span class="op">=</span> colors[<span class="dv">0</span>], alpha <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="dv">2</span>)</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> geom_smooth(method <span class="op">=</span> <span class="st">"lm"</span>, se <span class="op">=</span> <span class="va">False</span>, </span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                color <span class="op">=</span> colors[<span class="dv">1</span>], size <span class="op">=</span> <span class="dv">2</span>)</span>
@@ -487,8 +487,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="days-from-first-and-full-bloom" class="level2">
-<h2 class="anchored" data-anchor-id="days-from-first-and-full-bloom">Days from first and full bloom</h2>
+<section id="days-from-first-to-full-bloom" class="level2">
+<h2 class="anchored" data-anchor-id="days-from-first-to-full-bloom">Days from first to full bloom</h2>
 <p>The next figure illustrates the duration between the initial opening of cherry blossoms and their peak bloom across different regions in Japan over time. Each point represents the number of days for a given year. The linear line highlights the overall trends in blooming duration. The regions are individually faceted in a single row, enabling side-by-side comparisons. The figure shows that Hokkaidō has the shortest and decreasing periods between blossom opening and peak bloom, while regions like Kyūshū and Ryukyu exhibit increasing durations.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Python</a></li></ul>
