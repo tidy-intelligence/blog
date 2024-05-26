@@ -119,11 +119,10 @@ locations_regions = ibis.read_csv("data/locations_region.csv")
 
 southern_islands = ["Naze", "Ishigaki Island", "Miyakojima", "Naha", "Minami Daito Island"]
 
-locations_regions = locations_regions.mutate(
-    region=ibis.case()
-        .when(_.location.isin(southern_islands), "Ryukyu Islands")
-        .else_(_.region)
-        .end()
+locations_regions = (locations_regions
+  .mutate(
+    region = ibis.case().when(_.location.isin(southern_islands), "Ryukyu Islands").else_(_.region).end()
+  )
 )
 ```
 :::
