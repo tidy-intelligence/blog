@@ -66,7 +66,8 @@ ul.task-list li input[type="checkbox"] {
 
     const options = {
       valueNames: ['listing-image','listing-description','listing-title',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
+      page: 18,
+    pagination: { item: "<li class='page-item'><a class='page page-link' href='#'></a></li>" },
       searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
     };
 
@@ -147,14 +148,14 @@ window.Quarto = {
 <link rel="stylesheet" href="assets/css/styles-global.css">
 <link rel="stylesheet" href="assets/css/styles-blog.css">
 <meta property="og:title" content="Tidy Intelligence Blog">
-<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/dplyr-vs-siuba/thumbnail.png">
+<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/sakura-visualizations/thumbnail.png">
 <meta property="og:site_name" content="Tidy Intelligence">
-<meta property="og:image:height" content="1015">
-<meta property="og:image:width" content="1015">
+<meta property="og:image:height" content="1024">
+<meta property="og:image:width" content="1024">
 <meta name="twitter:title" content="Tidy Intelligence Blog">
-<meta name="twitter:image" content="https://blog.tidy-intelligence.com/posts/dplyr-vs-siuba/thumbnail.png">
-<meta name="twitter:image-height" content="1015">
-<meta name="twitter:image-width" content="1015">
+<meta name="twitter:image" content="https://blog.tidy-intelligence.com/posts/sakura-visualizations/thumbnail.png">
+<meta name="twitter:image-height" content="1024">
+<meta name="twitter:image-width" content="1024">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -203,7 +204,7 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(18)</span></div><div class="category" data-category="Classification">Classification <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Data">Data <span class="quarto-category-count">(3)</span></div><div class="category" data-category="Julia">Julia <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Manipulation">Manipulation <span class="quarto-category-count">(5)</span></div><div class="category" data-category="Modeling">Modeling <span class="quarto-category-count">(2)</span></div><div class="category" data-category="Python">Python <span class="quarto-category-count">(10)</span></div><div class="category" data-category="R">R <span class="quarto-category-count">(16)</span></div><div class="category" data-category="Recommenders">Recommenders <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Unsupervised Learning">Unsupervised Learning <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Visualization">Visualization <span class="quarto-category-count">(5)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(19)</span></div><div class="category" data-category="Classification">Classification <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Data">Data <span class="quarto-category-count">(3)</span></div><div class="category" data-category="Julia">Julia <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Manipulation">Manipulation <span class="quarto-category-count">(5)</span></div><div class="category" data-category="Modeling">Modeling <span class="quarto-category-count">(2)</span></div><div class="category" data-category="Python">Python <span class="quarto-category-count">(11)</span></div><div class="category" data-category="R">R <span class="quarto-category-count">(17)</span></div><div class="category" data-category="Recommenders">Recommenders <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Unsupervised Learning">Unsupervised Learning <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Visualization">Visualization <span class="quarto-category-count">(6)</span></div></div></div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
@@ -216,7 +217,24 @@ window.Quarto = {
 
 <div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
 <div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="R,Python,Manipulation" data-listing-date-sort="1715983200000" data-listing-file-modified-sort="1715946495637" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1285">
+<div class="g-col-1" data-index="0" data-categories="R,Python,Visualization" data-listing-date-sort="1716760800000" data-listing-file-modified-sort="1716729719824" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2086">
+<a href="./posts/sakura-visualizations/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top">
+<img src="./posts/sakura-visualizations/thumbnail.png" class="thumbnail-image card-img" style="height: 100%;" alt="A beautiful sakura tree in full bloom, covered with vibrant pink cherry blossoms. The tree stands alone in a serene park with green grass and a clear blue sky in the background. Soft petals are falling gently to the ground, creating a picturesque and tranquil scene. The sunlight filters through the blossoms, casting a soft glow around the tree. Created with DALL-E.">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Sakura Visualizations
+</h5>
+<div class="card-text listing-description">
+Visualizing first and full cherry blossom bloom dates for Japanese regions using R and Python
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="1" data-categories="R,Python,Manipulation" data-listing-date-sort="1715983200000" data-listing-file-modified-sort="1715946495637" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1285">
 <a href="./posts/dplyr-vs-siuba/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -233,7 +251,7 @@ A comparison of R’s dplyr and Python’s siuba data manipulation packages
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="1" data-categories="R,Modeling,Classification" data-listing-date-sort="1708556400000" data-listing-file-modified-sort="1709756287631" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="18" data-listing-word-count-sort="3567">
+<div class="g-col-1" data-index="2" data-categories="R,Modeling,Classification" data-listing-date-sort="1708556400000" data-listing-file-modified-sort="1709756287631" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="18" data-listing-word-count-sort="3567">
 <a href="./posts/classification-customer-churn/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -250,7 +268,7 @@ A comparison of classification approaches using the tidymodels R package
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="2" data-categories="R,Python,Modeling" data-listing-date-sort="1707174000000" data-listing-file-modified-sort="1708452504331" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1406">
+<div class="g-col-1" data-index="3" data-categories="R,Python,Modeling" data-listing-date-sort="1707174000000" data-listing-file-modified-sort="1708452504331" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1406">
 <a href="./posts/fixed-effects-regressions/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -267,7 +285,7 @@ A comparison of packages for fast fixed-effects estimation in R and Python
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="3" data-categories="R,Python,Visualization" data-listing-date-sort="1706655600000" data-listing-file-modified-sort="1706713145147" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2323">
+<div class="g-col-1" data-index="4" data-categories="R,Python,Visualization" data-listing-date-sort="1706655600000" data-listing-file-modified-sort="1706713145147" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2323">
 <a href="./posts/ggplot2-vs-matplotlib/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -284,7 +302,7 @@ A comparison of the two most popular data visualization tools for R and Python
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="4" data-categories="Python,Visualization" data-listing-date-sort="1706396400000" data-listing-file-modified-sort="1706640903509" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2845">
+<div class="g-col-1" data-index="5" data-categories="Python,Visualization" data-listing-date-sort="1706396400000" data-listing-file-modified-sort="1706640903509" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2845">
 <a href="./posts/interactive-data-visualization-with-python/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -301,7 +319,7 @@ A comparison of the dynamic visualization libraries plotly, bokeh and altair for
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="5" data-categories="R,Visualization" data-listing-date-sort="1705964400000" data-listing-file-modified-sort="1706640867995" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3135">
+<div class="g-col-1" data-index="6" data-categories="R,Visualization" data-listing-date-sort="1705964400000" data-listing-file-modified-sort="1706640867995" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3135">
 <a href="./posts/interactive-data-visualization-with-r/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -318,7 +336,7 @@ A comparison of the dynamic visualization packages ggiraph, plotly and highchart
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="6" data-categories="R,Python,Data" data-listing-date-sort="1705705200000" data-listing-file-modified-sort="1706641038689" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13" data-listing-word-count-sort="2494">
+<div class="g-col-1" data-index="7" data-categories="R,Python,Data" data-listing-date-sort="1705705200000" data-listing-file-modified-sort="1706641038689" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13" data-listing-word-count-sort="2494">
 <a href="./posts/data-storage-comparison/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -335,7 +353,7 @@ A comparison of popular open-source data storage technologies using R and Python
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="7" data-categories="R,Python,Visualization" data-listing-date-sort="1705359600000" data-listing-file-modified-sort="1706640913074" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1534">
+<div class="g-col-1" data-index="8" data-categories="R,Python,Visualization" data-listing-date-sort="1705359600000" data-listing-file-modified-sort="1706640913074" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1534">
 <a href="./posts/ggplot2-vs-seaborn/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -352,7 +370,7 @@ A comparison of two popular data visualization tools for R and Python
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="8" data-categories="R,Python,Visualization" data-listing-date-sort="1705186800000" data-listing-file-modified-sort="1709756295249" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1464">
+<div class="g-col-1" data-index="9" data-categories="R,Python,Visualization" data-listing-date-sort="1705186800000" data-listing-file-modified-sort="1709756295249" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1464">
 <a href="./posts/ggplot2-vs-plotnine/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -369,7 +387,7 @@ A comparison of implementations of the grammar of graphics in R and Python.
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="9" data-categories="R,Julia,Manipulation" data-listing-date-sort="1704754800000" data-listing-file-modified-sort="1706553117721" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1375">
+<div class="g-col-1" data-index="10" data-categories="R,Julia,Manipulation" data-listing-date-sort="1704754800000" data-listing-file-modified-sort="1706553117721" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1375">
 <a href="./posts/dplyr-vs-tidierdata/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -386,7 +404,7 @@ A comparison of R’s dplyr and Julia’s TidierData data manipulation packages
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="10" data-categories="R,Python,Manipulation" data-listing-date-sort="1704582000000" data-listing-file-modified-sort="1715946622477" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1406">
+<div class="g-col-1" data-index="11" data-categories="R,Python,Manipulation" data-listing-date-sort="1704582000000" data-listing-file-modified-sort="1715946622477" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1406">
 <a href="./posts/dplyr-vs-pandas/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -403,7 +421,7 @@ A comparison of R’s dplyr and Python’s pandas data manipulation packages
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="11" data-categories="R,Python,Manipulation" data-listing-date-sort="1704322800000" data-listing-file-modified-sort="1707082825143" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1436">
+<div class="g-col-1" data-index="12" data-categories="R,Python,Manipulation" data-listing-date-sort="1704322800000" data-listing-file-modified-sort="1707082825143" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1436">
 <a href="./posts/dplyr-vs-ibis/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -420,7 +438,7 @@ A comparison of R’s dplyr and Python’s ibis data manipulation packages
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="12" data-categories="R,Python,Manipulation" data-listing-date-sort="1704150000000" data-listing-file-modified-sort="1706553164457" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1390">
+<div class="g-col-1" data-index="13" data-categories="R,Python,Manipulation" data-listing-date-sort="1704150000000" data-listing-file-modified-sort="1706553164457" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1390">
 <a href="./posts/dplyr-vs-polars/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -437,7 +455,7 @@ A comparison of R’s dplyr and Python’s polars data manipulation packages
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="13" data-categories="R" data-listing-date-sort="1701126000000" data-listing-file-modified-sort="1706390530732" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1868">
+<div class="g-col-1" data-index="14" data-categories="R" data-listing-date-sort="1701126000000" data-listing-file-modified-sort="1706390530732" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1868">
 <a href="./posts/dax-seasonality/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -454,7 +472,7 @@ Debunking the Halloween indicator for German market returns using R
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="14" data-categories="R,Data" data-listing-date-sort="1701039600000" data-listing-file-modified-sort="1706390530734" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2082">
+<div class="g-col-1" data-index="15" data-categories="R,Data" data-listing-date-sort="1701039600000" data-listing-file-modified-sort="1706390530734" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2082">
 <a href="./posts/scraping-esg-data-from-yahoo-finance/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -471,7 +489,7 @@ How to scrape environmental, social and governance risk scores using R
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="15" data-categories="R,Unsupervised Learning" data-listing-date-sort="1700866800000" data-listing-file-modified-sort="1706390530729" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="3000">
+<div class="g-col-1" data-index="16" data-categories="R,Unsupervised Learning" data-listing-date-sort="1700866800000" data-listing-file-modified-sort="1706390530729" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="3000">
 <a href="./posts/clustering-binary-data/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -488,7 +506,7 @@ An application of different unsupervised learning approaches to cluster simulate
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="16" data-categories="Data" data-listing-date-sort="1700780400000" data-listing-file-modified-sort="1707119236516" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2216">
+<div class="g-col-1" data-index="17" data-categories="Data" data-listing-date-sort="1700780400000" data-listing-file-modified-sort="1707119236516" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2216">
 <a href="./posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -505,11 +523,11 @@ On the importance of tidy data for efficient analysis using the analogy of a wel
 </div>
 </a>
 </div>
-<div class="g-col-1" data-index="17" data-categories="R,Recommenders" data-listing-date-sort="1684706400000" data-listing-file-modified-sort="1706390530735" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2380">
+<div class="g-col-1" data-index="18" data-categories="R,Recommenders" data-listing-date-sort="1684706400000" data-listing-file-modified-sort="1706390530735" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2380">
 <a href="./posts/tidy-collaborative-filtering/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
-<img src="./posts/tidy-collaborative-filtering/thumbnail.png" class="thumbnail-image card-img" style="height: 100%;" alt="A 3d rendered  image of two stylized AI robots sitting at a round table, immersed in a discussion with a large, abstract, holographic projection of a collaborative filtering algorithm matrix in the middle. Created with DALL-E 3.">
+<img data-src="./posts/tidy-collaborative-filtering/thumbnail.png" class="thumbnail-image card-img" style="height: 100%;" alt="A 3d rendered  image of two stylized AI robots sitting at a round table, immersed in a discussion with a large, abstract, holographic projection of a collaborative filtering algorithm matrix in the middle. Created with DALL-E 3.">
 </p>
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
@@ -526,6 +544,9 @@ A simple implementation for prototyping multiple collaborative filtering algorit
 <div class="listing-no-matching d-none">
 No matching items
 </div>
+<nav id="listing-pagination" class="listing-pagination" aria-label="Page Navigation">
+  <ul class="pagination"></ul>
+</nav>
 </div></main> <!-- /main -->
 <footer class="footer-custom">
 <div class="custom-footer">

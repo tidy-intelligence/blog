@@ -1,7 +1,7 @@
 .quarto/*
 /.quarto/
 .Rproj.user
-data/
+/data/
 .RData
 .Rhistory
 posts/.DS_Store
@@ -10,3 +10,6 @@ posts/.DS_Store
 .Rhistory
 .Rhistory
 .DS_Store
+posts/sakura-visualizations/data/sakura_first_bloom_dates.csv
+posts/sakura-visualizations/data/sakura_full_bloom_dates.csv
+.Rhistory
