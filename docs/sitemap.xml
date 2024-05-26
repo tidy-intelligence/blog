@@ -17,48 +17,52 @@
     <lastmod>2024-01-27T21:22:10.732Z</lastmod>
   </url>
   <url>
-    <loc>https://blog.tidy-intelligence.com/posts/tidy-collaborative-filtering/index.html</loc>
-    <lastmod>2024-01-27T21:22:10.735Z</lastmod>
+    <loc>https://blog.tidy-intelligence.com/posts/sakura-visualizations/index.html</loc>
+    <lastmod>2024-05-26T13:21:59.824Z</lastmod>
   </url>
   <url>
-    <loc>https://blog.tidy-intelligence.com/posts/ggplot2-vs-matplotlib/index.html</loc>
-    <lastmod>2024-01-31T14:59:05.147Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.tidy-intelligence.com/posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html</loc>
-    <lastmod>2024-02-05T07:47:16.516Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.tidy-intelligence.com/posts/classification-customer-churn/index.html</loc>
-    <lastmod>2024-03-06T20:18:07.631Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-pandas/index.html</loc>
-    <lastmod>2024-05-17T11:50:22.477Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-polars/index.html</loc>
-    <lastmod>2024-01-29T18:32:44.457Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.tidy-intelligence.com/posts/fixed-effects-regressions/index.html</loc>
-    <lastmod>2024-02-20T18:08:24.331Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.tidy-intelligence.com/posts/ggplot2-vs-seaborn/index.html</loc>
-    <lastmod>2024-01-30T18:55:13.074Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.tidy-intelligence.com/posts/clustering-binary-data/index.html</loc>
-    <lastmod>2024-01-27T21:22:10.729Z</lastmod>
+    <loc>https://blog.tidy-intelligence.com/posts/ggplot2-vs-plotnine/index.html</loc>
+    <lastmod>2024-03-06T20:18:15.249Z</lastmod>
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-siuba/index.html</loc>
     <lastmod>2024-05-17T11:48:15.637Z</lastmod>
   </url>
   <url>
-    <loc>https://blog.tidy-intelligence.com/posts/ggplot2-vs-plotnine/index.html</loc>
-    <lastmod>2024-03-06T20:18:15.249Z</lastmod>
+    <loc>https://blog.tidy-intelligence.com/posts/clustering-binary-data/index.html</loc>
+    <lastmod>2024-01-27T21:22:10.729Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.tidy-intelligence.com/posts/ggplot2-vs-seaborn/index.html</loc>
+    <lastmod>2024-01-30T18:55:13.074Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.tidy-intelligence.com/posts/fixed-effects-regressions/index.html</loc>
+    <lastmod>2024-02-20T18:08:24.331Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-polars/index.html</loc>
+    <lastmod>2024-01-29T18:32:44.457Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-pandas/index.html</loc>
+    <lastmod>2024-05-17T11:50:22.477Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.tidy-intelligence.com/posts/classification-customer-churn/index.html</loc>
+    <lastmod>2024-03-06T20:18:07.631Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.tidy-intelligence.com/posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html</loc>
+    <lastmod>2024-02-05T07:47:16.516Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.tidy-intelligence.com/posts/ggplot2-vs-matplotlib/index.html</loc>
+    <lastmod>2024-01-31T14:59:05.147Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.tidy-intelligence.com/posts/tidy-collaborative-filtering/index.html</loc>
+    <lastmod>2024-01-27T21:22:10.735Z</lastmod>
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-ibis/index.html</loc>
@@ -75,9 +79,5 @@
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/interactive-data-visualization-with-python/index.html</loc>
     <lastmod>2024-01-30T18:55:03.509Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.tidy-intelligence.com/posts/sakura-visualizations/index.html</loc>
-    <lastmod>2024-05-26T13:21:59.824Z</lastmod>
   </url>
 </urlset>
