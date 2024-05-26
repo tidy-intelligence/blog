@@ -32,104 +32,77 @@ library(tidyr)
 library(readr)
 library(lubridate)
 library(ggplot2)
-library(janitor)
 ```
 ### Python
 ```{python}
-import pandas as pd
-from pandas import to_datetime
-import janitor
+import ibis
+from ibis import _
+import ibis.selectors as s
 from plotnine import *
-
-# TODO: translate data import to Python
-# TODO: reformat Python code (more whitespace!)
-# TODO: Write text around code chunks
-# TODO: ggrepel?
 ```
 :::
 
 ## Download and prepare data
 
+https://www.kaggle.com/datasets/ryanglasnapp/japanese-cherry-blossom-data
+
 ::: {.panel-tabset}
 ### R
 ```{r}
 #| message: false
-# Sakura dates by region
-# https://www.kaggle.com/datasets/ryanglasnapp/japanese-cherry-blossom-data
-sakura_first_bloom_dates <- read_csv("https://raw.githubusercontent.com/christophscheuch/data-viz-japan/main/data/sakura_first_bloom_dates.csv") |> 
-  clean_names()
-sakura_full_bloom_dates <- read_csv("https://raw.githubusercontent.com/christophscheuch/data-viz-japan/main/data/sakura_full_bloom_dates.csv") |> 
-  clean_names()
+sakura_first_bloom_dates <- read_csv("data/sakura_first_bloom_dates.csv") 
+sakura_full_bloom_dates <- read_csv("data/sakura_full_bloom_dates.csv")
   
-# Process first bloom dates
 first_bloom_long <- sakura_first_bloom_dates |>
-  select(-x30_year_average_1981_2010, -notes) |>
-  rename(location = site_name, is_currently_observed = currently_being_observed) |>
-  pivot_longer(cols = -c(location, is_currently_observed), names_to = "year", values_to = "first_bloom")
+  select(-`30 Year Average 1981-2010`, -Notes) |>
+  rename(location = `Site Name`, is_currently_observed = `Currently Being Observed`) |>
+  pivot_longer(`1953`:`2023`, names_to = "year", values_to = "first_bloom")
 
-# Process full bloom dates
 full_bloom_long <- sakura_full_bloom_dates |>
-  select(-x30_year_average_1981_2010, -notes) |>
-  rename(location = site_name, is_currently_observed = currently_being_observed) |>
-  pivot_longer(cols = -c(location, is_currently_observed), names_to = "year", values_to = "full_bloom")
+  select(-`30 Year Average 1981-2010`, -Notes) |>
+  rename(location = `Site Name`, is_currently_observed = `Currently Being Observed`) |>
+  pivot_longer(`1953`:`2023`, names_to = "year", values_to = "full_bloom")
 
-# Combine and calculate additional columns
 sakura_dates <- first_bloom_long |>
-  full_join(full_bloom_long, by = c("location", "year", "is_currently_observed")) |>
-  mutate(year = as.integer(gsub("x", "", year)),
-         first_bloom_day = as.integer(first_bloom - as.Date(paste(year, "-01-01", sep = ""))),
+  full_join(full_bloom_long, c("location", "year", "is_currently_observed")) |>
+  mutate(year = as.integer(year),
          full_bloom_day = as.integer(full_bloom - as.Date(paste(year, "-01-01", sep = ""))),
          time_to_full_bloom = as.integer(full_bloom - first_bloom))
 ```
 ### Python
 ```{python}
-sakura_first_bloom_dates = pd.read_csv("https://raw.githubusercontent.com/christophscheuch/data-viz-japan/main/data/sakura_first_bloom_dates.csv").clean_names()
-sakura_full_bloom_dates = pd.read_csv("https://raw.githubusercontent.com/christophscheuch/data-viz-japan/main/data/sakura_full_bloom_dates.csv").clean_names()
-  
-# Process first bloom dates
+sakura_first_bloom_dates = ibis.read_csv("data/sakura_first_bloom_dates.csv")
+sakura_full_bloom_dates = ibis.read_csv("data/sakura_full_bloom_dates.csv")
+
 first_bloom_long = (sakura_first_bloom_dates
-  .drop(columns=["30_year_average_1981_2010", "notes"])
-  .rename(
-    columns={"site_name": "location", "currently_being_observed": "is_currently_observed"}
-  )
-  .melt(id_vars=["location", "is_currently_observed"], var_name="year", value_name="first_bloom")
+  .drop("30 Year Average 1981-2010", "Notes")
+  .rename(location = "Site Name", is_currently_observed = "Currently Being Observed")
+  .pivot_longer(s.r["1953":"2023"], names_to = "year", values_to = "first_bloom")
 )
 
-# Process full bloom dates
 full_bloom_long = (sakura_full_bloom_dates
-  .drop(columns=["30_year_average_1981_2010", "notes"])
-  .rename(
-    columns={"site_name": "location", "currently_being_observed": "is_currently_observed"}
-  )
-  .melt(id_vars=["location", "is_currently_observed"], var_name="year", value_name="full_bloom")
+  .drop("30 Year Average 1981-2010", "Notes")
+  .rename(location = "Site Name", is_currently_observed = "Currently Being Observed")
+  .pivot_longer(s.r["1953":"2023"], names_to = "year", values_to = "full_bloom")
 )
 
-# Combine and calculate additional columns
-sakura_dates = (first_bloom_long
-  .merge(full_bloom_long, on=["location", "year", "is_currently_observed"], how="outer")
-  .assign(
-    year=lambda df: df["year"].astype(int),
-    first_bloom=lambda df: pd.to_datetime(df["first_bloom"]),
-    full_bloom=lambda df: pd.to_datetime(df["full_bloom"]),
-    first_bloom_day=lambda df: (df["first_bloom"] - pd.to_datetime(df["year"].astype(str) + "-01-01")).dt.days,
-    full_bloom_day=lambda df: (df["full_bloom"] - pd.to_datetime(df["year"].astype(str) + "-01-01")).dt.days,
-    time_to_full_bloom=lambda df: (df["full_bloom"] - df["first_bloom"]).dt.days
-  )
+sakura_dates = (first_bloom_long.outer_join(full_bloom_long, ["location", "year", "is_currently_observed"])
+  .select(~s.contains("_right"))
+  .mutate(year = _.year.cast("int32"))
+  .mutate(full_bloom_day = (_.full_bloom - ibis.date(_.year.cast('string') + '-01-01')).cast('interval("D")').cast("int32"),
+          time_to_full_bloom = _.full_bloom - _.first_bloom)
 )
 ```
 :::
 
+Sort locations into regions (used ChatGPT for labeling)
+https://en.wikipedia.org/wiki/List_of_regions_of_Japan
 
 ::: {.panel-tabset}
 ### R
 ```{r}
 #| message: false
-# Sort locations into regions (used ChatGPT for labeling)
-# https://en.wikipedia.org/wiki/List_of_regions_of_Japan
-# Location longitudes and latitudes
-# https://github.com/Yuriko-Schumacher/statistical-analysis-of-cherry-blossom-first-bloom-date/tree/main/data
-observatory_locations <- read_csv("https://raw.githubusercontent.com/Yuriko-Schumacher/statistical-analysis-of-cherry-blossom-first-bloom-date/main/data/observatory-locations.csv")
-locations_regions <- read_csv("https://raw.githubusercontent.com/christophscheuch/data-viz-japan/main/data/locations_region.csv") 
+locations_regions <- read_csv("data/locations_region.csv") 
 
 southern_islands <- c("Naze", "Ishigaki Island", "Miyakojima", "Naha", "Minami Daito Island")
 
@@ -138,15 +111,15 @@ locations_regions <- locations_regions |>
 ```
 ### Python
 ```{python}
-observatory_locations = pd.read_csv("https://raw.githubusercontent.com/Yuriko-Schumacher/statistical-analysis-of-cherry-blossom-first-bloom-date/main/data/observatory-locations.csv")
-locations_regions = pd.read_csv("https://raw.githubusercontent.com/christophscheuch/data-viz-japan/main/data/locations_region.csv")
+locations_regions = ibis.read_csv("data/locations_region.csv")
 
-southern_islands = ["Naze", "Ishigaki Island", "Miyakojima", "Naha", "Minami Daito Island"] 
+southern_islands = ["Naze", "Ishigaki Island", "Miyakojima", "Naha", "Minami Daito Island"]
 
-locations_regions = (locations_regions
-  .assign(
-    region = lambda x: x['region'].where(~x['location'].isin(southern_islands), "Ryukyu Islands")
-  )
+locations_regions = locations_regions.mutate(
+    region=ibis.case()
+        .when(_.location.isin(southern_islands), "Ryukyu Islands")
+        .else_(_.region)
+        .end()
 )
 ```
 
@@ -157,7 +130,6 @@ locations_regions = (locations_regions
 ```{r}
 #| message: false
 sakura_data <- sakura_dates |> 
-  left_join(observatory_locations, join_by(location)) |> 
   left_join(locations_regions, join_by(location)) |> 
   filter(is_currently_observed == TRUE &
           year >= 1954 &
@@ -167,9 +139,11 @@ sakura_data <- sakura_dates |>
 ### Python
 ```{python}
 sakura_data = (sakura_dates
-  .merge(observatory_locations, on = 'location', how = 'left')
-  .merge(locations_regions, on = 'location', how = 'left')
-  .query('is_currently_observed == True & year >= 1954 & full_bloom_day.notna() & time_to_full_bloom.notna()')
+  .left_join(locations_regions, "location")
+  .filter([_.is_currently_observed == True, 
+           _.year >= 1954, 
+           _.full_bloom_day.notnull(),
+           _.time_to_full_bloom.notnull()])
 )
 ```
 :::
@@ -223,7 +197,7 @@ breaks_year = range(1950, 2031, 20)
 #| message: false
 sakura_data |> 
   ggplot(aes(x = year, y = full_bloom_day)) +
-  geom_point(color = colors[1], alpha = 0.75, size = 2) +
+  geom_point(color = colors[1], alpha = 0.5, size = 2) +
   geom_smooth(method = lm, se = FALSE,
               color = colors[2], linewidth = 2) +
   facet_wrap(~region, nrow = 1) + 
@@ -243,7 +217,7 @@ sakura_data |>
 #| warning: false
 (ggplot(sakura_data, 
          aes(x = "year", y = "full_bloom_day"))
-  + geom_point(color = colors[0], alpha = 0.75, size = 2)
+  + geom_point(color = colors[0], alpha = 0.5, size = 2)
   + geom_smooth(method = "lm", se = False, 
                 color = colors[1], size = 2)
   + facet_wrap("~region", nrow = 1)
@@ -264,7 +238,7 @@ sakura_data |>
 #| message: false
 sakura_data |>
   ggplot(aes(x = year, y = time_to_full_bloom)) +
-  geom_point(color = colors[1], alpha = 0.75) +
+  geom_point(color = colors[1], alpha = 0.5) +
   geom_smooth(method = lm, se = FALSE,
               color = colors[2], linewidth = 2) +
   facet_wrap(~region, nrow = 1) +
@@ -279,7 +253,7 @@ sakura_data |>
 #| warning: false
 (ggplot(sakura_data, 
         aes(x = "year", y = "time_to_full_bloom"))
-  + geom_point(color = colors[0], alpha = 0.75)
+  + geom_point(color = colors[0], alpha = 0.5)
   + geom_smooth(method = "lm", se = False, 
                 color = colors[1], size = 2)
   + facet_wrap("~region", nrow = 1)
