@@ -197,8 +197,8 @@ ggplot(penguins,
 ```{python}
 (ggplot(penguins, 
        aes(x = "bill_length_mm", y = "flipper_length_mm"))
-  + geom_point(aes(color = "island", shape = "island"))
-  + facet_wrap("~species")
+  + geom_point(aes(color = "species", shape = "species"))
+  + facet_wrap("~island")
 )
 ```
 ::: 

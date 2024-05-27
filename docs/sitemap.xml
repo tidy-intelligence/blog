@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://blog.tidy-intelligence.com/index.html</loc>
-    <lastmod>2024-02-05T08:20:24.875Z</lastmod>
+    <lastmod>2024-02-01T08:23:10.414Z</lastmod>
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/interactive-data-visualization-with-r/index.html</loc>
@@ -18,11 +18,11 @@
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/sakura-visualizations/index.html</loc>
-    <lastmod>2024-05-26T13:30:09.234Z</lastmod>
+    <lastmod>2024-05-27T16:08:13.662Z</lastmod>
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/ggplot2-vs-plotnine/index.html</loc>
-    <lastmod>2024-03-06T20:18:15.249Z</lastmod>
+    <lastmod>2024-05-27T16:08:55.586Z</lastmod>
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-siuba/index.html</loc>

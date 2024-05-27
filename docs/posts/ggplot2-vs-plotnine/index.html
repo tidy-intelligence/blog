@@ -123,6 +123,7 @@ cookieconsent.run({
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 
+
 <link rel="stylesheet" href="../../assets/css/styles-global.css">
 <link rel="stylesheet" href="../../assets/css/styles-blog.css">
 <meta property="og:title" content="Tidy Data Visualization: ggplot2 vs plotnine">
@@ -570,8 +571,8 @@ cookieconsent.run({
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>(ggplot(penguins, </span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>       aes(x <span class="op">=</span> <span class="st">"bill_length_mm"</span>, y <span class="op">=</span> <span class="st">"flipper_length_mm"</span>))</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> geom_point(aes(color <span class="op">=</span> <span class="st">"island"</span>, shape <span class="op">=</span> <span class="st">"island"</span>))</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> facet_wrap(<span class="st">"~species"</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> geom_point(aes(color <span class="op">=</span> <span class="st">"species"</span>, shape <span class="op">=</span> <span class="st">"species"</span>))</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">+</span> facet_wrap(<span class="st">"~island"</span>)</span>
 <span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;Figure Size: (640 x 480)&gt;</code></pre>
@@ -635,40 +636,75 @@ cookieconsent.run({
 
 </main> <!-- /main -->
 <footer class="footer-custom">
+
 <div class="custom-footer">
+
   <div class="copyright">© Christoph Scheuch 2024. All rights reserved.</div>
+
   <a href="https://www.tidy-intelligence.com/impressum.html">Impressum</a>
+
   <a href="#" id="open_preferences_center">Cookie Preferences</a>
+
 </div>
+
 </footer>
 
+
+
 <script>
+
 document.addEventListener("DOMContentLoaded", function() {
+
     var giscusDiv = document.querySelector('.giscus');
+
     var footer = document.querySelector('.footer-custom');
 
+
+
     if (giscusDiv && footer) {
+
         giscusDiv.parentNode.insertBefore(footer, giscusDiv.nextSibling);
+
     }
+
 });
+
 </script>
+
 <script>
+
 document.addEventListener('DOMContentLoaded', function() {
+
     // Create the new link element
+
     var followButton = document.createElement('a');
+
     followButton.href = 'https://www.linkedin.com/in/christophscheuch';
+
     followButton.target = '_blank';
+
     followButton.role = 'button';
+
     followButton.className = 'linkedin-follow-button';
+
     followButton.innerHTML = '<i class="fa-brands fa-linkedin-in"></i> Follow';
 
+
+
     // Find the element that contains the name
+
     var nameElement = document.querySelector('.quarto-title-meta-contents p');
 
+
+
     // Insert the follow button after the name element
+
     nameElement.parentNode.insertBefore(followButton, nameElement.nextSibling);
+
 });
+
 </script>
+
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -1096,7 +1132,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"selector":".lightbox","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","descPosition":"bottom","loop":false,"closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
