@@ -224,7 +224,7 @@ sakura_data |>
 (ggplot(sakura_data, 
          aes(x = "year", y = "days_to_full_bloom"))
   + geom_point(color = colors[0], alpha = 0.5, size = 2)
-  + geom_smooth(method = "lm", se = False, 
+  + geom_smooth(method = "lm", se = False,
                 color = colors[1], size = 2)
   + facet_wrap("~region", nrow = 1)
   + labs(title = "Day of the year with peak cherry tree blossom for regions in Japan since 1954",

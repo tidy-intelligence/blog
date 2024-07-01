@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.553">
+<meta name="generator" content="quarto-1.5.45">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2023-11-24">
 <meta name="description" content="On the importance of tidy data for efficient analysis using the analogy of a well-organized kitchen">
 
-<title>Tidy Data: A Recipe for Efficient Data Analysis</title>
+<title>Tidy Data: A Recipe for Efficient Data Analysis – Tidy Intelligence</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -133,7 +133,7 @@ cookieconsent.run({
     <span class="navbar-title">Tidy Intelligence</span>
     </a>
   </div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -156,7 +156,7 @@ cookieconsent.run({
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
-          <div class="quarto-navbar-tools">
+            <div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -227,7 +227,7 @@ cookieconsent.run({
 <section id="example-for-tidy-data" class="level2">
 <h2 class="anchored" data-anchor-id="example-for-tidy-data">Example for tidy data</h2>
 <p>To illustrate the concept of tidy data in our tidy kitchen, suppose we have a table called <code>ingredient</code> that contains information about all the ingredients that we currently have in our kitchen. It might look as follows:</p>
-<table class="table">
+<table class="caption-top table">
 <thead>
 <tr class="header">
 <th>name</th>
@@ -301,7 +301,7 @@ cookieconsent.run({
 </table>
 <p>Each row refers to a specific ingredient and each column has a dedicated type and meaning. For instance, the column <code>quantity</code> contains information about how much of the ingredient called <code>name</code> we currently have and which <code>unit</code> we use to measure it.</p>
 <p>Similarly, we could have a table just for <code>dairy</code> that might look as follows:</p>
-<table class="table">
+<table class="caption-top table">
 <thead>
 <tr class="header">
 <th>name</th>
@@ -367,7 +367,7 @@ cookieconsent.run({
 <section id="when-colum-headers-are-values-not-variable-names" class="level2">
 <h2 class="anchored" data-anchor-id="when-colum-headers-are-values-not-variable-names">When colum headers are values, not variable names</h2>
 <p>Now let us move to data structures that are untidy. Consider the following variant of our <code>dairy</code> table:</p>
-<table class="table">
+<table class="caption-top table">
 <thead>
 <tr class="header">
 <th>type</th>
@@ -433,7 +433,7 @@ cookieconsent.run({
 <section id="when-multiple-variables-are-stored-in-one-column" class="level2">
 <h2 class="anchored" data-anchor-id="when-multiple-variables-are-stored-in-one-column">When multiple variables are stored in one column</h2>
 <p>Let us consider the following untidy version of our <code>ingredient</code> table.</p>
-<table class="table">
+<table class="caption-top table">
 <thead>
 <tr class="header">
 <th>type</th>
@@ -488,7 +488,7 @@ cookieconsent.run({
 <section id="when-variables-are-stored-in-both-rows-and-columns" class="level2">
 <h2 class="anchored" data-anchor-id="when-variables-are-stored-in-both-rows-and-columns">When variables are stored in both rows and columns</h2>
 <p>Let us extend our kitchen analogy by additionally considering recipes. For simplicity, a recipe just denotes how much of each ingredient is required. The following table contains two variants of a recipe for pancakes:</p>
-<table class="table">
+<table class="caption-top table">
 <thead>
 <tr class="header">
 <th>ingredient</th>
@@ -530,7 +530,7 @@ cookieconsent.run({
 <section id="when-there-are-multiple-types-of-data-in-the-same-column" class="level2">
 <h2 class="anchored" data-anchor-id="when-there-are-multiple-types-of-data-in-the-same-column">When there are multiple types of data in the same column</h2>
 <p>A recipe typically contains information on the required utensils and how much time a step requires. Consider the following table with different types of data:</p>
-<table class="table">
+<table class="caption-top table">
 <thead>
 <tr class="header">
 <th>type</th>
@@ -572,7 +572,7 @@ cookieconsent.run({
 <section id="when-some-data-is-missing" class="level2">
 <h2 class="anchored" data-anchor-id="when-some-data-is-missing">When some data is missing</h2>
 <p>As a last example for untidy data, let us consider the original <code>ingredient</code> table again, but with a few empty cells.</p>
-<table class="table">
+<table class="caption-top table">
 <thead>
 <tr class="header">
 <th>name</th>
@@ -721,18 +721,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -764,7 +753,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp("https:\/\/blog\.tidy-intelligence\.com");
@@ -772,7 +783,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.553">
+<meta name="generator" content="quarto-1.5.45">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2024-01-02">
 <meta name="description" content="A comparison of R’s dplyr and Python’s polars data manipulation packages">
 
-<title>Tidy Data Manipulation: dplyr vs polars</title>
+<title>Tidy Data Manipulation: dplyr vs polars – Tidy Intelligence</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -36,7 +36,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -149,7 +149,7 @@ cookieconsent.run({
     <span class="navbar-title">Tidy Intelligence</span>
     </a>
   </div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -172,7 +172,7 @@ cookieconsent.run({
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
-          <div class="quarto-navbar-tools">
+            <div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -326,7 +326,6 @@ cookieconsent.run({
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    (pl.col(<span class="st">"island"</span>).is_in([<span class="st">"Biscoe"</span>, <span class="st">"Dream"</span>]))) </span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
 <div><style>
 .dataframe > thead > tr,
 .dataframe > tbody > tr {
@@ -335,7 +334,7 @@ cookieconsent.run({
 }
 </style>
 <small>shape: (100, 8)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th">species</th>
@@ -477,7 +476,6 @@ cookieconsent.run({
 </div>
 </div>
 </div>
-</div>
 </section>
 <section id="slice-rows" class="level3">
 <h3 class="anchored" data-anchor-id="slice-rows">Slice rows</h3>
@@ -514,7 +512,6 @@ cookieconsent.run({
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  .<span class="bu">slice</span>(<span class="dv">9</span>, <span class="dv">11</span>)  </span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
 <div><style>
 .dataframe > thead > tr,
 .dataframe > tbody > tr {
@@ -523,7 +520,7 @@ cookieconsent.run({
 }
 </style>
 <small>shape: (11, 8)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th">species</th>
@@ -665,7 +662,6 @@ cookieconsent.run({
 </div>
 </div>
 </div>
-</div>
 </section>
 <section id="arrange-rows" class="level3">
 <h3 class="anchored" data-anchor-id="arrange-rows">Arrange rows</h3>
@@ -703,7 +699,6 @@ cookieconsent.run({
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        descending<span class="op">=</span>[<span class="va">False</span>, <span class="va">True</span>], nulls_last<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
 <div><style>
 .dataframe > thead > tr,
 .dataframe > tbody > tr {
@@ -712,7 +707,7 @@ cookieconsent.run({
 }
 </style>
 <small>shape: (344, 8)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th">species</th>
@@ -854,7 +849,6 @@ cookieconsent.run({
 </div>
 </div>
 </div>
-</div>
 </section>
 </section>
 <section id="work-with-columns" class="level2">
@@ -893,7 +887,6 @@ cookieconsent.run({
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  .select(pl.col(<span class="st">"bill_length_mm"</span>), pl.col(<span class="st">"sex"</span>))</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
 <div><style>
 .dataframe > thead > tr,
 .dataframe > tbody > tr {
@@ -902,7 +895,7 @@ cookieconsent.run({
 }
 </style>
 <small>shape: (344, 2)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th">bill_length_mm</th>
@@ -966,7 +959,6 @@ cookieconsent.run({
 </div>
 </div>
 </div>
-</div>
 </section>
 <section id="rename-columns" class="level3">
 <h3 class="anchored" data-anchor-id="rename-columns">Rename columns</h3>
@@ -1005,7 +997,6 @@ cookieconsent.run({
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>           <span class="st">"bill_depth_mm"</span> : <span class="st">"bill_depth"</span>})</span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
 <div><style>
 .dataframe > thead > tr,
 .dataframe > tbody > tr {
@@ -1014,7 +1005,7 @@ cookieconsent.run({
 }
 </style>
 <small>shape: (344, 8)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th">species</th>
@@ -1156,7 +1147,6 @@ cookieconsent.run({
 </div>
 </div>
 </div>
-</div>
 </section>
 <section id="mutate-columns" class="level3">
 <h3 class="anchored" data-anchor-id="mutate-columns">Mutate columns</h3>
@@ -1199,7 +1189,6 @@ cookieconsent.run({
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>          pl.col(<span class="st">"bill_length"</span>), pl.col(<span class="st">"bill_length_squared"</span>))</span>
 <span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
 <div><style>
 .dataframe > thead > tr,
 .dataframe > tbody > tr {
@@ -1208,7 +1197,7 @@ cookieconsent.run({
 }
 </style>
 <small>shape: (344, 4)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th">ones</th>
@@ -1298,7 +1287,6 @@ cookieconsent.run({
 </div>
 </div>
 </div>
-</div>
 </section>
 <section id="relocate-columns" class="level3">
 <h3 class="anchored" data-anchor-id="relocate-columns">Relocate columns</h3>
@@ -1338,7 +1326,6 @@ cookieconsent.run({
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>          pl.col(<span class="st">"species"</span>), pl.col(<span class="st">"bill_length_mm"</span>), pl.col(<span class="st">"sex"</span>))</span>
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
 <div><style>
 .dataframe > thead > tr,
 .dataframe > tbody > tr {
@@ -1347,7 +1334,7 @@ cookieconsent.run({
 }
 </style>
 <small>shape: (344, 7)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th">island</th>
@@ -1476,7 +1463,6 @@ cookieconsent.run({
 </div>
 </div>
 </div>
-</div>
 </section>
 </section>
 <section id="work-with-groups-of-rows" class="level2">
@@ -1511,7 +1497,6 @@ cookieconsent.run({
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  .sort(<span class="st">"island"</span>)</span>
 <span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
 <div><style>
 .dataframe > thead > tr,
 .dataframe > tbody > tr {
@@ -1520,7 +1505,7 @@ cookieconsent.run({
 }
 </style>
 <small>shape: (3, 2)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th">island</th>
@@ -1546,7 +1531,6 @@ cookieconsent.run({
 </tr>
 </tbody>
 </table>
-</div>
 </div>
 </div>
 </div>
@@ -1596,7 +1580,6 @@ cookieconsent.run({
 <span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  .sort(<span class="st">"island"</span>)</span>
 <span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
 <div><style>
 .dataframe > thead > tr,
 .dataframe > tbody > tr {
@@ -1605,7 +1588,7 @@ cookieconsent.run({
 }
 </style>
 <small>shape: (3, 6)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th">island</th>
@@ -1651,7 +1634,6 @@ cookieconsent.run({
 </tr>
 </tbody>
 </table>
-</div>
 </div>
 </div>
 </div>
@@ -1744,18 +1726,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -1787,7 +1758,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp("https:\/\/blog\.tidy-intelligence\.com");
@@ -1795,7 +1788,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
