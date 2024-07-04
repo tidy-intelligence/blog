@@ -95,7 +95,8 @@ sakura_dates = (first_bloom_long.outer_join(full_bloom_long, ["location", "year"
   .select(~s.contains("_right"))
   .mutate(year = _.year.cast("int32"))
   .mutate(days_to_full_bloom = (_.full_bloom - ibis.date(_.year.cast('string') + '-01-01')).cast('interval("D")').cast("int32"),
-          days_from_first_to_full_bloom = _.full_bloom - _.first_bloom)
+          days_from_first_to_full_bloom=(_.full_bloom - _.first_bloom).cast('interval("D")').cast("int32")
+    )
 )
 ```
 :::
@@ -159,7 +160,7 @@ I set the theme and colors for the figures below on a global level. Note that se
 ::: {.panel-tabset}
 ### R
 ```{r}
-theme_set(theme_classic(base_size = 16, base_family = "Palatino")) 
+theme_set(theme_classic(base_size = 16, base_family = "SF Pro Light")) 
 
 theme_update(
   panel.grid.minor = element_blank(),
@@ -171,12 +172,22 @@ theme_update(
   axis.line = element_blank()
 )
 
-colors <- c("#ffb7c5", "#b7c5ff", "#c5ffb7")
+colors <- c("#ffb7c5", "#A0522D")
 breaks_year <- seq(1950, 2030, by = 20)
 ```
 ### Python
 ```{python}
-theme_set(theme_classic(base_size = 16, base_family = "Palatino") + theme(figure_size = (12, 8)))
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+
+fpath = "/Library/Fonts/SF-Pro.ttf"
+
+fm.fontManager.addfont(fpath)
+prop = fm.FontProperties(fname=fpath)
+font_name = prop.get_name()
+plt.rcParams["font.family"] = font_name
+
+theme_set(theme_classic(base_size = 16) + theme(figure_size = (12, 8)))
 
 theme_update(
   panel_grid_minor = element_blank(),
@@ -188,7 +199,7 @@ theme_update(
   axis_line = element_blank()
 )
 
-colors = ["#ffb7c5", "#b7c5ff", "#c5ffb7"]
+colors = ["#ffb7c5", "#A0522D"]
 breaks_year = range(1950, 2031, 20)
 ```
 :::
@@ -207,7 +218,7 @@ sakura_data |>
   geom_smooth(method = lm, se = FALSE,
               color = colors[2], linewidth = 2) +
   facet_wrap(~region, nrow = 1) + 
-  labs(title = "Day of the year with peak cherry tree blossom for regions in Japan since 1953",
+  labs(title = "Day of the year with peak cherry tree blossom for regions in Japan since 1954",
        subtitle = "Cities in northern regions Hokkaidō and Honshū exhibit earlier full blooms, while Ryukyu Islands even later",
        x = NULL, y = NULL) +
   scale_x_continuous(breaks = breaks_year) +
@@ -216,7 +227,7 @@ sakura_data |>
 
 ### Python
 
-`linewidth` is still `size` in plotnine
+Note that `linewidth` is still `size` in plotnine
 
 ```{python}
 #| message: false
