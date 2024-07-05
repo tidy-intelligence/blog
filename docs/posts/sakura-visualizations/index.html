@@ -244,7 +244,7 @@ cookieconsent.run({
 
 <p>While I was traveling Japan earlier this year, I had the pleasure to experience sakura, the famous Japanese cherry blossoms. These blossoms are highly significant in Japanese culture, symbolizing the transient nature of life due to their brief blooming period. Sakura typically bloom in spring, from late March to early May, depending on the region. The blossoming of cherry trees is celebrated with hanami, a traditional custom of enjoying the beauty of flowers, often involving picnics under the blooming trees.</p>
 <p>Climate change is causing sakura to bloom earlier and for shorter periods due to rising temperatures and shifting phenological patterns. This disrupts traditional hanami festivals, affects pollination success, and leads to regional variations in bloom timing, with urban areas often experiencing more pronounced shifts.</p>
-<p>In this blog post, I visualize data with respect to cherry blossom blooming periods over regions and time. I provide a comprehensive guide on loading and preparing the corresponding data for analysis using both R and Python. The analysis spans from 1953 to 2023, leveraging the <code>tidyverse</code> family of packages for R and the <code>ibis-framework</code> for Python, complemented by <code>plotnine</code> for visualizations. The primary focus is to transform and merge datasets detailing the first and full bloom dates of cherry blossoms, preparing them for visualization.</p>
+<p>In this blog post, I visualize data with respect to cherry blossom blooming periods over regions and time. I provide a comprehensive guide on loading and preparing the corresponding data for analysis using both R and Python. The analysis spans from 1953 to 2023, leveraging the <code>tidyverse</code> family of packages for R and the <code>ibis-framework</code> for Python, complemented by <code>plotnine</code> for visualizations. I draw some inspiration from <a href="https://yuriko-schumacher.github.io/statistical-analysis-of-cherry-blossom-first-bloom-date/">this blog post</a> by Yuriko Schuhmacher. My primary focus is to transform and merge datasets detailing the first and full bloom dates of cherry blossoms and visualizing them by region.</p>
 <section id="loading-packages-and-data" class="level2">
 <h2 class="anchored" data-anchor-id="loading-packages-and-data">Loading packages and data</h2>
 <p>For the R version, I rely on the <code>tidyverse</code> family of packages and list the required packages explicitly. For the Python version, I use <code>ibis-framework</code> for data manipulation (see my post on <a href="../../posts/dplyr-vs-ibis/index.html">dplyr-vs-ibis</a> for more information) and <code>plotnine</code> for visualizations.</p>
@@ -356,7 +356,7 @@ cookieconsent.run({
 </div>
 </div>
 </div>
-<p>Before we move on to visualizations, let’s add the regions to the sakura dates and keep only regions that are still currently observed and with valid full bloom days and days between first and full bloom. In addition, I drop year 1953 to have exactly 70 years of data.</p>
+<p>Before we move on to visualizations, let’s add the regions to the sakura dates and keep only regions that are still currently observed and with valid full bloom days and days between first and full bloom. In addition, I drop year 1953 to have exactly 70 years of data. Finally, I want to order the regions from north to south.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
@@ -367,10 +367,14 @@ cookieconsent.run({
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(is_currently_observed <span class="sc">==</span> <span class="cn">TRUE</span> <span class="sc">&amp;</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>          year <span class="sc">&gt;=</span> <span class="dv">1954</span> <span class="sc">&amp;</span></span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>          <span class="sc">!</span><span class="fu">is.na</span>(days_to_full_bloom) <span class="sc">&amp;</span> </span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>          <span class="sc">!</span><span class="fu">is.na</span>(days_from_first_to_full_bloom))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>          <span class="sc">!</span><span class="fu">is.na</span>(days_from_first_to_full_bloom))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>sakura_data <span class="ot">&lt;-</span> sakura_data <span class="sc">|&gt;</span> </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">region =</span> <span class="fu">factor</span>(region, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Hokkaidō"</span>, <span class="st">"Honshū"</span>, <span class="st">"Kyūshū"</span>, <span class="st">"Shikoku"</span>, <span class="st">"Ryukyu Islands"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<p>Since <code>ibis-framework</code> does not support factor variables, we have to use <code>pandas</code> here.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sakura_data <span class="op">=</span> (sakura_dates</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  .left_join(locations_regions, <span class="st">"location"</span>)</span>
@@ -378,7 +382,11 @@ cookieconsent.run({
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>           _.year <span class="op">&gt;=</span> <span class="dv">1954</span>, </span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>           _.days_to_full_bloom.notnull(),</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>           _.days_from_first_to_full_bloom.notnull()])</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>sakura_data <span class="op">=</span> sakura_data.to_pandas()</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>sakura_data[<span class="st">"region"</span>] <span class="op">=</span> pd.Categorical(sakura_data[<span class="st">"region"</span>], categories <span class="op">=</span> [<span class="st">"Hokkaidō"</span>, <span class="st">"Honshū"</span>, <span class="st">"Kyūshū"</span>, <span class="st">"Shikoku"</span>, <span class="st">"Ryukyu Islands"</span>], ordered <span class="op">=</span> <span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -528,6 +536,7 @@ cookieconsent.run({
 </div>
 </div>
 <div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<p>Note that point shape in <code>plotnine</code> are according to <code>matplotlib.markers</code>, see the list <a href="https://matplotlib.org/stable/api/markers_api.html">here</a>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>(ggplot(sakura_data, </span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>        aes(x <span class="op">=</span> <span class="st">"year"</span>, y <span class="op">=</span> <span class="st">"days_from_first_to_full_bloom"</span>))</span>
@@ -1070,7 +1079,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","openEffect":"zoom","selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","closeEffect":"zoom","loop":false,"openEffect":"zoom"});
 (function() {
   let previousOnload = window.onload;
   window.onload = () => {

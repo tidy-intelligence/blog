@@ -22,7 +22,7 @@ While I was traveling Japan earlier this year, I had the pleasure to experience 
 
 Climate change is causing sakura to bloom earlier and for shorter periods due to rising temperatures and shifting phenological patterns. This disrupts traditional hanami festivals, affects pollination success, and leads to regional variations in bloom timing, with urban areas often experiencing more pronounced shifts.
 
-In this blog post, I visualize data with respect to cherry blossom blooming periods over regions and time. I provide a comprehensive guide on loading and preparing the corresponding data for analysis using both R and Python. The analysis spans from 1953 to 2023, leveraging the `tidyverse` family of packages for R and the `ibis-framework` for Python, complemented by `plotnine` for visualizations. The primary focus is to transform and merge datasets detailing the first and full bloom dates of cherry blossoms, preparing them for visualization.
+In this blog post, I visualize data with respect to cherry blossom blooming periods over regions and time. I provide a comprehensive guide on loading and preparing the corresponding data for analysis using both R and Python. The analysis spans from 1953 to 2023, leveraging the `tidyverse` family of packages for R and the `ibis-framework` for Python, complemented by `plotnine` for visualizations. I draw some inspiration from [this blog post](https://yuriko-schumacher.github.io/statistical-analysis-of-cherry-blossom-first-bloom-date/) by Yuriko Schuhmacher. My primary focus is to transform and merge datasets detailing the first and full bloom dates of cherry blossoms and visualizing them by region.
 
 ## Loading packages and data
 
@@ -128,7 +128,7 @@ locations_regions = (locations_regions
 ```
 :::
 
-Before we move on to visualizations, let's add the regions to the sakura dates and keep only regions that are still currently observed and with valid full bloom days and days between first and full bloom. In addition, I drop year 1953 to have exactly 70 years of data. 
+Before we move on to visualizations, let's add the regions to the sakura dates and keep only regions that are still currently observed and with valid full bloom days and days between first and full bloom. In addition, I drop year 1953 to have exactly 70 years of data. Finally, I want to order the regions from north to south. 
 
 ::: {.panel-tabset}
 ### R
@@ -140,8 +140,13 @@ sakura_data <- sakura_dates |>
           year >= 1954 &
           !is.na(days_to_full_bloom) & 
           !is.na(days_from_first_to_full_bloom))
+
+sakura_data <- sakura_data |> 
+  mutate(region = factor(region, levels = c("Hokkaidō", "Honshū", "Kyūshū", "Shikoku", "Ryukyu Islands")))
 ```
 ### Python
+
+Since `ibis-framework` does not support factor variables, we have to use `pandas` here.
 ```{python}
 sakura_data = (sakura_dates
   .left_join(locations_regions, "location")
@@ -150,6 +155,10 @@ sakura_data = (sakura_dates
            _.days_to_full_bloom.notnull(),
            _.days_from_first_to_full_bloom.notnull()])
 )
+
+import pandas as pd
+sakura_data = sakura_data.to_pandas()
+sakura_data["region"] = pd.Categorical(sakura_data["region"], categories = ["Hokkaidō", "Honshū", "Kyūshū", "Shikoku", "Ryukyu Islands"], ordered = True)
 ```
 :::
 
