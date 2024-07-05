@@ -165,6 +165,7 @@ theme_set(theme_classic(base_size = 16, base_family = "SF Pro Light"))
 theme_update(
   panel.grid.minor = element_blank(),
   panel.grid.major = element_blank(),
+  strip.text = element_text(size = 16),
   strip.background = element_blank(),
   axis.title.x = element_blank(), 
   axis.title.y = element_blank(),
@@ -192,6 +193,7 @@ theme_set(theme_classic(base_size = 16) + theme(figure_size = (12, 8)))
 theme_update(
   panel_grid_minor = element_blank(),
   panel_grid_major = element_blank(),
+  strip_text = element_text(size = 16),
   strip_background = element_blank(),
   axis_title_x = element_blank(),
   axis_title_y = element_blank(),
@@ -215,7 +217,7 @@ The first figure visually represents the full bloom days of cherry blossoms acro
 sakura_data |> 
   ggplot(aes(x = year, y = days_to_full_bloom)) +
   geom_point(color = colors[1], alpha = 0.5, size = 2) +
-  geom_smooth(method = lm, se = FALSE,
+  geom_smooth(method = "loess", se = FALSE,
               color = colors[2], linewidth = 2) +
   facet_wrap(~region, nrow = 1) + 
   labs(title = "Day of the year with peak cherry tree blossom for regions in Japan since 1954",
@@ -235,7 +237,7 @@ Note that `linewidth` is still `size` in plotnine
 (ggplot(sakura_data, 
          aes(x = "year", y = "days_to_full_bloom"))
   + geom_point(color = colors[0], alpha = 0.5, size = 2)
-  + geom_smooth(method = "lm", se = False,
+  + geom_smooth(method = "loess", se = False,
                 color = colors[1], size = 2)
   + facet_wrap("~region", nrow = 1)
   + labs(title = "Day of the year with peak cherry tree blossom for regions in Japan since 1954",
@@ -258,7 +260,7 @@ The next figure illustrates the duration between the initial opening of cherry b
 sakura_data |>
   ggplot(aes(x = year, y = days_from_first_to_full_bloom)) +
   geom_point(color = colors[1], alpha = 0.5) +
-  geom_smooth(method = lm, se = FALSE,
+  geom_smooth(method = "loess", se = FALSE,
               color = colors[2], linewidth = 2) +
   facet_wrap(~region, nrow = 1) +
   labs(title = "Days from blossoms opening to peak bloom for regions in Japan since 1954",
@@ -273,7 +275,7 @@ sakura_data |>
 (ggplot(sakura_data, 
         aes(x = "year", y = "days_from_first_to_full_bloom"))
   + geom_point(color = colors[0], alpha = 0.5)
-  + geom_smooth(method = "lm", se = False, 
+  + geom_smooth(method = "loess", se = False, 
                 color = colors[1], size = 2)
   + facet_wrap("~region", nrow = 1)
   + labs(title = "Days from blossoms opening to peak bloom for regions in Japan since 1954",
