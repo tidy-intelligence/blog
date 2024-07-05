@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Christoph Scheuch">
-<meta name="dcterms.date" content="2024-05-27">
+<meta name="dcterms.date" content="2024-07-05">
 <meta name="description" content="Visualizing first and full cherry blossom bloom dates for Japanese regions using R and Python">
 
 <title>Sakura Visualizations – Tidy Intelligence</title>
@@ -230,7 +230,7 @@ cookieconsent.run({
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 27, 2024</p>
+      <p class="date">July 5, 2024</p>
     </div>
   </div>
   
@@ -567,6 +567,7 @@ cookieconsent.run({
 <section id="concluding-remarks" class="level2">
 <h2 class="anchored" data-anchor-id="concluding-remarks">Concluding remarks</h2>
 <p>The post includes detailed code snippets for both R and Python, ensuring that readers can follow along regardless of their preferred programming language. I think it is remarkable how similar R and Python syntax can be these days.</p>
+<p>It would be great to include the daily average temperature in each year as an additional variable for the visualizations (e.g.&nbsp;color intensity of point color) to tackle the question of missing variables that explain the changes. However, for the purpose of this post, it seemed to much work to download the regional temperatures using the <a href="https://www.data.jma.go.jp/risk/obsdl/index.php">unintuitive and restrictive interface</a> of the Japanese Meterological Agency (JMA). If anybody can point me to an alternative data source, I’m happy to include the temperature changes as well!</p>
 <section id="related-articles">
    <h2 class="anchored">Related articles</h2>
     <div class="articles-container">
@@ -1079,7 +1080,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","closeEffect":"zoom","loop":false,"openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","openEffect":"zoom","descPosition":"bottom","loop":false});
 (function() {
   let previousOnload = window.onload;
   window.onload = () => {

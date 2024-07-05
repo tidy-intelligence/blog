@@ -4,7 +4,7 @@ description: "Visualizing first and full cherry blossom bloom dates for Japanese
 metadata:
   pagetitle: "Sakura Visualizations"
 author: "Christoph Scheuch"
-date: "2024-05-27" 
+date: "2024-07-05" 
 image: thumbnail.png
 image-alt: A beautiful sakura tree in full bloom, covered with vibrant pink cherry blossoms. The tree stands alone in a serene park with green grass and a clear blue sky in the background. Soft petals are falling gently to the ground, creating a picturesque and tranquil scene. The sunlight filters through the blossoms, casting a soft glow around the tree. Created with DALL-E.
 categories: 
@@ -303,6 +303,8 @@ Note that point shape in `plotnine` are according to `matplotlib.markers`, see t
 ## Concluding remarks
 
 The post includes detailed code snippets for both R and Python, ensuring that readers can follow along regardless of their preferred programming language. I think it is remarkable how similar R and Python syntax can be these days. 
+
+It would be great to include the daily average temperature in each year as an additional variable for the visualizations (e.g. color intensity of point color) to tackle the question of missing variables that explain the changes. However, for the purpose of this post, it seemed to much work to download the regional temperatures using the [unintuitive and restrictive interface](https://www.data.jma.go.jp/risk/obsdl/index.php) of the Japanese Meterological Agency (JMA). If anybody can point me to an alternative data source, I'm happy to include the temperature changes as well!
 
 ```{=html}
 <section id="related-articles">
