@@ -160,7 +160,7 @@ I set the theme and colors for the figures below on a global level. Note that se
 ::: {.panel-tabset}
 ### R
 ```{r}
-theme_set(theme_classic(base_size = 16, base_family = "SF Pro Light")) 
+theme_set(theme_classic(base_size = 16, base_family = "SF Pro")) 
 
 theme_update(
   panel.grid.minor = element_blank(),
@@ -177,6 +177,9 @@ colors <- c("#ffb7c5", "#A0522D")
 breaks_year <- seq(1950, 2030, by = 20)
 ```
 ### Python
+
+Since `plotnine` is built on `matplotlib`, setting the font family can be done more flexibly and consistently using the latter's font manager. 
+
 ```{python}
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
@@ -184,7 +187,7 @@ import matplotlib.font_manager as fm
 fpath = "/Library/Fonts/SF-Pro.ttf"
 
 fm.fontManager.addfont(fpath)
-prop = fm.FontProperties(fname=fpath)
+prop = fm.FontProperties(fname = fpath)
 font_name = prop.get_name()
 plt.rcParams["font.family"] = font_name
 
@@ -216,7 +219,7 @@ The first figure visually represents the full bloom days of cherry blossoms acro
 #| message: false
 sakura_data |> 
   ggplot(aes(x = year, y = days_to_full_bloom)) +
-  geom_point(color = colors[1], alpha = 0.5, size = 2) +
+  geom_point(color = colors[1], alpha = 0.9, size = 4, shape = 21, fill = "white") +
   geom_smooth(method = "loess", se = FALSE,
               color = colors[2], linewidth = 2) +
   facet_wrap(~region, nrow = 1) + 
@@ -229,14 +232,14 @@ sakura_data |>
 
 ### Python
 
-Note that `linewidth` is still `size` in plotnine
+Note that `linewidth` is still `size` in plotnine.
 
 ```{python}
 #| message: false
 #| warning: false
 (ggplot(sakura_data, 
          aes(x = "year", y = "days_to_full_bloom"))
-  + geom_point(color = colors[0], alpha = 0.5, size = 2)
+  + geom_point(color = colors[0], alpha = 0.9, size = 4, shape = "o", fill = "white")
   + geom_smooth(method = "loess", se = False,
                 color = colors[1], size = 2)
   + facet_wrap("~region", nrow = 1)
@@ -259,7 +262,7 @@ The next figure illustrates the duration between the initial opening of cherry b
 #| message: false
 sakura_data |>
   ggplot(aes(x = year, y = days_from_first_to_full_bloom)) +
-  geom_point(color = colors[1], alpha = 0.5) +
+  geom_point(color = colors[1], alpha = 0.9, size = 4, shape = 21, fill = "white") +
   geom_smooth(method = "loess", se = FALSE,
               color = colors[2], linewidth = 2) +
   facet_wrap(~region, nrow = 1) +
@@ -269,12 +272,14 @@ sakura_data |>
   scale_x_continuous(breaks = breaks_year)
 ```
 ### Python
+
+Note that point shape in `plotnine` are according to `matplotlib.markers`, see the list [here](https://matplotlib.org/stable/api/markers_api.html).
 ```{python}
 #| message: false
 #| warning: false
 (ggplot(sakura_data, 
         aes(x = "year", y = "days_from_first_to_full_bloom"))
-  + geom_point(color = colors[0], alpha = 0.5)
+  + geom_point(color = colors[0], alpha = 0.9, size = 4, shape = "o", fill = "white")
   + geom_smooth(method = "loess", se = False, 
                 color = colors[1], size = 2)
   + facet_wrap("~region", nrow = 1)
