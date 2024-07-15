@@ -1,6 +1,6 @@
 ---
 metadata:
-  pagetitle: "Tidy Intelligence Blog"
+  pagetitle: "Tidily Blog"
   description-meta: "Blog posts about tidy data science with R, Python, and Julia."
 listing:
   contents: posts

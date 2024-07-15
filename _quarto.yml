@@ -8,7 +8,7 @@ link-citations: true
 links-as-notes: true
 
 website:
-  title: "Tidy Intelligence"
+  title: "Tidily"
   description: "Let your data spark joy!"
   site-url: https://blog.tidy-intelligence.com
   open-graph: true
