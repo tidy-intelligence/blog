@@ -30,6 +30,8 @@ website:
     left:
       - text: "Home"
         url: https://www.tidy-intelligence.com/
+      - text: "Apps"
+        url: https://apps.tidy-intelligence.com/
       - text: "Blog"
         file: index.qmd
       - text: "Contact"
