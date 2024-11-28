@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Christoph Scheuch">
+<meta name="dcterms.date" content="2024-11-28">
+<meta name="description" content="Explore external debt relationships with interactive networks in R">
+
+<title>International External Debt Network – Tidy Intelligence</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<link href="../../assets/img/favicon.ico" rel="icon">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-YQF6MZY01S"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-YQF6MZY01S', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"interstitial",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+<style>html{ scroll-behavior: smooth; }</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="../../site_libs/vis-9.1.0/vis-network.min.css" rel="stylesheet">
+<script src="../../site_libs/vis-9.1.0/vis-network.min.js"></script>
+<script src="../../site_libs/visNetwork-binding-2.1.2/visNetwork.js"></script>
+
+
+<link rel="stylesheet" href="../../assets/css/styles-global.css">
+<link rel="stylesheet" href="../../assets/css/styles-blog.css">
+<meta property="og:title" content="International External Debt Network">
+<meta property="og:description" content="Explore external debt relationships with interactive networks in R">
+<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/international-external-debt-network/thumbnail.png">
+<meta property="og:site_name" content="Tidy Intelligence">
+<meta property="og:image:height" content="1024">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:alt" content="A whimsical and friendly spider with expressive eyes sits on a desk in a bright and inviting office. The spider is focused on a computer screen displaying a colorful network visualization. Sunlight streams through large windows, casting a warm glow over the room. The office is decorated with vibrant green plants in terracotta pots, neatly arranged colorful books on shelves, and cozy furnishings, creating a lively and welcoming atmosphere. Created with DALL-E.">
+<meta name="twitter:title" content="International External Debt Network">
+<meta name="twitter:description" content="Explore external debt relationships with interactive networks in R">
+<meta name="twitter:image" content="https://blog.tidy-intelligence.com/posts/international-external-debt-network/thumbnail.png">
+<meta name="twitter:image-height" content="1024">
+<meta name="twitter:image-width" content="1024">
+<meta name="twitter:image:alt" content="A whimsical and friendly spider with expressive eyes sits on a desk in a bright and inviting office. The spider is focused on a computer screen displaying a colorful network visualization. Sunlight streams through large windows, casting a warm glow over the room. The office is decorated with vibrant green plants in terracotta pots, neatly arranged colorful books on shelves, and cozy furnishings, creating a lively and welcoming atmosphere. Created with DALL-E.">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="https://www.tidy-intelligence.com">
+    <span class="navbar-title">Tidy Intelligence</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.tidy-intelligence.com/"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://apps.tidy-intelligence.com/"> 
+<span class="menu-text">Apps</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.tidy-intelligence.com/contact.html"> 
+<span class="menu-text">Contact</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.etsy.com/shop/tidyswag/?etsrc=sdt&amp;utm_source=tidy-intelligence.com"> 
+<span class="menu-text">Swag</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link active" data-scroll-target="#data-preparation">Data Preparation</a></li>
+  <li><a href="#debitor-centric-view" id="toc-debitor-centric-view" class="nav-link" data-scroll-target="#debitor-centric-view">Debitor-Centric View</a></li>
+  <li><a href="#creditor-centric-view" id="toc-creditor-centric-view" class="nav-link" data-scroll-target="#creditor-centric-view">Creditor-Centric View</a></li>
+  <li><a href="#concluding-remarks" id="toc-concluding-remarks" class="nav-link" data-scroll-target="#concluding-remarks">Concluding Remarks</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Global Debt Networks</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">R</div>
+    <div class="quarto-category">Visualization</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Explore external debt relationships with interactive networks in R
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Christoph Scheuch </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 28, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>In this blog post, I visualize external debt using interactive networks with R. Understanding external debt flows between countries and creditors is a crucial aspect in analyzing global economic relationships. Using tools such as the recently released <a href="https://teal-insights.github.io/r-wbids/"><code>wbids</code></a> package to download data from the World Bank International Debt statistics and <a href="https://cran.r-project.org/web/packages/visNetwork/vignettes/Introduction-to-visNetwork.html"><code>visNetwork</code></a> for visualization, we can uncover interesting insights.</p>
+<p>This post relies on the following packages.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Due to a bug in <code>scales::cut_short_scale()</code>, I installed the development version of <code>scales</code> from <a href="https://github.com/r-lib/scales">GitHub</a>.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wbids)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(visNetwork)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="data-preparation" class="level2">
+<h2 class="anchored" data-anchor-id="data-preparation">Data Preparation</h2>
+<p>The <code>wbids</code> package provides easy access to download debtor-creditor relationships for all available countries. Here, we pull external debt data (IDS series “DT.DOD.DPPG.CD”) for 2022 using <code>ids_get()</code> and enrich it with geographical and counterpart details. Note that we drop “World” and “Region” counterparts because we rather want to look at their individual components.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>geographies <span class="ot">&lt;-</span> <span class="fu">ids_list_geographies</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(geography_type <span class="sc">!=</span> <span class="st">"Region"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>external_debt_raw <span class="ot">&lt;-</span> geographies<span class="sc">$</span>geography_id <span class="sc">|&gt;</span> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_df</span>(\(x) <span class="fu">ids_get</span>(x, <span class="st">"DT.DOD.DPPG.CD"</span>, <span class="st">"all"</span>, <span class="dv">2022</span>, <span class="dv">2022</span>))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>counterparts <span class="ot">&lt;-</span> <span class="fu">ids_list_counterparts</span>()</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>external_debt <span class="ot">&lt;-</span> external_debt_raw <span class="sc">|&gt;</span> </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(value <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(geographies, <span class="fu">join_by</span>(geography_id)) <span class="sc">|&gt;</span> </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(counterparts, <span class="fu">join_by</span>(counterpart_id)) <span class="sc">|&gt;</span> </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>counterpart_name <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"World"</span>, <span class="st">"Region"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">from =</span> geography_name, <span class="at">to =</span> counterpart_name, value, counterpart_type) <span class="sc">|&gt;</span> </span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">to =</span> <span class="fu">str_squish</span>(to))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="debitor-centric-view" class="level2">
+<h2 class="anchored" data-anchor-id="debitor-centric-view">Debitor-Centric View</h2>
+<p>For now, let’s narrow our focus to specific debtor countries. This step allows us to examine the relationships from a debtor’s perspective, understanding how much debt they owe and to whom. In the following, we focus on Nigeria and its neighbor Cameroon.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>selected_geographies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Nigeria"</span>, <span class="st">"Cameroon"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>external_debt_sub <span class="ot">&lt;-</span> external_debt <span class="sc">|&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(from <span class="sc">%in%</span> selected_geographies) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>visNetwork</code> requires two data frames: <code>nodes</code> and <code>edges</code>, each with corresponding properties. To enhance the visualization, we create helper functions for formatting node titles and labels:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>format_title <span class="ot">&lt;-</span> <span class="cf">function</span>(id, value, type) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  prefix <span class="ot">&lt;-</span> <span class="fu">if_else</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    type <span class="sc">==</span> <span class="st">"debtor"</span>, <span class="st">"&lt;br&gt;Received: "</span>, <span class="st">"&lt;br&gt;Provided: "</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  debt <span class="ot">&lt;-</span> scales<span class="sc">::</span><span class="fu">label_number</span>(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">accuracy =</span> <span class="fl">0.1</span>, <span class="at">scale_cut =</span> scales<span class="sc">::</span><span class="fu">cut_short_scale</span>()</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  )(value)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  title <span class="ot">&lt;-</span> <span class="fu">str_c</span>(</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    id, prefix, debt, <span class="st">" USD"</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  title</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>format_label <span class="ot">&lt;-</span> <span class="cf">function</span>(id) {</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  label <span class="ot">&lt;-</span> <span class="fu">str_wrap</span>(id, <span class="at">width =</span> <span class="dv">20</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  label</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We now construct the nodes and edges for the network. Nodes represent entities (countries or institutions), and edges represent debt relationships. The data looks like this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>create_nodes <span class="ot">&lt;-</span> <span class="cf">function</span>(external_debt_sub) {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  total_debt <span class="ot">&lt;-</span> <span class="fu">sum</span>(external_debt_sub<span class="sc">$</span>value)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  nodes <span class="ot">&lt;-</span> external_debt_sub <span class="sc">|&gt;</span> </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(<span class="at">id =</span> from, <span class="at">type =</span> <span class="st">"debtor"</span>, <span class="at">color =</span> <span class="st">"Country"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">value =</span> <span class="fu">sum</span>(value),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>      external_debt_sub <span class="sc">|&gt;</span> </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">group_by</span>(<span class="at">id =</span> to, <span class="at">type =</span> <span class="st">"creditor"</span>, <span class="at">color =</span> counterpart_type) <span class="sc">|&gt;</span> </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">summarize</span>(<span class="at">value =</span> <span class="fu">sum</span>(value),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> </span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">format_title</span>(id, value, type),</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">format_label</span>(id),</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> value <span class="sc">/</span> total_debt,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        color <span class="sc">==</span> <span class="st">"Other"</span> <span class="sc">~</span> <span class="st">"#C46231"</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        color <span class="sc">==</span> <span class="st">"Country"</span> <span class="sc">~</span> <span class="st">"#3193C4"</span>,</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        color <span class="sc">==</span> <span class="st">"Global MDBs"</span> <span class="sc">~</span> <span class="st">"#AB31C4"</span>,</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>        color <span class="sc">==</span> <span class="st">"Bondholders"</span> <span class="sc">~</span> <span class="st">"#4AC431"</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>  nodes</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>nodes <span class="ot">&lt;-</span> <span class="fu">create_nodes</span>(external_debt_sub)</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>nodes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 33 × 7
+   id                                    type  color   value title label    size
+   &lt;chr&gt;                                 &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;
+ 1 Cameroon                              debt… #319… 1.18e10 Came… "Cam… 2.28e-1
+ 2 Nigeria                               debt… #319… 4.00e10 Nige… "Nig… 7.72e-1
+ 3 African Dev. Bank                     cred… #C46… 4.18e 9 Afri… "Afr… 8.07e-2
+ 4 African Export-Import Bank            cred… #C46… 7.60e 7 Afri… "Afr… 1.47e-3
+ 5 Arab Bank for Economic Dev. in Afric… cred… #C46… 7.23e 7 Arab… "Ara… 1.39e-3
+ 6 Austria                               cred… #319… 8.78e 6 Aust… "Aus… 1.69e-4
+ 7 Belgium                               cred… #319… 5.69e 7 Belg… "Bel… 1.10e-3
+ 8 Bondholders                           cred… #4AC… 1.73e10 Bond… "Bon… 3.33e-1
+ 9 Central Bank of West African States … cred… #C46… 2.28e 7 Cent… "Cen… 4.40e-4
+10 China                                 cred… #319… 8.08e 9 Chin… "Chi… 1.56e-1
+# ℹ 23 more rows</code></pre>
+</div>
+</div>
+<p>Edges add the connective tissue to the network, showing who owes whom. Here is how the example data looks like:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>create_edges <span class="ot">&lt;-</span> <span class="cf">function</span>(external_debt_sub) {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  edges <span class="ot">&lt;-</span> external_debt_sub <span class="sc">|&gt;</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(from, to) <span class="sc">|&gt;</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">shadow =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">"grey"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">smooth =</span> <span class="cn">TRUE</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  edges</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">create_edges</span>(external_debt_sub)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>edges</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 45 × 5
+   from     to                               shadow color smooth
+   &lt;chr&gt;    &lt;chr&gt;                            &lt;lgl&gt;  &lt;chr&gt; &lt;lgl&gt; 
+ 1 Cameroon World Bank-IDA                   TRUE   grey  TRUE  
+ 2 Cameroon World Bank-IBRD                  TRUE   grey  TRUE  
+ 3 Cameroon United States                    TRUE   grey  TRUE  
+ 4 Cameroon United Kingdom                   TRUE   grey  TRUE  
+ 5 Cameroon United Arab Emirates             TRUE   grey  TRUE  
+ 6 Cameroon Turkiye                          TRUE   grey  TRUE  
+ 7 Cameroon Switzerland                      TRUE   grey  TRUE  
+ 8 Cameroon Spain                            TRUE   grey  TRUE  
+ 9 Cameroon Saudi Arabia                     TRUE   grey  TRUE  
+10 Cameroon OPEC Fund for International Dev. TRUE   grey  TRUE  
+# ℹ 35 more rows</code></pre>
+</div>
+</div>
+<p>The <code>visNetwork</code> library brings everything together, producing an interactive network. This visualization provides a debtor-centric perspective, illustrating how selected countries distribute their debt obligations among creditors.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>visualize_network <span class="ot">&lt;-</span> <span class="cf">function</span>(external_debt_sub) {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  nodes <span class="ot">&lt;-</span> <span class="fu">create_nodes</span>(external_debt_sub)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  edges <span class="ot">&lt;-</span> <span class="fu">create_edges</span>(external_debt_sub)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">visNetwork</span>(</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    nodes, edges, <span class="at">width =</span> <span class="st">"100%"</span>, <span class="at">height =</span> <span class="st">"600px"</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">visNodes</span>(<span class="at">shape =</span> <span class="st">"dot"</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="fu">visualize_network</span>(external_debt_sub)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="htmlwidget-edaf874b003b16dad421" style="width:100%;height:600px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-edaf874b003b16dad421">{"x":{"nodes":{"id":["Cameroon","Nigeria","African Dev. Bank","African Export-Import Bank","Arab Bank for Economic Dev. in Africa (BADEA)","Austria","Belgium","Bondholders","Central Bank of West African States (BCEAO)","China","Dev. Bank of the Central African States (BDEAC)","European Development Fund (EDF)","European Investment Bank","France","Germany, Fed. Rep. of","India","International Fund for Agricultural Dev.","Islamic Dev. Bank","Japan","Korea, Republic of","Kuwait","Multiple Lenders","Norway","OPEC Fund for International Dev.","Saudi Arabia","Spain","Switzerland","Turkiye","United Arab Emirates","United Kingdom","United States","World Bank-IBRD","World Bank-IDA"],"type":["debtor","debtor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor","creditor"],"color":["#3193C4","#3193C4","#C46231","#C46231","#C46231","#3193C4","#3193C4","#4AC431","#C46231","#3193C4","#C46231","#C46231","#C46231","#3193C4","#3193C4","#3193C4","#AB31C4","#C46231","#3193C4","#3193C4","#3193C4","#C46231","#3193C4","#C46231","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#C46231","#C46231"],"value":[11838936567.4,40003719239.6,4183353007.7,75983000,72301952.8,8779184.6,56934041.4,17255622000,22803833.8,8076502755.1,3800045.7,45873399.4,34995146,1741291829.6,300323136.4,193671000,350300937.5,994995071.5999999,143829626.9,76523385.8,20016337.2,1479358613.2,35339657.8,18215000,15073600,47338907.8,926076.3,122672000,101348332,92233168.40000001,42531760,851998000,15377721000],"title":["Cameroon<br>Received: 11.8B USD","Nigeria<br>Received: 40.0B USD","African Dev. Bank<br>Provided: 4.2B USD","African Export-Import Bank<br>Provided: 76.0M USD","Arab Bank for Economic Dev. in Africa (BADEA)<br>Provided: 72.3M USD","Austria<br>Provided: 8.8M USD","Belgium<br>Provided: 56.9M USD","Bondholders<br>Provided: 17.3B USD","Central Bank of West African States (BCEAO)<br>Provided: 22.8M USD","China<br>Provided: 8.1B USD","Dev. Bank of the Central African States (BDEAC)<br>Provided: 3.8M USD","European Development Fund (EDF)<br>Provided: 45.9M USD","European Investment Bank<br>Provided: 35.0M USD","France<br>Provided: 1.7B USD","Germany, Fed. Rep. of<br>Provided: 300.3M USD","India<br>Provided: 193.7M USD","International Fund for Agricultural Dev.<br>Provided: 350.3M USD","Islamic Dev. Bank<br>Provided: 995.0M USD","Japan<br>Provided: 143.8M USD","Korea, Republic of<br>Provided: 76.5M USD","Kuwait<br>Provided: 20.0M USD","Multiple Lenders<br>Provided: 1.5B USD","Norway<br>Provided: 35.3M USD","OPEC Fund for International Dev.<br>Provided: 18.2M USD","Saudi Arabia<br>Provided: 15.1M USD","Spain<br>Provided: 47.3M USD","Switzerland<br>Provided: 926.1K USD","Turkiye<br>Provided: 122.7M USD","United Arab Emirates<br>Provided: 101.3M USD","United Kingdom<br>Provided: 92.2M USD","United States<br>Provided: 42.5M USD","World Bank-IBRD<br>Provided: 852.0M USD","World Bank-IDA<br>Provided: 15.4B USD"],"label":["Cameroon","Nigeria","African Dev. Bank","African\nExport-Import Bank","Arab Bank for\nEconomic Dev. in\nAfrica (BADEA)","Austria","Belgium","Bondholders","Central Bank of\nWest African States\n(BCEAO)","China","Dev. Bank of the\nCentral African\nStates (BDEAC)","European Development\nFund (EDF)","European Investment\nBank","France","Germany, Fed. Rep.\nof","India","International Fund\nfor Agricultural\nDev.","Islamic Dev. Bank","Japan","Korea, Republic of","Kuwait","Multiple Lenders","Norway","OPEC Fund for\nInternational Dev.","Saudi Arabia","Spain","Switzerland","Turkiye","United Arab Emirates","United Kingdom","United States","World Bank-IBRD","World Bank-IDA"],"size":[0.2283628487605655,0.7716371512394342,0.08069326199787678,0.001465646364315704,0.001394642146983479,0.0001693428792051699,0.001098208425354485,0.3328460267205307,0.0004398662345712801,0.1557887540554872,7.329959549423589e-05,0.0008848582057751367,0.0006750261045707233,0.03358801362496718,0.005792973599154407,0.00373574611457019,0.006757002164474393,0.01919259451722864,0.002774349127395197,0.001476069939103457,0.0003860978356224048,0.02853554838524015,0.0006816714392789324,0.0003513515987261697,0.0002907567092263954,0.0009131265955246086,1.78632110100146e-05,0.002366236800380823,0.001954921684130147,0.001779098060550098,0.0008204008714047629,0.01643430466162499,0.296622940330222]},"edges":{"from":["Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Cameroon","Nigeria","Nigeria","Nigeria","Nigeria","Nigeria","Nigeria","Nigeria","Nigeria","Nigeria","Nigeria","Nigeria","Nigeria","Nigeria","Nigeria"],"to":["World Bank-IDA","World Bank-IBRD","United States","United Kingdom","United Arab Emirates","Turkiye","Switzerland","Spain","Saudi Arabia","OPEC Fund for International Dev.","Norway","Multiple Lenders","Kuwait","Korea, Republic of","Japan","Islamic Dev. Bank","International Fund for Agricultural Dev.","India","Germany, Fed. Rep. of","France","European Investment Bank","European Development Fund (EDF)","Dev. Bank of the Central African States (BDEAC)","China","Central Bank of West African States (BCEAO)","Bondholders","Belgium","Austria","Arab Bank for Economic Dev. in Africa (BADEA)","African Export-Import Bank","African Dev. Bank","World Bank-IDA","World Bank-IBRD","Multiple Lenders","Japan","Islamic Dev. Bank","International Fund for Agricultural Dev.","India","Germany, Fed. Rep. of","France","European Development Fund (EDF)","China","Bondholders","Arab Bank for Economic Dev. in Africa (BADEA)","African Dev. Bank"],"shadow":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"color":["grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey"],"smooth":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false}},"groups":null,"width":"100%","height":"600px","idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>Visualizing the network from a debtor’s perspective sheds light on the diversity of funding sources for countries like Nigeria and Cameroon. While both nations share some creditors, the wider spread of Cameroon’s creditor network could indicate stronger diversification in funding sources—a potentially advantageous position for economic resilience.</p>
+</section>
+<section id="creditor-centric-view" class="level2">
+<h2 class="anchored" data-anchor-id="creditor-centric-view">Creditor-Centric View</h2>
+<p>If you wondered why we wrapped everything into functions, then here is the resolution: we can use the same function to examine the network from creditors’ perspective. For example, let’s focus on Austria (my home country) and Germany (where I currently live).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>selected_counterparts <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Austria"</span>, <span class="st">"Germany, Fed. Rep. of"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>external_debt_sub <span class="ot">&lt;-</span> external_debt <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(to <span class="sc">%in%</span> selected_counterparts) </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">visualize_network</span>(external_debt_sub)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="htmlwidget-6a9375692bdc7baeacc6" style="width:100%;height:600px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6a9375692bdc7baeacc6">{"x":{"nodes":{"id":["Albania","Algeria","Angola","Argentina","Armenia","Azerbaijan","Bangladesh","Belarus","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Brazil","Bulgaria","Burkina Faso","Cabo Verde","Cambodia","Cameroon","China","Colombia","Costa Rica","Cote d'Ivoire","Dominican Republic","Ecuador","Egypt, Arab Rep.","El Salvador","Eswatini","Ethiopia","Gabon","Georgia","Ghana","Grenada","Guatemala","Honduras","India","Indonesia","Iran, Islamic Rep.","Iraq","Jamaica","Jordan","Kazakhstan","Kenya","Kosovo","Kyrgyz Republic","Lao PDR","Lebanon","Madagascar","Mali","Mauritania","Mauritius","Mexico","Moldova","Mongolia","Montenegro","Morocco","Mozambique","Myanmar","Nicaragua","Niger","Nigeria","North Macedonia","Pakistan","Papua New Guinea","Paraguay","Peru","Philippines","Senegal","Serbia","South Africa","Sri Lanka","Sudan","Syrian Arab Republic","Tajikistan","Tanzania","Thailand","Tunisia","Turkiye","Turkmenistan","Uganda","Ukraine","Uzbekistan","Viet Nam","Yemen, Rep.","Zimbabwe","Austria","Germany, Fed. Rep. of"],"type":["debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","debtor","creditor","creditor"],"color":["#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4","#3193C4"],"value":[375692784.4,90661,459147236.6,760220838.2,530317786.4,161049367,83852892.2,13247172,116047146.6,20087277.8,65698293.6,202552464.6,11910507517.8,7728583.6,2035072.8,12350161.4,376509.8,164570021,191412771.9,1712214335,12819562,576192252.4,23096796.4,35234064.4,4888752539,109628131.8,2554507,15767547.8,84641109.59999999,652480117.8000001,1145160296.4,10107000,50533374.8,100755302.4,3850079430.3,4443548019.1,125302034.8,937426257.8,6323871.4,696520731.4,6859304.6,438843362.6,55645588.59999999,71100622.59999999,112628693.6,11710201.4,33034974,4053080,2279324.2,50130.2,3391431291.2,21176276.4,162008978.6,65731358.2,2192664459.1,28782201,545104062.2,52740170.2,182954964.6,144532300,347975050.2,1187895885.2,4873295.4,5624181.8,477641443.8,139946452.8,34807424.4,384908208.4,199065611.7,335652620.4,264672800.4,313186775.4,16595229.4,19785761.9,4807166.2,1096077624.2,3247301982,197338065.6,22879636.6,1328577225.4,122540607.4,1593531829.4,762619,415615374.8,13191115856.6,40650400198.8],"title":["Albania<br>Received: 375.7M USD","Algeria<br>Received: 90.7K USD","Angola<br>Received: 459.1M USD","Argentina<br>Received: 760.2M USD","Armenia<br>Received: 530.3M USD","Azerbaijan<br>Received: 161.0M USD","Bangladesh<br>Received: 83.9M USD","Belarus<br>Received: 13.2M USD","Benin<br>Received: 116.0M USD","Bhutan<br>Received: 20.1M USD","Bolivia<br>Received: 65.7M USD","Bosnia and Herzegovina<br>Received: 202.6M USD","Brazil<br>Received: 11.9B USD","Bulgaria<br>Received: 7.7M USD","Burkina Faso<br>Received: 2.0M USD","Cabo Verde<br>Received: 12.4M USD","Cambodia<br>Received: 376.5K USD","Cameroon<br>Received: 164.6M USD","China<br>Received: 191.4M USD","Colombia<br>Received: 1.7B USD","Costa Rica<br>Received: 12.8M USD","Cote d'Ivoire<br>Received: 576.2M USD","Dominican Republic<br>Received: 23.1M USD","Ecuador<br>Received: 35.2M USD","Egypt, Arab Rep.<br>Received: 4.9B USD","El Salvador<br>Received: 109.6M USD","Eswatini<br>Received: 2.6M USD","Ethiopia<br>Received: 15.8M USD","Gabon<br>Received: 84.6M USD","Georgia<br>Received: 652.5M USD","Ghana<br>Received: 1.1B USD","Grenada<br>Received: 10.1M USD","Guatemala<br>Received: 50.5M USD","Honduras<br>Received: 100.8M USD","India<br>Received: 3.9B USD","Indonesia<br>Received: 4.4B USD","Iran, Islamic Rep.<br>Received: 125.3M USD","Iraq<br>Received: 937.4M USD","Jamaica<br>Received: 6.3M USD","Jordan<br>Received: 696.5M USD","Kazakhstan<br>Received: 6.9M USD","Kenya<br>Received: 438.8M USD","Kosovo<br>Received: 55.6M USD","Kyrgyz Republic<br>Received: 71.1M USD","Lao PDR<br>Received: 112.6M USD","Lebanon<br>Received: 11.7M USD","Madagascar<br>Received: 33.0M USD","Mali<br>Received: 4.1M USD","Mauritania<br>Received: 2.3M USD","Mauritius<br>Received: 50.1K USD","Mexico<br>Received: 3.4B USD","Moldova<br>Received: 21.2M USD","Mongolia<br>Received: 162.0M USD","Montenegro<br>Received: 65.7M USD","Morocco<br>Received: 2.2B USD","Mozambique<br>Received: 28.8M USD","Myanmar<br>Received: 545.1M USD","Nicaragua<br>Received: 52.7M USD","Niger<br>Received: 183.0M USD","Nigeria<br>Received: 144.5M USD","North Macedonia<br>Received: 348.0M USD","Pakistan<br>Received: 1.2B USD","Papua New Guinea<br>Received: 4.9M USD","Paraguay<br>Received: 5.6M USD","Peru<br>Received: 477.6M USD","Philippines<br>Received: 139.9M USD","Senegal<br>Received: 34.8M USD","Serbia<br>Received: 384.9M USD","South Africa<br>Received: 199.1M USD","Sri Lanka<br>Received: 335.7M USD","Sudan<br>Received: 264.7M USD","Syrian Arab Republic<br>Received: 313.2M USD","Tajikistan<br>Received: 16.6M USD","Tanzania<br>Received: 19.8M USD","Thailand<br>Received: 4.8M USD","Tunisia<br>Received: 1.1B USD","Turkiye<br>Received: 3.2B USD","Turkmenistan<br>Received: 197.3M USD","Uganda<br>Received: 22.9M USD","Ukraine<br>Received: 1.3B USD","Uzbekistan<br>Received: 122.5M USD","Viet Nam<br>Received: 1.6B USD","Yemen, Rep.<br>Received: 762.6K USD","Zimbabwe<br>Received: 415.6M USD","Austria<br>Provided: 13.2B USD","Germany, Fed. Rep. of<br>Provided: 40.7B USD"],"label":["Albania","Algeria","Angola","Argentina","Armenia","Azerbaijan","Bangladesh","Belarus","Benin","Bhutan","Bolivia","Bosnia and\nHerzegovina","Brazil","Bulgaria","Burkina Faso","Cabo Verde","Cambodia","Cameroon","China","Colombia","Costa Rica","Cote d'Ivoire","Dominican Republic","Ecuador","Egypt, Arab Rep.","El Salvador","Eswatini","Ethiopia","Gabon","Georgia","Ghana","Grenada","Guatemala","Honduras","India","Indonesia","Iran, Islamic Rep.","Iraq","Jamaica","Jordan","Kazakhstan","Kenya","Kosovo","Kyrgyz Republic","Lao PDR","Lebanon","Madagascar","Mali","Mauritania","Mauritius","Mexico","Moldova","Mongolia","Montenegro","Morocco","Mozambique","Myanmar","Nicaragua","Niger","Nigeria","North Macedonia","Pakistan","Papua New Guinea","Paraguay","Peru","Philippines","Senegal","Serbia","South Africa","Sri Lanka","Sudan","Syrian Arab Republic","Tajikistan","Tanzania","Thailand","Tunisia","Turkiye","Turkmenistan","Uganda","Ukraine","Uzbekistan","Viet Nam","Yemen, Rep.","Zimbabwe","Austria","Germany, Fed. Rep.\nof"],"size":[0.006977752706915471,1.68384931632896e-06,0.008527754607198701,0.01411960312220359,0.009849607240894407,0.002991174446765002,0.001557402137668634,0.0002460401001035964,0.002155346934893026,0.0003730815785226272,0.001220216264571749,0.003762012651939158,0.2212141928831413,0.0001435432017190547,3.779746465359596e-05,0.000229379896867918,6.992927160754389e-06,0.003056563653049191,0.003555114824460863,0.03180100525472249,0.0002380980874834463,0.01070163499495686,0.0004289774525708871,0.0006544032743013045,0.09079893913034953,0.002036126391522829,4.744493073656306e-05,0.0002928511110975414,0.001572041721724717,0.01211853167597721,0.02126909456304486,0.0001877175967630713,0.0009385577989298057,0.001871331080208223,0.07150763411525186,0.08253014299463321,0.002327238235102278,0.01741084439070103,0.0001174534423119342,0.01293649923756453,0.0001273980582742535,0.008150650181329482,0.001033507090378802,0.001320553873832998,0.002091855910671446,0.0002174939016938313,0.0006135595061255114,7.527796943588293e-05,4.233395281170575e-05,9.31069621970131e-07,0.06298914926003202,0.0003933075803105315,0.003008997340143647,0.00122083037432241,0.04072441899377179,0.0005345726329545529,0.01012423315939168,0.0009795446722884482,0.003398027730343799,0.002684402494374121,0.006462950445933815,0.02206282386212379,9.051185325067083e-05,0.000104458087588266,0.008871248040425404,0.002599229424669297,0.0006464792775185799,0.007148911037422321,0.003697251234440954,0.006234085608856774,0.004915775405129123,0.005816826834477467,0.000308223664856027,0.0003674815151869337,8.928363374934852e-05,0.0203574807045217,0.06031223152518038,0.003665165471881399,0.0004249441374655592,0.02467570237125134,0.002275950165926093,0.02959671172261091,1.416414424912008e-05,0.007719236107177118,0.2449989677673092,0.7550010322326911]},"edges":{"from":["Angola","Angola","Albania","Albania","Argentina","Argentina","Armenia","Armenia","Azerbaijan","Benin","Burkina Faso","Bangladesh","Bulgaria","Bulgaria","Bosnia and Herzegovina","Bosnia and Herzegovina","Belarus","Bolivia","Brazil","Brazil","Bhutan","China","Cote d'Ivoire","Cameroon","Cameroon","Colombia","Cabo Verde","Costa Rica","Dominican Republic","Algeria","Ecuador","Ecuador","Egypt, Arab Rep.","Egypt, Arab Rep.","Ethiopia","Gabon","Georgia","Georgia","Ghana","Ghana","Grenada","Grenada","Guatemala","Honduras","Honduras","Indonesia","Indonesia","India","Iran, Islamic Rep.","Iraq","Iraq","Jamaica","Jordan","Kazakhstan","Kenya","Kenya","Kyrgyz Republic","Cambodia","Lao PDR","Lebanon","Sri Lanka","Sri Lanka","Morocco","Morocco","Moldova","Moldova","Madagascar","Mexico","North Macedonia","Mali","Myanmar","Myanmar","Montenegro","Montenegro","Mongolia","Mongolia","Mozambique","Mauritania","Mauritius","Niger","Nigeria","Nicaragua","Nicaragua","Pakistan","Pakistan","Peru","Philippines","Philippines","Papua New Guinea","Paraguay","Sudan","Sudan","Senegal","Senegal","El Salvador","Serbia","Serbia","Eswatini","Syrian Arab Republic","Thailand","Tajikistan","Turkmenistan","Tunisia","Tunisia","Turkiye","Turkiye","Tanzania","Tanzania","Uganda","Uganda","Ukraine","Uzbekistan","Uzbekistan","Viet Nam","Viet Nam","Kosovo","Kosovo","Yemen, Rep.","South Africa","Zimbabwe","Zimbabwe"],"to":["Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Austria","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Germany, Fed. Rep. of","Austria"],"shadow":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"color":["grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey","grey"],"smooth":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false}},"groups":null,"width":"100%","height":"600px","idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>This approach reveals which countries owe these creditors and in what amounts. For me, it is interesting to see that Austria shares a lof of counterparts with Germany (which is not surprising), but that Germany provides credit to many more counterparts around the World. Germany’s broader network of counterparts underscores its role as a significant lender globally, while Austria’s overlapping but smaller network highlights the nuanced dynamics of regional lending patterns.</p>
+</section>
+<section id="concluding-remarks" class="level2">
+<h2 class="anchored" data-anchor-id="concluding-remarks">Concluding Remarks</h2>
+<p>By combining <code>wbids</code> for data retrieval, <code>tidyverse</code> for manipulation, and <code>visNetwork</code> for visualization, you can quickly uncover intricate patterns in global debt relationships. Try adapting this workflow to your own analysis!</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<footer class="footer-custom">
+<div class="custom-footer">
+  <div class="copyright">© Christoph Scheuch 2024. All rights reserved.</div>
+  <a href="https://www.tidy-intelligence.com/impressum.html">Impressum</a>
+  <a href="#" id="open_preferences_center">Cookie Preferences</a>
+</div>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var giscusDiv = document.querySelector('.giscus');
+    var footer = document.querySelector('.footer-custom');
+
+    if (giscusDiv && footer) {
+        giscusDiv.parentNode.insertBefore(footer, giscusDiv.nextSibling);
+    }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Create the new link element
+    var followButton = document.createElement('a');
+    followButton.href = 'https://www.linkedin.com/in/christophscheuch';
+    followButton.target = '_blank';
+    followButton.role = 'button';
+    followButton.className = 'linkedin-follow-button';
+    followButton.innerHTML = '<i class="fa-brands fa-linkedin-in"></i> Follow';
+
+    // Find the element that contains the name
+    var nameElement = document.querySelector('.quarto-title-meta-contents p');
+
+    // Insert the follow button after the name element
+    nameElement.parentNode.insertBefore(followButton, nameElement.nextSibling);
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/blog\.tidy-intelligence\.com");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="tidy-intelligence/blog" data-repo-id="R_kgDOKH1yOg" data-category="Announcements" data-category-id="DIC_kwDOKH1yOs4CcPjh" data-mapping="url" data-reactions-enabled="0" data-emit-metadata="0" data-input-position="bottom" data-theme="light" data-lang="en" crossorigin="anonymous" data-loading="lazy" async="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="light">
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
