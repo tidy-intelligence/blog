@@ -1,0 +1,180 @@
+---
+title: "Global Debt Networks"
+description: "Explore external debt relationships with interactive networks in R"
+metadata:
+  pagetitle: "International External Debt Network"
+author: "Christoph Scheuch"
+date: "2024-11-28" 
+image: thumbnail.png
+image-alt: A whimsical and friendly spider with expressive eyes sits on a desk in a bright and inviting office. The spider is focused on a computer screen displaying a colorful network visualization. Sunlight streams through large windows, casting a warm glow over the room. The office is decorated with vibrant green plants in terracotta pots, neatly arranged colorful books on shelves, and cozy furnishings, creating a lively and welcoming atmosphere. Created with DALL-E.
+categories: 
+  - R
+  - Visualization
+format:
+  html: 
+    fig-width: 12
+    fig-height: 8
+    fig-dpi: 300
+---
+
+In this blog post, I visualize external debt using interactive networks with R. Understanding external debt flows between countries and creditors is a crucial aspect in analyzing global economic relationships. Using tools such as the recently released [`wbids`](https://teal-insights.github.io/r-wbids/) package to download data from the World Bank International Debt statistics and [`visNetwork`](https://cran.r-project.org/web/packages/visNetwork/vignettes/Introduction-to-visNetwork.html) for visualization, we can uncover interesting insights. 
+
+This post relies on the following packages.
+
+::: callout-note
+Due to a bug in `scales::cut_short_scale()`, I installed the development version of `scales` from [GitHub](https://github.com/r-lib/scales).
+:::
+
+```{r}
+#| message: false
+library(tidyverse)
+library(wbids)
+library(visNetwork)
+library(scales)
+```
+
+## Data Preparation
+
+The `wbids` package provides easy access to download debtor-creditor relationships for all available countries. Here, we pull external debt data (IDS series "DT.DOD.DPPG.CD") for 2022 using `ids_get()` and enrich it with geographical and counterpart details. Note that we drop "World" and "Region" counterparts because we rather want to look at their individual components.
+
+```{r}
+#| cache: true
+geographies <- ids_list_geographies() |> 
+  filter(geography_type != "Region")
+
+external_debt_raw <- geographies$geography_id |> 
+  map_df(\(x) ids_get(x, "DT.DOD.DPPG.CD", "all", 2022, 2022))
+
+counterparts <- ids_list_counterparts()
+
+external_debt <- external_debt_raw |> 
+  filter(value > 0) |> 
+  left_join(geographies, join_by(geography_id)) |> 
+  left_join(counterparts, join_by(counterpart_id)) |> 
+  filter(!counterpart_name %in% c("World", "Region")) |> 
+  select(from = geography_name, to = counterpart_name, value, counterpart_type) |> 
+  mutate(to = str_squish(to))
+```
+
+## Debitor-Centric View
+
+For now, let’s narrow our focus to specific debtor countries. This step allows us to examine the relationships from a debtor’s perspective, understanding how much debt they owe and to whom. In the following, we focus on Nigeria and its neighbor Cameroon.
+
+```{r}
+selected_geographies <- c("Nigeria", "Cameroon")
+
+external_debt_sub <- external_debt |>
+  filter(from %in% selected_geographies) 
+```
+
+`visNetwork` requires two data frames: `nodes` and `edges`, each with corresponding properties. To enhance the visualization, we create helper functions for formatting node titles and labels: 
+
+```{r}
+format_title <- function(id, value, type) {
+  prefix <- if_else(
+    type == "debtor", "<br>Received: ", "<br>Provided: "
+  )
+  debt <- scales::label_number(
+    accuracy = 0.1, scale_cut = scales::cut_short_scale()
+  )(value)
+  title <- str_c(
+    id, prefix, debt, " USD"
+  )
+  title
+}
+
+format_label <- function(id) {
+  label <- str_wrap(id, width = 20)
+  label
+}
+```
+
+We now construct the nodes and edges for the network. Nodes represent entities (countries or institutions), and edges represent debt relationships. The data looks like this:
+
+```{r}
+create_nodes <- function(external_debt_sub) {
+  
+  total_debt <- sum(external_debt_sub$value)
+  
+  nodes <- external_debt_sub |> 
+    group_by(id = from, type = "debtor", color = "Country") |> 
+    summarize(value = sum(value),
+              .groups = "drop") |> 
+    bind_rows(
+      external_debt_sub |> 
+        group_by(id = to, type = "creditor", color = counterpart_type) |> 
+        summarize(value = sum(value),
+                  .groups = "drop")
+    ) |> 
+    mutate(
+      title = format_title(id, value, type),
+      label = format_label(id),
+      size = value / total_debt,
+      color = case_when(
+        color == "Other" ~ "#C46231",
+        color == "Country" ~ "#3193C4",
+        color == "Global MDBs" ~ "#AB31C4",
+        color == "Bondholders" ~ "#4AC431"
+      )
+    )
+  nodes
+}
+
+nodes <- create_nodes(external_debt_sub)
+nodes
+```
+
+Edges add the connective tissue to the network, showing who owes whom. Here is how the example data looks like:
+
+```{r}
+create_edges <- function(external_debt_sub) {
+  edges <- external_debt_sub |> 
+    select(from, to) |> 
+    mutate(
+      shadow = TRUE, 
+      color = "grey",
+      smooth = TRUE
+    )
+  edges
+}
+
+edges <- create_edges(external_debt_sub)
+edges
+```
+
+The `visNetwork` library brings everything together, producing an interactive network. This visualization provides a debtor-centric perspective, illustrating how selected countries distribute their debt obligations among creditors.
+
+```{r}
+visualize_network <- function(external_debt_sub) {
+  nodes <- create_nodes(external_debt_sub)
+  edges <- create_edges(external_debt_sub)
+  
+  visNetwork(
+    nodes, edges, width = "100%", height = "600px"
+  ) |> 
+    visNodes(shape = "dot")
+}
+
+visualize_network(external_debt_sub)
+```
+
+Visualizing the network from a debtor’s perspective sheds light on the diversity of funding sources for countries like Nigeria and Cameroon. While both nations share some creditors, the wider spread of Cameroon’s creditor network could indicate stronger diversification in funding sources—a potentially advantageous position for economic resilience.
+
+## Creditor-Centric View
+
+If you wondered why we wrapped everything into functions, then here is the resolution: we can use the same function to examine the network from creditors' perspective. For example, let's focus on Austria (my home country) and Germany (where I currently live).
+
+```{r}
+selected_counterparts <- c("Austria", "Germany, Fed. Rep. of")
+
+external_debt_sub <- external_debt |>
+  filter(to %in% selected_counterparts) 
+
+visualize_network(external_debt_sub)
+```
+
+This approach reveals which countries owe these creditors and in what amounts. For me, it is interesting to see that Austria shares a lof of counterparts with Germany (which is not surprising), but that Germany provides credit to many more counterparts around the World. Germany’s broader network of counterparts underscores its role as a significant lender globally, while Austria’s overlapping but smaller network highlights the nuanced dynamics of regional lending patterns. 
+
+## Concluding Remarks
+
+By combining `wbids` for data retrieval, `tidyverse` for manipulation, and `visNetwork` for visualization, you can quickly uncover intricate patterns in global debt relationships. Try adapting this workflow to your own analysis!
