@@ -56,7 +56,7 @@ external_debt <- external_debt_raw |>
   mutate(to = str_squish(to))
 ```
 
-## Debitor-Centric View
+## Debtor-Centric View
 
 For now, let’s narrow our focus to specific debtor countries. This step allows us to examine the relationships from a debtor’s perspective, understanding how much debt they owe and to whom. In the following, we focus on Nigeria and its neighbor Cameroon.
 
