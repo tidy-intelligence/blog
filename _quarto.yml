@@ -34,10 +34,10 @@ website:
         url: https://apps.tidy-intelligence.com/
       - text: "Blog"
         file: index.qmd
-      - text: "Contact"
-        url: https://www.tidy-intelligence.com/contact.html
       - text: "Swag"
         url: https://www.etsy.com/shop/tidyswag/?etsrc=sdt&utm_source=tidy-intelligence.com
+      - text: "About"
+        url: https://www.tidy-intelligence.com/about.html
   comments:
     giscus:
       repo: "tidy-intelligence/blog"

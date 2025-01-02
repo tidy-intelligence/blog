@@ -1,6 +1,7 @@
 :root {
-  --main-color: #3193C4;
+  --main-color: #C9B7F4;
   --font-black: #333333;
+  --font-dark: #27486D;
 }
 
 body {
@@ -18,7 +19,7 @@ body {
 .navbar-nav .nav-link.active,
 .navbar-nav .nav-link.active:hover,
 .navbar-nav .nav-link.focus {
-  color: white;
+  color: var(--font-dark);
   text-decoration: none;
 }
 
@@ -38,7 +39,7 @@ body {
 }
 
 .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%2327486D' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
 @media screen and (max-width: 375px) {
@@ -54,8 +55,7 @@ body {
 }
 
 a {
-  text-decoration: none;
-  color: var(--main-color);
+  color: var(--font-dark);
 }
 
 .responsive-iframe {
@@ -72,6 +72,15 @@ a {
 .custom-footer {
   text-align: center;
   font-size: smaller;
+  background: white;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  margin-top: 0px;
+  padding-top: 0px;
 }
 
 .custom-footer a,
@@ -86,9 +95,5 @@ a {
 }
 
 .custom-footer a:last-child {
-  margin-right: 0;
-}
-
-.footer {
-  display: none;
+  margin: 0;
 }
