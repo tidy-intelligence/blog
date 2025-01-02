@@ -297,7 +297,7 @@ pre {
     .quarto-title-meta-contents {
       padding: 0px 0px 8px 0px;
     }
-    
+}
 
 .page-link {
   color: var(--font-dark);
@@ -309,5 +309,3 @@ pre {
     background-color: var(--main-color);
     border-color: var(--main-color);
 }
-
-
