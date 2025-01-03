@@ -9,7 +9,7 @@ body {
 }
 
 .navbar {
-  background-color: var(--main-color);
+  background-color: white;
 }
 
 .navbar a, 

@@ -13,7 +13,7 @@ h2 {
   
 /* Styling of grid items on blog overview */
 .quarto-grid-item {
-  border: none;
+  border: 2px solid var(--font-dark);
   border-radius: 8px;
   transition: box-shadow 0.4s;
   overflow: hidden;
@@ -37,8 +37,6 @@ h2 {
 }
   
 .card-img {
-  padding-bottom: 8px;
-  border-radius: 8px;
 }
   
 .listing-tile {
