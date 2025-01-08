@@ -1,6 +1,7 @@
 h1 {
   padding-top: 8px;
   padding-bottom: 16px;
+  font-family: var(--header-font);
 }
   
 h2 {
@@ -9,6 +10,7 @@ h2 {
   font-size: 1.5rem;
   border-bottom: 0px;
   padding-bottom: 0px;
+  font-family: var(--header-font);
 }
   
 /* Styling of grid items on blog overview */

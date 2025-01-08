@@ -1,16 +1,21 @@
 :root {
   --main-color: #C9B7F4;
   --font-black: #333333;
-  --font-dark: #27486D;
+  --font-dark: #27486D;  
+  --body-font: "source-sans-3", sans-serif;
+  --header-font: "montserrat", sans-serif;
 }
 
 body {
-  font-family: "Gill Sans", sans-serif;
+  font-family: var(--body-font);
+  font-weight: 400;
+  font-style: normal;
 }
 
 .navbar {
   background-color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: var(--body-font);
 }
 
 .navbar a, 

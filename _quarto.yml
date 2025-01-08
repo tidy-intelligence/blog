@@ -67,6 +67,7 @@ format:
     from: markdown+emoji
     include-in-header: 
       - assets/html/header-fontawesome.html
+      - assets/html/header-font.html
     include-after-body: 
       - assets/html/bottom-footer.html
       - assets/html/bottom-giscus.html
