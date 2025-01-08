@@ -38,9 +38,6 @@ h2 {
   padding: 8px 8px 8px 8px;
 }
   
-.card-img {
-}
-  
 .listing-tile {
   margin-top: 8px;
 }
@@ -70,7 +67,6 @@ h2 {
   cursor: pointer;
   text-align: right;
   position: relative;
-  color: black;
 }
 
 .card-body:hover::after, 
