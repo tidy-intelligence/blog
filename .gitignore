@@ -13,3 +13,4 @@ posts/.DS_Store
 posts/sakura-visualizations/data/sakura_first_bloom_dates.csv
 posts/sakura-visualizations/data/sakura_full_bloom_dates.csv
 .Rhistory
+database.duckdb

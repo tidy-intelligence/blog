@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/rapid-rag-prototyping/index.html",
       "/posts/international-external-debt-network/index.html",
       "/posts/sakura-visualizations/index.html",
       "/posts/dplyr-vs-siuba/index.html",

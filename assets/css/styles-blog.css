@@ -305,3 +305,7 @@ pre {
     background-color: var(--main-color);
     border-color: var(--main-color);
 }
+
+.cell {
+  margin-bottom: 16px;
+}
