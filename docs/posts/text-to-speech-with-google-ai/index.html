@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2025-02-24">
 <meta name="description" content="Creating an audio book using Google’s Text-to-Speech API">
 
-<title>Rapid RAG Prototyping – Tidy Intelligence</title>
+<title>Text-to-Speech with Goolge AI – Tidy Intelligence</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -123,15 +123,19 @@ cookieconsent.run({
 
 <link rel="stylesheet" href="../../assets/css/styles-global.css">
 <link rel="stylesheet" href="../../assets/css/styles-blog.css">
-<meta property="og:title" content="Rapid RAG Prototyping">
+<meta property="og:title" content="Text-to-Speech with Goolge AI">
 <meta property="og:description" content="Creating an audio book using Google’s Text-to-Speech API">
 <meta property="og:image" content="https://blog.tidy-intelligence.com/posts/text-to-speech-with-google-ai/thumbnail.png">
 <meta property="og:site_name" content="Tidy Intelligence">
-<meta property="og:image:alt" content="Created with DALL-E.">
-<meta name="twitter:title" content="Rapid RAG Prototyping">
+<meta property="og:image:height" content="1024">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:alt" content="A whimsical illustration of a bug lying on its back in a cozy office setting. Sunlight streams through a large window, creating a warm and welcoming atmosphere. The office is decorated with vibrant green plants in terracotta pots and bookshelves filled with colorful books. The bug appears relaxed and content, adding a playful touch to the cheerful environment. Created with DALL-E.">
+<meta name="twitter:title" content="Text-to-Speech with Goolge AI">
 <meta name="twitter:description" content="Creating an audio book using Google’s Text-to-Speech API">
 <meta name="twitter:image" content="https://blog.tidy-intelligence.com/posts/text-to-speech-with-google-ai/thumbnail.png">
-<meta name="twitter:image:alt" content="Created with DALL-E.">
+<meta name="twitter:image-height" content="1024">
+<meta name="twitter:image-width" content="1024">
+<meta name="twitter:image:alt" content="A whimsical illustration of a bug lying on its back in a cozy office setting. Sunlight streams through a large window, creating a warm and welcoming atmosphere. The office is decorated with vibrant green plants in terracotta pots and bookshelves filled with colorful books. The bug appears relaxed and content, adding a playful touch to the cheerful environment. Created with DALL-E.">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -187,8 +191,7 @@ cookieconsent.run({
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#downlado-book-from-project-gutenberg" id="toc-downlado-book-from-project-gutenberg" class="nav-link active" data-scroll-target="#downlado-book-from-project-gutenberg">Downlado Book from Project Gutenberg</a></li>
-  <li><a href="#prepare-text" id="toc-prepare-text" class="nav-link" data-scroll-target="#prepare-text">Prepare Text</a></li>
+  <li><a href="#prepare-text" id="toc-prepare-text" class="nav-link active" data-scroll-target="#prepare-text">Prepare Text</a></li>
   <li><a href="#convert-text-to-speech" id="toc-convert-text-to-speech" class="nav-link" data-scroll-target="#convert-text-to-speech">Convert Text to Speech</a></li>
   <li><a href="#process-text" id="toc-process-text" class="nav-link" data-scroll-target="#process-text">Process Text</a></li>
   <li><a href="#combine-individual-segments" id="toc-combine-individual-segments" class="nav-link" data-scroll-target="#combine-individual-segments">Combine Individual Segments</a></li>
@@ -238,7 +241,10 @@ cookieconsent.run({
 </header>
 
 
-<div id="e009a780" class="cell" data-execution_count="1">
+<p>Lately, I’ve found myself increasingly drawn to audiobooks and became curious about how I could create one myself using AI. In this post, I’ll walk you through how to leverage Google’s powerful Text-to-Speech (TTS) API to transform written content into high-quality audio. As an example, we’ll use the first chapter of Franz Kafka’s The Metamorphosis and turn this classic piece of literature into an audiobook - step by step.</p>
+<p>Before we dive into generating our audiobook, let’s set up the Python environment with the necessary libraries. We’ll use Google Cloud’s Text-to-Speech client to convert text into speech, along with some utility libraries for handling environment variables and audio processing.</p>
+<p>The key packages we’ll need are: - <code>google-cloud-texttospeech</code>: Google’s official client library for the Text-to-Speech API. - <code>pydub</code>: A simple and easy-to-use library for audio manipulation. - <code>python-dotenv</code>: To securely load API keys and configuration from a .env file.</p>
+<div id="5f88d544" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
@@ -249,9 +255,10 @@ cookieconsent.run({
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="downlado-book-from-project-gutenberg" class="level2">
-<h2 class="anchored" data-anchor-id="downlado-book-from-project-gutenberg">Downlado Book from Project Gutenberg</h2>
-<div id="5e878226" class="cell" data-execution_count="2">
+<section id="prepare-text" class="level2">
+<h2 class="anchored" data-anchor-id="prepare-text">Prepare Text</h2>
+<p>To begin, we need the text we want to convert into audio. I downloaded the first chapter of Franz Kafka’s The Metamorphosis from <a href="https://www.gutenberg.org/cache/epub/5200/pg5200.txt">Project Gutenberg</a>, which offers a vast collection of public domain books.</p>
+<div id="52695424" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"metamorphosis_chapter1.txt"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="im">as</span> <span class="bu">file</span>:</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="bu">file</span>.read()</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -260,45 +267,48 @@ cookieconsent.run({
 <pre><code>'One morning, when Gregor Samsa woke from troubled dreams, he found\nhimself transformed in his bed into a horrible vermin. He lay on his\narmour-like back, and if he lifted his head a little he could see his\nbrown belly, slightly domed and divided by arches into stiff sections.\nThe bedding was hardly able to cover it and seemed ready to slide off\nany moment. His many legs, pitifully thin compared with the size of the\nrest of him, waved about helplessly as he looked.\n\n“What’s happened to me?” he th'</code></pre>
 </div>
 </div>
-</section>
-<section id="prepare-text" class="level2">
-<h2 class="anchored" data-anchor-id="prepare-text">Prepare Text</h2>
-<div id="3084501c" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> split_text_by_paragraphs(text: <span class="bu">str</span>, max_bytes: <span class="bu">int</span> <span class="op">=</span> <span class="dv">2000</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">str</span>]:</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Split the text into chunks based on paragraphs (empty lines) and ensure each chunk is within the byte limit.</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">        text (str): The input text to split.</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">        max_bytes (int): Maximum byte size for each chunk.</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">        list[str]: List of text chunks.</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    paragraphs <span class="op">=</span> text.split(<span class="st">"</span><span class="ch">\n\n</span><span class="st">"</span>)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    chunks <span class="op">=</span> []</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    current_chunk <span class="op">=</span> <span class="st">""</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    current_bytes <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> paragraph <span class="kw">in</span> paragraphs:</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        paragraph_bytes <span class="op">=</span> <span class="bu">len</span>(paragraph.encode(<span class="st">"utf-8"</span>))</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> current_bytes <span class="op">+</span> paragraph_bytes <span class="op">+</span> <span class="dv">1</span> <span class="op">&gt;</span> max_bytes:</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>            chunks.append(current_chunk.strip())</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>            current_chunk <span class="op">=</span> paragraph</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>            current_bytes <span class="op">=</span> paragraph_bytes</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> current_chunk:</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>                current_chunk <span class="op">+=</span> <span class="st">"</span><span class="ch">\n\n</span><span class="st">"</span> <span class="op">+</span> paragraph</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>                current_chunk <span class="op">=</span> paragraph</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>            current_bytes <span class="op">+=</span> paragraph_bytes <span class="op">+</span> <span class="dv">2</span> </span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> current_chunk:</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        chunks.append(current_chunk.strip())</span>
+<p>Before moving forward, skim through the loaded text to ensure there aren’t any unwanted headers, footers, or formatting issues (like excessive line breaks) that might affect the audio quality or API compatibility.</p>
+<p>One of the challenges in working with text-to-speech APIs is handling large chunks of text. Google’s API has limitations on input size, so we need to split our text intelligently. The following approach breaks the text into manageable paragraphs while preserving the natural flow of the narrative. It splits text on double line breaks (paragraphs), ensures each chunk stays within a 2000-byte limit, and maintains paragraph integrity where possible.</p>
+<div id="204ed6ab" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> split_text_by_paragraphs(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    text: <span class="bu">str</span>, </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    max_bytes: <span class="bu">int</span> <span class="op">=</span> <span class="dv">2000</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">str</span>]:</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Split the text into chunks based on paragraphs (empty lines) and ensure each chunk is within the byte limit.</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">        text (str): The input text to split.</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">        max_bytes (int): Maximum byte size for each chunk.</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">        list[str]: List of text chunks.</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    paragraphs <span class="op">=</span> text.split(<span class="st">"</span><span class="ch">\n\n</span><span class="st">"</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    chunks <span class="op">=</span> []</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    current_chunk <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    current_bytes <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> paragraph <span class="kw">in</span> paragraphs:</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        paragraph_bytes <span class="op">=</span> <span class="bu">len</span>(paragraph.encode(<span class="st">"utf-8"</span>))</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> current_bytes <span class="op">+</span> paragraph_bytes <span class="op">+</span> <span class="dv">1</span> <span class="op">&gt;</span> max_bytes:</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>            chunks.append(current_chunk.strip())</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>            current_chunk <span class="op">=</span> paragraph</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>            current_bytes <span class="op">=</span> paragraph_bytes</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> current_chunk:</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                current_chunk <span class="op">+=</span> <span class="st">"</span><span class="ch">\n\n</span><span class="st">"</span> <span class="op">+</span> paragraph</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>                current_chunk <span class="op">=</span> paragraph</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>            current_bytes <span class="op">+=</span> paragraph_bytes <span class="op">+</span> <span class="dv">2</span> </span>
 <span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> chunks</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> current_chunk:</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>        chunks.append(current_chunk.strip())</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> chunks</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="e9c81c4e" class="cell" data-execution_count="4">
+<p>Let’s create paragraphs and inspect the first one:</p>
+<div id="bdfffa4b" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>paragraphs <span class="op">=</span> split_text_by_paragraphs(text)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(paragraphs)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>paragraphs[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -306,19 +316,29 @@ cookieconsent.run({
 <pre><code>'One morning, when Gregor Samsa woke from troubled dreams, he found\nhimself transformed in his bed into a horrible vermin. He lay on his\narmour-like back, and if he lifted his head a little he could see his\nbrown belly, slightly domed and divided by arches into stiff sections.\nThe bedding was hardly able to cover it and seemed ready to slide off\nany moment. His many legs, pitifully thin compared with the size of the\nrest of him, waved about helplessly as he looked.\n\n“What’s happened to me?” he thought. It wasn’t a dream. His room, a\nproper human room although a little too small, lay peacefully between\nits four familiar walls. A collection of textile samples lay spread out\non the table—Samsa was a travelling salesman—and above it there hung a\npicture that he had recently cut out of an illustrated magazine and\nhoused in a nice, gilded frame. It showed a lady fitted out with a fur\nhat and fur boa who sat upright, raising a heavy fur muff that covered\nthe whole of her lower arm towards the viewer.\n\nGregor then turned to look out the window at the dull weather. Drops of\nrain could be heard hitting the pane, which made him feel quite sad.\n“How about if I sleep a little bit longer and forget all this\nnonsense”, he thought, but that was something he was unable to do\nbecause he was used to sleeping on his right, and in his present state\ncouldn’t get into that position. However hard he threw himself onto his\nright, he always rolled back to where he was. He must have tried it a\nhundred times, shut his eyes so that he wouldn’t have to look at the\nfloundering legs, and only stopped when he began to feel a mild, dull\npain there that he had never felt before.'</code></pre>
 </div>
 </div>
-<div id="5ffe38f6" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_chunk(chunk):</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> re.sub(<span class="vs">r'(?&lt;!\n)\n(?!\n)'</span>, <span class="st">' '</span>, chunk) </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> re.sub(<span class="vs">r'\n{2,}'</span>, <span class="st">'. '</span>, cleaned_chunk)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> cleaned_chunk.replace(<span class="st">".."</span>, <span class="st">"."</span>).replace(<span class="st">"»"</span>, <span class="st">""</span>).replace(<span class="st">"«"</span>, <span class="st">""</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> re.sub(<span class="vs">r'\s-\s+'</span>, <span class="st">''</span>, cleaned_chunk)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> re.sub(<span class="vs">r'\([^)]*\)'</span>, <span class="st">''</span>, cleaned_chunk).strip()</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> cleaned_chunk.replace(<span class="st">"</span><span class="ch">\u2028</span><span class="st">"</span>, <span class="st">" "</span>)</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> re.sub(<span class="vs">r'[\x00-\x1F\x7F-\x9F]'</span>, <span class="st">' '</span>, cleaned_chunk)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> cleaned_chunk</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>clean_chunk(paragraphs[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Raw text often contains formatting that doesn’t translate well to speech or even triggers error codes in the API. The following <code>clean_chunk()</code> function emerged in another project that I was working on and prepares the text by: converting single line breaks to spaces, removing double periods, cleaning up special characters and quotation marks, eliminating parenthetical content, and handling Unicode and control characters. This cleaning process is crucial for producing natural-sounding speech without awkward pauses or artifacts. Note that the function below is not generally applicable and needs to be adapted to your specific context.</p>
+<div id="1cdc11c5" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_chunk(chunk) <span class="op">-&gt;</span> <span class="bu">str</span>: </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Cleans and formats a text chunk by removing unwanted characters, normalizing whitespace, and improving readability.</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">        chunk (str): The text chunk to be cleaned.</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">        str: The cleaned and formatted text.</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> re.sub(<span class="vs">r'(?&lt;!\n)\n(?!\n)'</span>, <span class="st">' '</span>, chunk) </span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> re.sub(<span class="vs">r'\n{2,}'</span>, <span class="st">'. '</span>, cleaned_chunk)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> cleaned_chunk.replace(<span class="st">".."</span>, <span class="st">"."</span>).replace(<span class="st">"»"</span>, <span class="st">""</span>).replace(<span class="st">"«"</span>, <span class="st">""</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> re.sub(<span class="vs">r'\s-\s+'</span>, <span class="st">''</span>, cleaned_chunk)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> re.sub(<span class="vs">r'\([^)]*\)'</span>, <span class="st">''</span>, cleaned_chunk).strip()</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> cleaned_chunk.replace(<span class="st">"</span><span class="ch">\u2028</span><span class="st">"</span>, <span class="st">" "</span>)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    cleaned_chunk <span class="op">=</span> re.sub(<span class="vs">r'[\x00-\x1F\x7F-\x9F]'</span>, <span class="st">' '</span>, cleaned_chunk)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> cleaned_chunk</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>clean_chunk(paragraphs[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>'One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches into stiff sections. The bedding was hardly able to cover it and seemed ready to slide off any moment. His many legs, pitifully thin compared with the size of the rest of him, waved about helplessly as he looked. “What’s happened to me?” he thought. It wasn’t a dream. His room, a proper human room although a little too small, lay peacefully between its four familiar walls. A collection of textile samples lay spread out on the table—Samsa was a travelling salesman—and above it there hung a picture that he had recently cut out of an illustrated magazine and housed in a nice, gilded frame. It showed a lady fitted out with a fur hat and fur boa who sat upright, raising a heavy fur muff that covered the whole of her lower arm towards the viewer. Gregor then turned to look out the window at the dull weather. Drops of rain could be heard hitting the pane, which made him feel quite sad. “How about if I sleep a little bit longer and forget all this nonsense”, he thought, but that was something he was unable to do because he was used to sleeping on his right, and in his present state couldn’t get into that position. However hard he threw himself onto his right, he always rolled back to where he was. He must have tried it a hundred times, shut his eyes so that he wouldn’t have to look at the floundering legs, and only stopped when he began to feel a mild, dull pain there that he had never felt before.'</code></pre>
 </div>
@@ -326,7 +346,8 @@ cookieconsent.run({
 </section>
 <section id="convert-text-to-speech" class="level2">
 <h2 class="anchored" data-anchor-id="convert-text-to-speech">Convert Text to Speech</h2>
-<div id="ba111171" class="cell" data-execution_count="6">
+<p>The heart of our solution lies in the <code>text_to_speech()</code> function, which interfaces with Google’s API. I’ve configured it with specific parameters to create a more engaging listening experience: aAdjusting pitch (-20) for a more natural sound and setting to a comfortable speaking rate (0.8). The function includes error handling and retry logic, making it robust enough for processing longer texts like books.</p>
+<div id="1b2604ea" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> text_to_speech(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    text: <span class="bu">str</span>, </span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    output_file: <span class="bu">str</span>, </span>
@@ -342,56 +363,61 @@ cookieconsent.run({
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">        text (str): The text to convert to speech.</span></span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">        output_file (str): The path to save the output MP3 file.</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">        max_retries (int): Maximum number of retries on failure.</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">        base_delay (float): Base delay in seconds for exponential backoff.</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    client <span class="op">=</span> texttospeech.TextToSpeechClient()</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    synthesis_input <span class="op">=</span> texttospeech.SynthesisInput(text<span class="op">=</span>text)</span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    voice <span class="op">=</span> texttospeech.VoiceSelectionParams(</span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        language_code<span class="op">=</span>model[:<span class="dv">5</span>],</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>model</span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    audio_config <span class="op">=</span> texttospeech.AudioConfig(</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>        audio_encoding<span class="op">=</span>texttospeech.AudioEncoding.MP3,</span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>        pitch<span class="op">=</span>pitch,</span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>        speaking_rate<span class="op">=</span>speaking_rate</span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>    retries <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> retries <span class="op">&lt;</span> max_retries:</span>
-<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
-<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>            response <span class="op">=</span> client.synthesize_speech(</span>
-<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>                <span class="bu">input</span><span class="op">=</span>synthesis_input,</span>
-<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>                voice<span class="op">=</span>voice,</span>
-<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>                audio_config<span class="op">=</span>audio_config</span>
-<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>            )</span>
-<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>            <span class="cf">with</span> <span class="bu">open</span>(output_file, <span class="st">"wb"</span>) <span class="im">as</span> out:</span>
-<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>                out.write(response.audio_content)</span>
-<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"Audio content written to file: </span><span class="sc">{</span>output_file<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
-<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="bu">hasattr</span>(e, <span class="st">'code'</span>) <span class="kw">and</span> e.code <span class="op">==</span> <span class="dv">500</span>:</span>
-<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>                retries <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>                delay <span class="op">=</span> base_delay <span class="op">*</span> (<span class="dv">2</span> <span class="op">**</span> (retries <span class="op">-</span> <span class="dv">1</span>))</span>
-<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"Error 500: Retrying in </span><span class="sc">{</span>delay<span class="sc">:.2f}</span><span class="ss"> seconds... (Attempt </span><span class="sc">{</span>retries<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>max_retries<span class="sc">}</span><span class="ss">)"</span>)</span>
-<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>                time.sleep(delay)</span>
-<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
-<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"Non-retryable error: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>                <span class="cf">raise</span></span>
-<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Failed to process text after </span><span class="sc">{</span>max_retries<span class="sc">}</span><span class="ss"> retries."</span>)</span>
-<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">RuntimeError</span>(<span class="st">"Max retries reached."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">        model (str): The model used.</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">        pitch (float): The pitch parameter of the model.</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">        speaking_rate (float): The speaking_rate parameter of the model. </span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co">        max_retries (int): Maximum number of retries on failure.</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co">        base_delay (float): Base delay in seconds for exponential backoff.</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    client <span class="op">=</span> texttospeech.TextToSpeechClient()</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    synthesis_input <span class="op">=</span> texttospeech.SynthesisInput(text<span class="op">=</span>text)</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    voice <span class="op">=</span> texttospeech.VoiceSelectionParams(</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>        language_code<span class="op">=</span>model[:<span class="dv">5</span>],</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>model</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    audio_config <span class="op">=</span> texttospeech.AudioConfig(</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>        audio_encoding<span class="op">=</span>texttospeech.AudioEncoding.MP3,</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>        pitch<span class="op">=</span>pitch,</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>        speaking_rate<span class="op">=</span>speaking_rate</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>    retries <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> retries <span class="op">&lt;</span> max_retries:</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>            response <span class="op">=</span> client.synthesize_speech(</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>                <span class="bu">input</span><span class="op">=</span>synthesis_input,</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>                voice<span class="op">=</span>voice,</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>                audio_config<span class="op">=</span>audio_config</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>            <span class="cf">with</span> <span class="bu">open</span>(output_file, <span class="st">"wb"</span>) <span class="im">as</span> out:</span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>                out.write(response.audio_content)</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"Audio content written to file: </span><span class="sc">{</span>output_file<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="bu">hasattr</span>(e, <span class="st">'code'</span>) <span class="kw">and</span> e.code <span class="op">==</span> <span class="dv">500</span>:</span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>                retries <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>                delay <span class="op">=</span> base_delay <span class="op">*</span> (<span class="dv">2</span> <span class="op">**</span> (retries <span class="op">-</span> <span class="dv">1</span>))</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"Error 500: Retrying in </span><span class="sc">{</span>delay<span class="sc">:.2f}</span><span class="ss"> seconds... (Attempt </span><span class="sc">{</span>retries<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>max_retries<span class="sc">}</span><span class="ss">)"</span>)</span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>                time.sleep(delay)</span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"Non-retryable error: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>                <span class="cf">raise</span></span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Failed to process text after </span><span class="sc">{</span>max_retries<span class="sc">}</span><span class="ss"> retries."</span>)</span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">RuntimeError</span>(<span class="st">"Max retries reached."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="34c038cd" class="cell" data-execution_count="7">
+<p>To create an audio of the first paragraph of the example chapter and store it locally, you just run:</p>
+<div id="6748317c" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>text_to_speech(paragraphs[<span class="dv">0</span>], <span class="st">"out/part1.mp3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="process-text" class="level2">
 <h2 class="anchored" data-anchor-id="process-text">Process Text</h2>
-<div id="ad2622c3" class="cell" data-execution_count="8">
+<p>Now that we have the text split into manageable chunks, cleaned them for better text-to-speech conversion, and created a function to interface with Google’s API, it’s time to process the parapgrahs and generate MP3 files. The <code>process_text()</code> function puts the pieces from above together and stores MP3 files for each paragraph separately.</p>
+<div id="a2f34c58" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_text(text: <span class="bu">list</span>, output_folder: <span class="bu">str</span>):</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Process a text, split it into chunks, and generate MP3 files in the output folder.</span></span>
@@ -414,14 +440,15 @@ cookieconsent.run({
 <span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>        text_to_speech(cleaned_chunk, output_file_path)</span>
 <span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        time.sleep(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="87282c4c" class="cell" data-execution_count="9">
+<p>To create audio files for each paragraph separately, just run:</p>
+<div id="21c37559" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>process_text(text, <span class="st">"out"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="combine-individual-segments" class="level2">
 <h2 class="anchored" data-anchor-id="combine-individual-segments">Combine Individual Segments</h2>
-<p>Note that you might have to run <code>pip install audioop-lts</code> to</p>
-<div id="e3081ee5" class="cell" data-execution_count="10">
+<p>After converting individual text chunks to speech, we need to stitch them together into a cohesive audiobook. This final step uses pydub’s AudioSegment to combine the individual MP3 files seamlessly, ensuring smooth transitions between segments. Note that you might have to run <code>pip install audioop-lts</code> to make this work.</p>
+<div id="4d6647a5" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>input_dir <span class="op">=</span> <span class="st">"out"</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>output_dir <span class="op">=</span> <span class="st">"out"</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -439,6 +466,9 @@ cookieconsent.run({
 <span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    combined_audio <span class="op">=</span> audio <span class="cf">if</span> combined_audio <span class="kw">is</span> <span class="va">None</span> <span class="cf">else</span> combined_audio <span class="op">+</span> audio</span>
 <span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>combined_audio.export(<span class="st">"out/chapter1.mp3"</span>, <span class="bu">format</span><span class="op">=</span><span class="st">"mp3"</span>, bitrate<span class="op">=</span><span class="st">"320k"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>You can listen to the first chapter of Kafka’s The Metamorphosis generated with the Google TTS API here:</p>
+<iframe src="https://drive.google.com/file/d/1z3s_KN3bvQheAeGMa_5Ri-aDs2iQOsKl/preview" width="100%" height="100" allow="autoplay"></iframe>
+<p>Creating audiobooks with Google’s Text-to-Speech API is surprisingly straightforward. While the output may not match the nuanced performance of human narrators, it provides a quick and effective way to convert text content into listenable audio. This approach is particularly valuable for, e.g., rapid prototyping of audio content, or creating accessible versions of text materials. When using this system, keep the API costs and rate limits, as well as the importance of proper text processing in mind.</p>
 
 
 </section>

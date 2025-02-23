@@ -3,15 +3,24 @@
 title: "Text-to-Speech with Goolge AI"
 description: "Creating an audio book using Google's Text-to-Speech API"
 metadata:
-  pagetitle: "Rapid RAG Prototyping"
+  pagetitle: "Text-to-Speech with Goolge AI"
 author: "Christoph Scheuch"
 date: "2025-02-24" 
 image: thumbnail.png
-image-alt: Created with DALL-E.
+image-alt: A whimsical illustration of a bug lying on its back in a cozy office setting. Sunlight streams through a large window, creating a warm and welcoming atmosphere. The office is decorated with vibrant green plants in terracotta pots and bookshelves filled with colorful books. The bug appears relaxed and content, adding a playful touch to the cheerful environment. Created with DALL-E.
 categories: 
   - Python
   - Text-to-Speech AI
 ---
+
+Lately, I’ve found myself increasingly drawn to audiobooks and became curious about how I could create one myself using AI. In this post, I’ll walk you through how to leverage Google’s powerful Text-to-Speech (TTS) API to transform written content into high-quality audio. As an example, we’ll use the first chapter of Franz Kafka’s The Metamorphosis and turn this classic piece of literature into an audiobook - step by step.
+
+Before we dive into generating our audiobook, let’s set up the Python environment with the necessary libraries. We’ll use Google Cloud’s Text-to-Speech client to convert text into speech, along with some utility libraries for handling environment variables and audio processing.
+
+The key packages we’ll need are:
+- `google-cloud-texttospeech`: Google’s official client library for the Text-to-Speech API.
+- `pydub`: A simple and easy-to-use library for audio manipulation.
+- `python-dotenv`: To securely load API keys and configuration from a .env file.
 
 ```{python}
 #| output: false
@@ -26,8 +35,9 @@ from pydub import AudioSegment
 load_dotenv()
 ```
 
+## Prepare Text
 
-## Downlado Book from Project Gutenberg
+To begin, we need the text we want to convert into audio. I downloaded the first chapter of Franz Kafka’s The Metamorphosis from [Project Gutenberg](https://www.gutenberg.org/cache/epub/5200/pg5200.txt), which offers a vast collection of public domain books.
 
 ```{python}
 with open("metamorphosis_chapter1.txt", "r", encoding="utf-8") as file:
@@ -36,10 +46,15 @@ with open("metamorphosis_chapter1.txt", "r", encoding="utf-8") as file:
 text[:500]
 ```
 
-## Prepare Text
+Before moving forward, skim through the loaded text to ensure there aren’t any unwanted headers, footers, or formatting issues (like excessive line breaks) that might affect the audio quality or API compatibility. 
+
+One of the challenges in working with text-to-speech APIs is handling large chunks of text. Google's API has limitations on input size, so we need to split our text intelligently. The following approach breaks the text into manageable paragraphs while preserving the natural flow of the narrative. It splits text on double line breaks (paragraphs), ensures each chunk stays within a 2000-byte limit, and  maintains paragraph integrity where possible.
 
 ```{python}
-def split_text_by_paragraphs(text: str, max_bytes: int = 2000) -> list[str]:
+def split_text_by_paragraphs(
+    text: str, 
+    max_bytes: int = 2000
+) -> list[str]:
     """
     Split the text into chunks based on paragraphs (empty lines) and ensure each chunk is within the byte limit.
 
@@ -74,15 +89,27 @@ def split_text_by_paragraphs(text: str, max_bytes: int = 2000) -> list[str]:
     return chunks
 ```
 
+Let's create paragraphs and inspect the first one:
+
 ```{python}
 paragraphs = split_text_by_paragraphs(text)
 len(paragraphs)
 paragraphs[0]
 ```
 
+Raw text often contains formatting that doesn't translate well to speech or even triggers error codes in the API. The following `clean_chunk()` function emerged in another project that I was working on and prepares the text by: converting single line breaks to spaces, removing double periods, cleaning up special characters and quotation marks, eliminating parenthetical content, and handling Unicode and control characters. This cleaning process is crucial for producing natural-sounding speech without awkward pauses or artifacts. Note that the function below is not generally applicable and needs to be adapted to your specific context.
 
 ```{python}
-def clean_chunk(chunk):
+def clean_chunk(chunk) -> str: 
+    """
+    Cleans and formats a text chunk by removing unwanted characters, normalizing whitespace, and improving readability.
+
+    Args:
+        chunk (str): The text chunk to be cleaned.
+
+    Returns:
+        str: The cleaned and formatted text.
+    """
     cleaned_chunk = re.sub(r'(?<!\n)\n(?!\n)', ' ', chunk) 
     cleaned_chunk = re.sub(r'\n{2,}', '. ', cleaned_chunk)
     cleaned_chunk = cleaned_chunk.replace("..", ".").replace("»", "").replace("«", "")
@@ -97,6 +124,8 @@ clean_chunk(paragraphs[0])
 ```
 
 ## Convert Text to Speech
+
+The heart of our solution lies in the `text_to_speech()` function, which interfaces with Google's API. I've configured it with specific parameters to create a more engaging listening experience: aAdjusting pitch (-20) for a more natural sound and setting to a comfortable speaking rate (0.8). The function includes error handling and retry logic, making it robust enough for processing longer texts like books.
 
 ```{python}
 #| eval: false
@@ -115,6 +144,9 @@ def text_to_speech(
     Args:
         text (str): The text to convert to speech.
         output_file (str): The path to save the output MP3 file.
+        model (str): The model used.
+        pitch (float): The pitch parameter of the model.
+        speaking_rate (float): The speaking_rate parameter of the model. 
         max_retries (int): Maximum number of retries on failure.
         base_delay (float): Base delay in seconds for exponential backoff.
     """
@@ -159,12 +191,16 @@ def text_to_speech(
     raise RuntimeError("Max retries reached.")
 ```
 
+To create an audio of the first paragraph of the example chapter and store it locally, you just run:
+
 ```{python}
 #| eval: false
 text_to_speech(paragraphs[0], "out/part1.mp3")
 ```
 
 ## Process Text 
+
+Now that we have the text split into manageable chunks, cleaned them for better text-to-speech conversion, and created a function to interface with Google's API, it’s time to process the parapgrahs and generate MP3 files. The `process_text()` function puts the pieces from above together and stores MP3 files for each paragraph separately.
 
 ```{python}
 #| eval: false
@@ -191,6 +227,8 @@ def process_text(text: list, output_folder: str):
         time.sleep(1)
 ```
 
+To create audio files for each paragraph separately, just run:
+
 ```{python}
 #| eval: false
 process_text(text, "out")
@@ -198,7 +236,7 @@ process_text(text, "out")
 
 ## Combine Individual Segments
 
-Note that you might have to run `pip install audioop-lts` to 
+After converting individual text chunks to speech, we need to stitch them together into a cohesive audiobook. This final step uses pydub's AudioSegment to combine the individual MP3 files seamlessly, ensuring smooth transitions between segments. Note that you might have to run `pip install audioop-lts` to make this work. 
 
 ```{python}
 #| eval: false
@@ -220,4 +258,10 @@ for file in mp3_files:
 combined_audio.export("out/chapter1.mp3", format="mp3", bitrate="320k")
 ```
 
+You can listen to the first chapter of Kafka's The Metamorphosis generated with the Google TTS API here:
 
+```{=html}
+<iframe src="https://drive.google.com/file/d/1z3s_KN3bvQheAeGMa_5Ri-aDs2iQOsKl/preview" width="100%" height="100" allow="autoplay"></iframe>
+```
+
+Creating audiobooks with Google's Text-to-Speech API is surprisingly straightforward. While the output may not match the nuanced performance of human narrators, it provides a quick and effective way to convert text content into listenable audio. This approach is particularly valuable for, e.g., rapid prototyping of audio content, or creating accessible versions of text materials. When using this system, keep the API costs and rate limits, as well as the importance of proper text processing in mind. 
