@@ -1,0 +1,223 @@
+
+---
+title: "Text-to-Speech with Goolge AI"
+description: "Creating an audio book using Google's Text-to-Speech API"
+metadata:
+  pagetitle: "Rapid RAG Prototyping"
+author: "Christoph Scheuch"
+date: "2025-02-24" 
+image: thumbnail.png
+image-alt: Created with DALL-E.
+categories: 
+  - Python
+  - Text-to-Speech AI
+---
+
+```{python}
+#| output: false
+import os
+import time
+import re
+
+from dotenv import load_dotenv
+from google.cloud import texttospeech
+from pydub import AudioSegment
+
+load_dotenv()
+```
+
+
+## Downlado Book from Project Gutenberg
+
+```{python}
+with open("metamorphosis_chapter1.txt", "r", encoding="utf-8") as file:
+    text = file.read()
+
+text[:500]
+```
+
+## Prepare Text
+
+```{python}
+def split_text_by_paragraphs(text: str, max_bytes: int = 2000) -> list[str]:
+    """
+    Split the text into chunks based on paragraphs (empty lines) and ensure each chunk is within the byte limit.
+
+    Args:
+        text (str): The input text to split.
+        max_bytes (int): Maximum byte size for each chunk.
+
+    Returns:
+        list[str]: List of text chunks.
+    """
+    paragraphs = text.split("\n\n")
+    chunks = []
+    current_chunk = ""
+    current_bytes = 0
+
+    for paragraph in paragraphs:
+        paragraph_bytes = len(paragraph.encode("utf-8"))
+        if current_bytes + paragraph_bytes + 1 > max_bytes:
+            chunks.append(current_chunk.strip())
+            current_chunk = paragraph
+            current_bytes = paragraph_bytes
+        else:
+            if current_chunk:
+                current_chunk += "\n\n" + paragraph
+            else:
+                current_chunk = paragraph
+            current_bytes += paragraph_bytes + 2 
+
+    if current_chunk:
+        chunks.append(current_chunk.strip())
+
+    return chunks
+```
+
+```{python}
+paragraphs = split_text_by_paragraphs(text)
+len(paragraphs)
+paragraphs[0]
+```
+
+
+```{python}
+def clean_chunk(chunk):
+    cleaned_chunk = re.sub(r'(?<!\n)\n(?!\n)', ' ', chunk) 
+    cleaned_chunk = re.sub(r'\n{2,}', '. ', cleaned_chunk)
+    cleaned_chunk = cleaned_chunk.replace("..", ".").replace("»", "").replace("«", "")
+    cleaned_chunk = re.sub(r'\s-\s+', '', cleaned_chunk)
+    cleaned_chunk = re.sub(r'\([^)]*\)', '', cleaned_chunk).strip()
+    cleaned_chunk = cleaned_chunk.replace("\u2028", " ")
+    cleaned_chunk = re.sub(r'[\x00-\x1F\x7F-\x9F]', ' ', cleaned_chunk)
+
+    return cleaned_chunk
+
+clean_chunk(paragraphs[0])
+```
+
+## Convert Text to Speech
+
+```{python}
+#| eval: false
+def text_to_speech(
+    text: str, 
+    output_file: str, 
+    model: str = "en-US-Studio-Q",
+    pitch: float = -20,
+    speaking_rate: float = 0.8,
+    max_retries: int = 5, 
+    base_delay: float = 1.0
+):
+    """
+    Convert text to speech and save the output as an MP3 file, with exponential backoff for retries.
+    
+    Args:
+        text (str): The text to convert to speech.
+        output_file (str): The path to save the output MP3 file.
+        max_retries (int): Maximum number of retries on failure.
+        base_delay (float): Base delay in seconds for exponential backoff.
+    """
+    client = texttospeech.TextToSpeechClient()
+
+    synthesis_input = texttospeech.SynthesisInput(text=text)
+
+    voice = texttospeech.VoiceSelectionParams(
+        language_code=model[:5],
+        name=model
+    )
+
+    audio_config = texttospeech.AudioConfig(
+        audio_encoding=texttospeech.AudioEncoding.MP3,
+        pitch=pitch,
+        speaking_rate=speaking_rate
+    )
+
+    retries = 0
+    while retries < max_retries:
+        try:
+            response = client.synthesize_speech(
+                input=synthesis_input,
+                voice=voice,
+                audio_config=audio_config
+            )
+            with open(output_file, "wb") as out:
+                out.write(response.audio_content)
+                print(f"Audio content written to file: {output_file}")
+            return
+        except Exception as e:
+            if hasattr(e, 'code') and e.code == 500:
+                retries += 1
+                delay = base_delay * (2 ** (retries - 1))
+                print(f"Error 500: Retrying in {delay:.2f} seconds... (Attempt {retries}/{max_retries})")
+                time.sleep(delay)
+            else:
+                print(f"Non-retryable error: {e}")
+                raise
+
+    print(f"Failed to process text after {max_retries} retries.")
+    raise RuntimeError("Max retries reached.")
+```
+
+```{python}
+#| eval: false
+text_to_speech(paragraphs[0], "out/part1.mp3")
+```
+
+## Process Text 
+
+```{python}
+#| eval: false
+def process_text(text: list, output_folder: str):
+    """
+    Process a text, split it into chunks, and generate MP3 files in the output folder.
+
+    Args:
+        text (str): A list of file paths to text files.
+        output_folder (str): The folder to save the generated MP3 files.
+    """
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    text_chunks = split_text_by_paragraphs(text)
+
+    for i, chunk in enumerate(text_chunks):
+        output_file_name = f"part{i+1}.mp3"
+        output_file_path = os.path.join(output_folder, output_file_name)
+                
+        cleaned_chunk = clean_chunk(chunk)
+
+        text_to_speech(cleaned_chunk, output_file_path)
+        time.sleep(1)
+```
+
+```{python}
+#| eval: false
+process_text(text, "out")
+```
+
+## Combine Individual Segments
+
+Note that you might have to run `pip install audioop-lts` to 
+
+```{python}
+#| eval: false
+input_dir = "out"
+output_dir = "out"
+
+def get_number(filename):
+    return int(filename.replace('part', '').replace('.mp3', ''))
+
+mp3_files = sorted(
+    [file for file in os.listdir(input_dir) if file.endswith(".mp3")],
+    key=get_number
+)
+
+combined_audio = None
+for file in mp3_files:
+    audio = AudioSegment.from_file(os.path.join(input_dir, file))
+    combined_audio = audio if combined_audio is None else combined_audio + audio
+combined_audio.export("out/chapter1.mp3", format="mp3", bitrate="320k")
+```
+
+

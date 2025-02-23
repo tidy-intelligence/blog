@@ -129,13 +129,13 @@ cookieconsent.run({
 <meta property="og:site_name" content="Tidy Intelligence">
 <meta property="og:image:height" content="500">
 <meta property="og:image:width" content="500">
-<meta property="og:image:alt" content="Created with DALL-E.">
+<meta property="og:image:alt" content="A cozy office scene featuring a small elephant sitting at a large wooden desk and a duck perched on a nearby chair. Sunlight streams through a large window, filling the room with a warm, welcoming glow. The office is decorated with vibrant green plants in terracotta pots and bookshelves filled with colorful books, creating a cheerful and inviting atmosphere. Created with DALL-E.">
 <meta name="twitter:title" content="Rapid RAG Prototyping">
 <meta name="twitter:description" content="Building a Retrieval-Augmented Generation (RAG) prototype with ellmer and duckdb in R">
 <meta name="twitter:image" content="https://blog.tidy-intelligence.com/posts/rapid-rag-prototyping/thumbnail.png">
 <meta name="twitter:image-height" content="500">
 <meta name="twitter:image-width" content="500">
-<meta name="twitter:image:alt" content="Created with DALL-E.">
+<meta name="twitter:image:alt" content="A cozy office scene featuring a small elephant sitting at a large wooden desk and a duck perched on a nearby chair. Sunlight streams through a large window, filling the room with a warm, welcoming glow. The office is decorated with vibrant green plants in terracotta pots and bookshelves filled with colorful books, creating a cheerful and inviting atmosphere. Created with DALL-E.">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -258,15 +258,13 @@ cookieconsent.run({
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>chat <span class="ot">&lt;-</span> <span class="fu">chat_openai</span>(<span class="at">model =</span> <span class="st">"gpt-4o-mini"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>chat<span class="sc">$</span><span class="fu">chat</span>(<span class="st">"Who is Christoph Scheuch?"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>As of my last update in October 2021, Christoph Scheuch might not be widely 
-recognized in mainstream sources or might not have significant public presence,
-as information about individuals can vary widely depending on their field of 
-expertise, geographic region, and the context in which they are mentioned. If 
-he's a notable figure in a specific niche or has gained prominence after my 
-last update, I wouldn't have information on that.
-
-Please provide more context or specify which Christoph Scheuch you are 
-referring to, and I'll do my best to assist you!</code></pre>
+<pre><code>As of my last knowledge update in October 2021, there isn't widely recognized 
+information about an individual named Christoph Scheuch in popular media, 
+academia, or notable public affairs. It's possible that he could be a private 
+individual or a professional in a specific field not covered in mainstream 
+sources. If he has gained prominence after that date or if he is known in a 
+specific niche, I would not have that information. You may want to check the 
+latest news or specific professional networks for up-to-date information.</code></pre>
 </div>
 </div>
 <p>Too bad, I’m not a widely recognized public figure, so Chat cannot say anything about me. This example perfectly illustrates a common limitation of LLMs - while they excel at general knowledge and patterns learned during training, they lack access to specific, current, or private information. This is where RAG becomes invaluable. By augmenting the model’s capabilities with our own knowledge base, we can help it provide accurate, contextual responses about topics it wasn’t originally trained on.</p>
@@ -379,9 +377,9 @@ referring to, and I'll do my best to assist you!</code></pre>
 <pre><code># A tibble: 3 × 2
   similarity text                                                               
        &lt;dbl&gt; &lt;chr&gt;                                                              
-1      0.716 Who is Christoph Scheuch? Christoph Scheuch is an independent BI &amp;…
-2      0.657 Christoph Scheuch is an independent BI &amp; Data Science consultant s…
-3      0.463 Christian Schuch is a renowned intergalactic cartographer, best kn…</code></pre>
+1      0.717 Who is Christoph Scheuch? Christoph Scheuch is an independent BI &amp;…
+2      0.658 Christoph Scheuch is an independent BI &amp; Data Science consultant s…
+3      0.464 Christian Schuch is a renowned intergalactic cartographer, best kn…</code></pre>
 </div>
 </div>
 <p>The results reveal several interesting insights about our vector similarity search:</p>
@@ -433,7 +431,7 @@ referring to, and I'll do my best to assist you!</code></pre>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>chat<span class="sc">$</span><span class="fu">chat</span>(user_input_augmented)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Christoph Scheuch is an independent BI &amp; Data Science consultant specializing 
-in financial topics. He provides services and trainings related to data 
+in financial topics. He provides services and training related to data 
 infrastructure, data analysis, machine learning, and general data science 
 topics. Previously, he held positions as the Head of AI, Director of Product, 
 and Head of BI &amp; Data Science at the social trading platform wikifolio.com. He 
