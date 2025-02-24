@@ -13,12 +13,12 @@ categories:
   - Text-to-Speech AI
 ---
 
-Lately, I’ve found myself increasingly drawn to audiobooks and became curious about how I could create one myself using AI. In this post, I’ll walk you through how to leverage Google’s powerful Text-to-Speech (TTS) API to transform written content into high-quality audio. As an example, we’ll use the first chapter of Franz Kafka’s The Metamorphosis and turn this classic piece of literature into an audiobook - step by step.
+Lately, I've found myself increasingly drawn to audiobooks and became curious about how I could create one myself using AI. In this post, I'll walk you through how to leverage Google's powerful Text-to-Speech (TTS) API to transform written content into high-quality audio. As an example, we'll use the first chapter of Franz Kafka's The Metamorphosis and turn this classic piece of literature into an audiobook - step by step.
 
-Before we dive into generating our audiobook, let’s set up the Python environment with the necessary libraries. We’ll use Google Cloud’s Text-to-Speech client to convert text into speech, along with some utility libraries for handling environment variables and audio processing.
+Before we dive into generating our audiobook, let's set up the Python environment with the necessary libraries. We'll use Google Cloud's Text-to-Speech client to convert text into speech, along with some utility libraries for handling environment variables and audio processing.
 
-The key packages we’ll need are:
-- `google-cloud-texttospeech`: Google’s official client library for the Text-to-Speech API.
+The key packages we'll need are:
+- `google-cloud-texttospeech`: Google's official client library for the Text-to-Speech API.
 - `pydub`: A simple and easy-to-use library for audio manipulation.
 - `python-dotenv`: To securely load API keys and configuration from a .env file.
 
@@ -37,7 +37,7 @@ load_dotenv()
 
 ## Prepare Text
 
-To begin, we need the text we want to convert into audio. I downloaded the first chapter of Franz Kafka’s The Metamorphosis from [Project Gutenberg](https://www.gutenberg.org/cache/epub/5200/pg5200.txt), which offers a vast collection of public domain books.
+To begin, we need the text we want to convert into audio. I downloaded the first chapter of Franz Kafka's The Metamorphosis from [Project Gutenberg](https://www.gutenberg.org/cache/epub/5200/pg5200.txt), which offers a vast collection of public domain books.
 
 ```{python}
 with open("metamorphosis_chapter1.txt", "r", encoding="utf-8") as file:
@@ -46,7 +46,7 @@ with open("metamorphosis_chapter1.txt", "r", encoding="utf-8") as file:
 text[:500]
 ```
 
-Before moving forward, skim through the loaded text to ensure there aren’t any unwanted headers, footers, or formatting issues (like excessive line breaks) that might affect the audio quality or API compatibility. 
+Before moving forward, skim through the loaded text to ensure there aren't any unwanted headers, footers, or formatting issues (like excessive line breaks) that might affect the audio quality or API compatibility. 
 
 One of the challenges in working with text-to-speech APIs is handling large chunks of text. Google's API has limitations on input size, so we need to split our text intelligently. The following approach breaks the text into manageable paragraphs while preserving the natural flow of the narrative. It splits text on double line breaks (paragraphs), ensures each chunk stays within a 2000-byte limit, and  maintains paragraph integrity where possible.
 
@@ -200,7 +200,7 @@ text_to_speech(paragraphs[0], "out/part1.mp3")
 
 ## Process Text 
 
-Now that we have the text split into manageable chunks, cleaned them for better text-to-speech conversion, and created a function to interface with Google's API, it’s time to process the parapgrahs and generate MP3 files. The `process_text()` function puts the pieces from above together and stores MP3 files for each paragraph separately.
+Now that we have the text split into manageable chunks, cleaned them for better text-to-speech conversion, and created a function to interface with Google's API, it's time to process the parapgrahs and generate MP3 files. The `process_text()` function puts the pieces from above together and stores MP3 files for each paragraph separately.
 
 ```{python}
 #| eval: false
