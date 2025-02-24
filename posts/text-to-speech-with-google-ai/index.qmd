@@ -18,6 +18,7 @@ Lately, I've found myself increasingly drawn to audiobooks and became curious ab
 Before we dive into generating our audiobook, let's set up the Python environment with the necessary libraries. We'll use Google Cloud's Text-to-Speech client to convert text into speech, along with some utility libraries for handling environment variables and audio processing.
 
 The key packages we'll need are:
+
 - `google-cloud-texttospeech`: Google's official client library for the Text-to-Speech API.
 - `pydub`: A simple and easy-to-use library for audio manipulation.
 - `python-dotenv`: To securely load API keys and configuration from a .env file.

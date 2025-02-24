@@ -243,8 +243,13 @@ cookieconsent.run({
 
 <p>Lately, I’ve found myself increasingly drawn to audiobooks and became curious about how I could create one myself using AI. In this post, I’ll walk you through how to leverage Google’s powerful Text-to-Speech (TTS) API to transform written content into high-quality audio. As an example, we’ll use the first chapter of Franz Kafka’s The Metamorphosis and turn this classic piece of literature into an audiobook - step by step.</p>
 <p>Before we dive into generating our audiobook, let’s set up the Python environment with the necessary libraries. We’ll use Google Cloud’s Text-to-Speech client to convert text into speech, along with some utility libraries for handling environment variables and audio processing.</p>
-<p>The key packages we’ll need are: - <code>google-cloud-texttospeech</code>: Google’s official client library for the Text-to-Speech API. - <code>pydub</code>: A simple and easy-to-use library for audio manipulation. - <code>python-dotenv</code>: To securely load API keys and configuration from a .env file.</p>
-<div id="1806bd7d" class="cell" data-execution_count="1">
+<p>The key packages we’ll need are:</p>
+<ul>
+<li><code>google-cloud-texttospeech</code>: Google’s official client library for the Text-to-Speech API.</li>
+<li><code>pydub</code>: A simple and easy-to-use library for audio manipulation.</li>
+<li><code>python-dotenv</code>: To securely load API keys and configuration from a .env file.</li>
+</ul>
+<div id="29b6c507" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
@@ -258,7 +263,7 @@ cookieconsent.run({
 <section id="prepare-text" class="level2">
 <h2 class="anchored" data-anchor-id="prepare-text">Prepare Text</h2>
 <p>To begin, we need the text we want to convert into audio. I downloaded the first chapter of Franz Kafka’s The Metamorphosis from <a href="https://www.gutenberg.org/cache/epub/5200/pg5200.txt">Project Gutenberg</a>, which offers a vast collection of public domain books.</p>
-<div id="373bbed3" class="cell" data-execution_count="2">
+<div id="2c6974fd" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"metamorphosis_chapter1.txt"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="im">as</span> <span class="bu">file</span>:</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="bu">file</span>.read()</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -269,7 +274,7 @@ cookieconsent.run({
 </div>
 <p>Before moving forward, skim through the loaded text to ensure there aren’t any unwanted headers, footers, or formatting issues (like excessive line breaks) that might affect the audio quality or API compatibility.</p>
 <p>One of the challenges in working with text-to-speech APIs is handling large chunks of text. Google’s API has limitations on input size, so we need to split our text intelligently. The following approach breaks the text into manageable paragraphs while preserving the natural flow of the narrative. It splits text on double line breaks (paragraphs), ensures each chunk stays within a 2000-byte limit, and maintains paragraph integrity where possible.</p>
-<div id="2a11ccb5" class="cell" data-execution_count="3">
+<div id="07420166" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> split_text_by_paragraphs(</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    text: <span class="bu">str</span>, </span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    max_bytes: <span class="bu">int</span> <span class="op">=</span> <span class="dv">2000</span></span>
@@ -308,7 +313,7 @@ cookieconsent.run({
 <span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> chunks</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s create paragraphs and inspect the first one:</p>
-<div id="988f78be" class="cell" data-execution_count="4">
+<div id="f4d4c133" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>paragraphs <span class="op">=</span> split_text_by_paragraphs(text)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(paragraphs)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>paragraphs[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -317,7 +322,7 @@ cookieconsent.run({
 </div>
 </div>
 <p>Raw text often contains formatting that doesn’t translate well to speech or even triggers error codes in the API. The following <code>clean_chunk()</code> function emerged in another project that I was working on and prepares the text by: converting single line breaks to spaces, removing double periods, cleaning up special characters and quotation marks, eliminating parenthetical content, and handling Unicode and control characters. This cleaning process is crucial for producing natural-sounding speech without awkward pauses or artifacts. Note that the function below is not generally applicable and needs to be adapted to your specific context.</p>
-<div id="84c2aa9f" class="cell" data-execution_count="5">
+<div id="e9c7f5bc" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_chunk(chunk) <span class="op">-&gt;</span> <span class="bu">str</span>: </span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Cleans and formats a text chunk by removing unwanted characters, normalizing whitespace, and improving readability.</span></span>
@@ -347,7 +352,7 @@ cookieconsent.run({
 <section id="convert-text-to-speech" class="level2">
 <h2 class="anchored" data-anchor-id="convert-text-to-speech">Convert Text to Speech</h2>
 <p>The heart of our solution lies in the <code>text_to_speech()</code> function, which interfaces with Google’s API. I’ve configured it with specific parameters to create a more engaging listening experience: aAdjusting pitch (-20) for a more natural sound and setting to a comfortable speaking rate (0.8). The function includes error handling and retry logic, making it robust enough for processing longer texts like books.</p>
-<div id="71728aba" class="cell" data-execution_count="6">
+<div id="134d9af0" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> text_to_speech(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    text: <span class="bu">str</span>, </span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    output_file: <span class="bu">str</span>, </span>
@@ -410,14 +415,14 @@ cookieconsent.run({
 <span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">RuntimeError</span>(<span class="st">"Max retries reached."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>To create an audio of the first paragraph of the example chapter and store it locally, you just run:</p>
-<div id="88b6eb04" class="cell" data-execution_count="7">
+<div id="16e8370c" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>text_to_speech(paragraphs[<span class="dv">0</span>], <span class="st">"out/part1.mp3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="process-text" class="level2">
 <h2 class="anchored" data-anchor-id="process-text">Process Text</h2>
 <p>Now that we have the text split into manageable chunks, cleaned them for better text-to-speech conversion, and created a function to interface with Google’s API, it’s time to process the parapgrahs and generate MP3 files. The <code>process_text()</code> function puts the pieces from above together and stores MP3 files for each paragraph separately.</p>
-<div id="260e3e00" class="cell" data-execution_count="8">
+<div id="63c10aad" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_text(text: <span class="bu">list</span>, output_folder: <span class="bu">str</span>):</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Process a text, split it into chunks, and generate MP3 files in the output folder.</span></span>
@@ -441,14 +446,14 @@ cookieconsent.run({
 <span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        time.sleep(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>To create audio files for each paragraph separately, just run:</p>
-<div id="5bda4864" class="cell" data-execution_count="9">
+<div id="e7c9c878" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>process_text(text, <span class="st">"out"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="combine-individual-segments" class="level2">
 <h2 class="anchored" data-anchor-id="combine-individual-segments">Combine Individual Segments</h2>
 <p>After converting individual text chunks to speech, we need to stitch them together into a cohesive audiobook. This final step uses pydub’s AudioSegment to combine the individual MP3 files seamlessly, ensuring smooth transitions between segments. Note that you might have to run <code>pip install audioop-lts</code> to make this work.</p>
-<div id="0862eb25" class="cell" data-execution_count="10">
+<div id="6f4ba99c" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>input_dir <span class="op">=</span> <span class="st">"out"</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>output_dir <span class="op">=</span> <span class="st">"out"</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
