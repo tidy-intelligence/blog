@@ -13,8 +13,12 @@
     <lastmod>2024-01-29T18:31:57.721Z</lastmod>
   </url>
   <url>
-    <loc>https://blog.tidy-intelligence.com/posts/scraping-esg-data-from-yahoo-finance/index.html</loc>
-    <lastmod>2024-01-27T21:22:10.734Z</lastmod>
+    <loc>https://blog.tidy-intelligence.com/posts/rapid-rag-prototyping/index.html</loc>
+    <lastmod>2025-02-23T10:25:26.755Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.tidy-intelligence.com/posts/text-to-speech-with-google-ai/index.html</loc>
+    <lastmod>2025-02-24T07:18:06.960Z</lastmod>
   </url>
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/dplyr-vs-ibis/index.html</loc>
@@ -73,6 +77,10 @@
     <lastmod>2024-01-27T21:22:10.732Z</lastmod>
   </url>
   <url>
+    <loc>https://blog.tidy-intelligence.com/posts/scraping-esg-data-from-yahoo-finance/index.html</loc>
+    <lastmod>2024-01-27T21:22:10.734Z</lastmod>
+  </url>
+  <url>
     <loc>https://blog.tidy-intelligence.com/posts/data-storage-comparison/index.html</loc>
     <lastmod>2024-01-30T18:57:18.689Z</lastmod>
   </url>
@@ -83,17 +91,5 @@
   <url>
     <loc>https://blog.tidy-intelligence.com/posts/interactive-data-visualization-with-python/index.html</loc>
     <lastmod>2024-01-30T18:55:03.509Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.tidy-intelligence.com/posts/rag-prototyping-with-ellmer-and-duckdb/index.html</loc>
-    <lastmod>2025-02-21T17:32:55.880Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.tidy-intelligence.com/posts/track-turns-and-feedback-in-shinychat/index.html</loc>
-    <lastmod>2025-02-20T17:53:38.396Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.tidy-intelligence.com/posts/rapid-rag-prototyping/index.html</loc>
-    <lastmod>2025-02-21T17:48:31.668Z</lastmod>
   </url>
 </urlset>

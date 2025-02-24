@@ -6,7 +6,7 @@ metadata:
 author: "Christoph Scheuch"
 date: "2025-02-22" 
 image: thumbnail.png
-image-alt: Created with DALL-E.
+image-alt: A cozy office scene featuring a small elephant sitting at a large wooden desk and a duck perched on a nearby chair. Sunlight streams through a large window, filling the room with a warm, welcoming glow. The office is decorated with vibrant green plants in terracotta pots and bookshelves filled with colorful books, creating a cheerful and inviting atmosphere. Created with DALL-E.
 categories: 
   - R
   - Generative AI
