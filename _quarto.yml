@@ -30,6 +30,8 @@ website:
     left:
       - text: "Home"
         url: https://www.tidy-intelligence.com/
+      - text: "Projects"
+        url: https://www.tidy-intelligence.com/projects
       - text: "Apps"
         url: https://apps.tidy-intelligence.com/
       - text: "Blog"
