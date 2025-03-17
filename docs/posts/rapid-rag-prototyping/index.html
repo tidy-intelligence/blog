@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.40">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -70,7 +70,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap-6bd9cfa162949bde0a231f530c97869d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
@@ -249,6 +249,19 @@ cookieconsent.run({
 <p>A common challenge with LLMs is their inability to reference specific, up-to-date information beyond their training data. This is where retrieval-augmented generation (RAG) comes into play. RAG systems bridge this gap by integrating LLMs with external knowledge bases, enabling them to generate more accurate and contextually grounded responses.</p>
 <p>The <code>ellmer</code> package in R simplifies working with LLMs by offering a seamless interface to multiple providers. It comes with built-in features like tool calling and structured data extraction, making it easy to extend LLM capabilities. On the other hand, DuckDB is a high-performance, embedded analytics database that runs directly within your application. Known for its ability to process large datasets efficiently, DuckDB can query diverse file formats and, with its vector search extension, becomes an excellent lightweight tool for implementing retrieval-based features.</p>
 <p>By combining <code>ellmer</code> and DuckDB, you get a powerful stack for quickly prototyping LLM-powered applications. Whether you’re building a proof-of-concept or laying the groundwork for a more complex system, this setup offers the flexibility and performance to bring your ideas to life—fast.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I came across the promising <a href="https://github.com/t-kalinowski/ragnar"><code>ragner</code></a> package a few weeks after I wrote this blog post. While it is still actively being developed, it already offers a streamlined alternative to the application described below.</p>
+</div>
+</div>
 <section id="response-without-augmentation" class="level2">
 <h2 class="anchored" data-anchor-id="response-without-augmentation">Response without Augmentation</h2>
 <div class="cell">
@@ -262,13 +275,13 @@ cookieconsent.run({
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>chat <span class="ot">&lt;-</span> <span class="fu">chat_openai</span>(<span class="at">model =</span> <span class="st">"gpt-4o-mini"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>chat<span class="sc">$</span><span class="fu">chat</span>(<span class="st">"Who is Christoph Scheuch?"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>As of my last knowledge update in October 2021, there isn't widely recognized 
-information about an individual named Christoph Scheuch in popular media, 
-academia, or notable public affairs. It's possible that he could be a private 
-individual or a professional in a specific field not covered in mainstream 
-sources. If he has gained prominence after that date or if he is known in a 
-specific niche, I would not have that information. You may want to check the 
-latest news or specific professional networks for up-to-date information.</code></pre>
+<pre><code>As of my last knowledge update in October 2021, Christoph Scheuch does not 
+appear to be a widely recognized public figure or celebrity, and I do not have 
+specific information about him. It’s possible that he may be a private 
+individual or a professional in a specific field who has gained recognition 
+since then. If you’re looking for information about a specific Christoph 
+Scheuch, please provide additional context or details, and I would be happy to 
+try to help further!</code></pre>
 </div>
 </div>
 <p>Too bad, I’m not a widely recognized public figure, so Chat cannot say anything about me. This example perfectly illustrates a common limitation of LLMs - while they excel at general knowledge and patterns learned during training, they lack access to specific, current, or private information. This is where RAG becomes invaluable. By augmenting the model’s capabilities with our own knowledge base, we can help it provide accurate, contextual responses about topics it wasn’t originally trained on.</p>
@@ -382,7 +395,7 @@ latest news or specific professional networks for up-to-date information.</code>
   similarity text                                                               
        &lt;dbl&gt; &lt;chr&gt;                                                              
 1      0.717 Who is Christoph Scheuch? Christoph Scheuch is an independent BI &amp;…
-2      0.658 Christoph Scheuch is an independent BI &amp; Data Science consultant s…
+2      0.657 Christoph Scheuch is an independent BI &amp; Data Science consultant s…
 3      0.464 Christian Schuch is a renowned intergalactic cartographer, best kn…</code></pre>
 </div>
 </div>
@@ -437,11 +450,11 @@ latest news or specific professional networks for up-to-date information.</code>
 <pre><code>Christoph Scheuch is an independent BI &amp; Data Science consultant specializing 
 in financial topics. He provides services and training related to data 
 infrastructure, data analysis, machine learning, and general data science 
-topics. Previously, he held positions as the Head of AI, Director of Product, 
-and Head of BI &amp; Data Science at the social trading platform wikifolio.com. He 
-is also the co-creator and maintainer of the open-source project Tidy Finance. 
-In his free time, he occasionally designs shirts and mugs, which are available 
-under the Tidy Swag brand.</code></pre>
+topics. Previously, he was the Head of AI, Director of Product, and Head of BI 
+&amp; Data Science at the social trading platform wikifolio.com. He is also the 
+co-creator and maintainer of the open-source project Tidy Finance. In his free 
+time, he occasionally designs shirts and mugs, which are available under the 
+Tidy Swag brand.</code></pre>
 </div>
 </div>
 <p>Lo and behold, Chat now gets it right! We’ve successfully transformed our LLM from having no knowledge about a specific topic to providing accurate, contextualized responses based on our provided information.</p>
