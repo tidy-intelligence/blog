@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/quarto-dashboard-shiny-docker/index.html",
       "/posts/text-to-speech-with-google-ai/index.html",
       "/posts/rapid-rag-prototyping/index.html",
       "/posts/international-external-debt-network/index.html",

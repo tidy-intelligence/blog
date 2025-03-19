@@ -309,3 +309,7 @@ pre {
 .cell {
   margin-bottom: 16px;
 }
+
+pre {
+  margin-bottom: 1em;
+}
