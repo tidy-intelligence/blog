@@ -1,0 +1,134 @@
+---
+title: "Quarto Dashboard with Shiny Server and Docker"
+description: "Deploy a Quarto dashboard with an R Shiny backend using Shiny Server inside a Docker container"
+metadata:
+  pagetitle: "Quarto Dashboard with Shiny Server and Docker"
+author: "Christoph Scheuch"
+date: "2025-03-19" 
+image: thumbnail.png
+image-alt: A cozy office scene featuring a shiny bluebird and a small whale, both of equal size, sitting at a large wooden desk. Sunlight streams through a large window, casting a warm glow across the room. The office is decorated with lush green plants in terracotta pots and bookshelves filled with colorful books, creating a cheerful and inviting atmosphere. The bird and whale appear to be engaged in a friendly interaction, adding a whimsical touch to the setting. Created with DALL-E.
+categories: 
+  - R
+  - Shiny
+  - Quarto
+---
+
+[Quarto dashboards](https://quarto.org/docs/dashboards/) provide a seamless way to create interactive web applications using Python, R, Julia, and Observable. While there are convenient hosting solutions such as shinyapps.io, Hugging Face, and Posit Connect, sometimes you need more control over resources—particularly RAM. Hosting on a cloud platform like Google Cloud Run (GCR) allows for more flexibility and cost efficiency. The method outlined in this post should be applicable to other cloud providers as well, so please share your experience in the comments if you deploy it elsewhere! 
+
+In this blog post, I’ll show you how to deploy a Quarto dashboard with an R Shiny backend inside a Docker container, served using [Shiny Server](https://posit.co/products/open-source/shiny-server/). You can find the complete setup in this GitHub [repo](https://github.com/tidy-intelligence/quarto-dashboard-shiny-docker). If you're interested in a Python-based dashboard deployment, feel free to [reach out](https://www.tidy-intelligence.com/)!
+
+## Setting Up the Dashboard
+
+The foundation of our dashboard is an `index.qmd` file. In this example, we use a demonstration from the Shiny Gallery that illustrates the [k-Means clustering algorithm](https://shiny.posit.co/r/gallery/start-simple/kmeans-example/).
+
+It is just a simple app without any additional depdencies. You can check out the code [in the repo](https://github.com/tidy-intelligence/quarto-dashboard-shiny-docker/blob/main/index.qmd), I'm not going into details here.
+
+To preview the dashboard locally, install [Quarto](https://quarto.org/docs/download/), the necessary packages, and use the following command in your R console:
+
+```{r}
+#| eval: false
+# Install required packages
+install.packages("shiny")
+install.packages("quarto")
+
+# Serve the dasboard
+quarto::quarto_serve("index.qmd")
+```
+
+This launches a local server where you can interact with your dashboard. However, this step isn’t required for deployment, as the Docker container will handle rendering automatically.
+
+## Writing the Dockerfile
+
+Our Docker container needs to: (i) install Quarto and its dependencies, (ii) install Shiny Server to serve the dashboard, and (iii) render the `.qmd` file to an HTML format for deployment. 
+
+We start with the [`rocker/shiny`](https://rocker-project.org/images/versioned/shiny.html) base image, which includes R, Shiny Server, and its dependencies. For production applications, you might want to specify the version here. 
+
+```
+FROM rocker/shiny
+```
+
+Then, we install additional dependencies required for Quarto:
+
+```
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    pandoc \
+    curl \
+    gdebi-core \
+    && rm -rf /var/lib/apt/lists/*
+```
+
+Next, we install Quarto (you may want to also specify a fixed version for production stability):
+
+```
+RUN curl -LO https://quarto.org/download/latest/quarto-linux-amd64.deb
+RUN gdebi --non-interactive quarto-linux-amd64.deb
+```
+
+We install the required R packages:
+
+```
+RUN R -e "install.packages(c('shiny', 'quarto'))"
+```
+
+We copy our custom configuration (see below) for the shiny server into the container.
+
+```
+RUN mkdir -p /srv/shiny-server/dashboard && \
+    chown -R shiny:shiny /srv/shiny-server
+COPY shiny-server.conf /etc/shiny-server/shiny-server.conf
+```
+
+We also set additional permissions for server log files:
+
+```
+RUN mkdir -p /var/log/shiny-server && \
+    chown -R shiny:shiny /var/log/shiny-server
+```
+
+Since Shiny Server does not natively support `.qmd` files, we need to render the dashboard inside the container. If you are interested in why Shiny Server cannot handle the `.qmd` files directly, check out this [pull request](https://github.com/rstudio/shiny-server/pull/531).
+
+```
+COPY index.qmd /srv/shiny-server/dashboard/index.qmd
+WORKDIR /srv/shiny-server/dashboard/
+RUN quarto render index.qmd
+```
+
+Finally, we switch to the shiny user for enhanced security and start the shiny Server process upon execution.
+
+```
+USER shiny
+CMD ["/usr/bin/shiny-server"]
+```
+
+## Shiny Server Configuration
+
+Shiny Server requires a configuration file (`shiny-server.conf`) to specify how the dashboard is served. Below is a minimal setup:
+
+```
+run_as shiny;
+
+server {
+  listen 8080;
+
+  location / {
+    site_dir /srv/shiny-server/dashboard;
+    log_dir /var/log/shiny-server;
+  }
+}
+```
+
+This configuration ensures that:
+
+- The server runs as the `shiny` user.
+- It listens on port `8080` (which is compatible with GCR).
+- It serves the dashboard from `/srv/shiny-server/dashboard` (as specified in the `Dockerfile`).
+
+## Deploying to a Cloud Platform
+
+Deploying this setup to a cloud provider like GCR is straightforward. If you want automatic deployment from a GitHub repository, you can follow Google’s [Cloud Build]((https://cloud.google.com/run/docs/continuous-deployment-with-cloud-build#setup-cd)) setup. Once the repository is updated, GCR automatically builds and deploys the container.
+
+## Conclusion
+
+With this setup, you can deploy a Quarto dashboard backed by an R Shiny application in a Docker container, making it easy to run both locally and on cloud platforms like GCR. This approach provides greater flexibility and control over resource allocation compared to managed services.
+
+I’d love to hear your feedback! If you deploy this setup on other platforms, let me know how it works for you in the comments.
