@@ -1,9 +1,9 @@
 
 ---
-title: "Text-to-Speech with Goolge AI"
+title: "Text-to-Speech with Google AI"
 description: "Creating an audio book using Google's Text-to-Speech API"
 metadata:
-  pagetitle: "Text-to-Speech with Goolge AI"
+  pagetitle: "Text-to-Speech with Google AI"
 author: "Christoph Scheuch"
 date: "2025-02-24" 
 image: thumbnail.png
