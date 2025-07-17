@@ -26,7 +26,7 @@ The `ellmer` package in R simplifies working with LLMs by offering a seamless in
 By combining `ellmer` and DuckDB, you get a powerful stack for quickly prototyping LLM-powered applications. Whether you’re building a proof-of-concept or laying the groundwork for a more complex system, this setup offers the flexibility and performance to bring your ideas to life—fast.
 
 ::: {.callout-note} 
-I came across the promising [`ragner`](https://github.com/t-kalinowski/ragnar) package a few weeks after I wrote this blog post. While it is still actively being developed, it already offers a streamlined alternative to the application described below.
+I came across the promising [`ragner`](https://github.com/tidyverse/ragnar) package a few weeks after I wrote this blog post. While it is still actively being developed, it already offers a streamlined alternative to the application described below.
 :::
 
 ## Response without Augmentation
