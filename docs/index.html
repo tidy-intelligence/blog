@@ -150,16 +150,16 @@ window.Quarto = {
 <link rel="stylesheet" href="assets/css/styles-global.css">
 <link rel="stylesheet" href="assets/css/styles-blog.css">
 <meta property="og:title" content="Tidy Intelligence Blog">
-<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/quarto-dashboard-shiny-docker/thumbnail.png">
+<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/deploying-shiny-apps-in-the-azure-cloud/thumbnail.png">
 <meta property="og:site_name" content="Tidy Intelligence">
-<meta property="og:image:alt" content="A cozy office scene featuring a shiny bluebird and a small whale, both of equal size, sitting at a large wooden desk. Sunlight streams through a large window, casting a warm glow across the room. The office is decorated with lush green plants in terracotta pots and bookshelves filled with colorful books, creating a cheerful and inviting atmosphere. The bird and whale appear to be engaged in a friendly interaction, adding a whimsical touch to the setting. Created with DALL-E.">
-<meta property="og:image:height" content="981">
-<meta property="og:image:width" content="981">
+<meta property="og:image:alt" content="Collection of various Microsoft Azure service icons, including App Service, Azure Pipelines, Container Registry, Storage Account, Azure Container Apps, Microsoft Entra ID, Azure Functions, Virtual Machine, Key Vault, and other Azure-related services, arranged around the central Azure logo.">
+<meta property="og:image:height" content="2624">
+<meta property="og:image:width" content="2650">
 <meta name="twitter:title" content="Tidy Intelligence Blog">
-<meta name="twitter:image" content="https://blog.tidy-intelligence.com/posts/quarto-dashboard-shiny-docker/thumbnail.png">
-<meta name="twitter:image:alt" content="A cozy office scene featuring a shiny bluebird and a small whale, both of equal size, sitting at a large wooden desk. Sunlight streams through a large window, casting a warm glow across the room. The office is decorated with lush green plants in terracotta pots and bookshelves filled with colorful books, creating a cheerful and inviting atmosphere. The bird and whale appear to be engaged in a friendly interaction, adding a whimsical touch to the setting. Created with DALL-E.">
-<meta name="twitter:image-height" content="981">
-<meta name="twitter:image-width" content="981">
+<meta name="twitter:image" content="https://blog.tidy-intelligence.com/posts/deploying-shiny-apps-in-the-azure-cloud/thumbnail.png">
+<meta name="twitter:image:alt" content="Collection of various Microsoft Azure service icons, including App Service, Azure Pipelines, Container Registry, Storage Account, Azure Container Apps, Microsoft Entra ID, Azure Functions, Virtual Machine, Key Vault, and other Azure-related services, arranged around the central Azure logo.">
+<meta name="twitter:image-height" content="2624">
+<meta name="twitter:image-width" content="2650">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -212,7 +212,7 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(23)</span></div><div class="category" data-category="Q2xhc3NpZmljYXRpb24=">Classification <span class="quarto-category-count">(1)</span></div><div class="category" data-category="RGF0YQ==">Data <span class="quarto-category-count">(3)</span></div><div class="category" data-category="R2VuZXJhdGl2ZSUyMEFJ">Generative AI <span class="quarto-category-count">(1)</span></div><div class="category" data-category="SnVsaWE=">Julia <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TWFuaXB1bGF0aW9u">Manipulation <span class="quarto-category-count">(5)</span></div><div class="category" data-category="TW9kZWxpbmc=">Modeling <span class="quarto-category-count">(2)</span></div><div class="category" data-category="UHl0aG9u">Python <span class="quarto-category-count">(12)</span></div><div class="category" data-category="UXVhcnRv">Quarto <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Ug==">R <span class="quarto-category-count">(20)</span></div><div class="category" data-category="UmVjb21tZW5kZXJz">Recommenders <span class="quarto-category-count">(1)</span></div><div class="category" data-category="U2hpbnk=">Shiny <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VGV4dC10by1TcGVlY2glMjBBSQ==">Text-to-Speech AI <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VW5zdXBlcnZpc2VkJTIwTGVhcm5pbmc=">Unsupervised Learning <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VmlzdWFsaXphdGlvbg==">Visualization <span class="quarto-category-count">(7)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(24)</span></div><div class="category" data-category="Q2xhc3NpZmljYXRpb24=">Classification <span class="quarto-category-count">(1)</span></div><div class="category" data-category="RGF0YQ==">Data <span class="quarto-category-count">(3)</span></div><div class="category" data-category="R2VuZXJhdGl2ZSUyMEFJ">Generative AI <span class="quarto-category-count">(1)</span></div><div class="category" data-category="SnVsaWE=">Julia <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TWFuaXB1bGF0aW9u">Manipulation <span class="quarto-category-count">(5)</span></div><div class="category" data-category="TW9kZWxpbmc=">Modeling <span class="quarto-category-count">(2)</span></div><div class="category" data-category="UHl0aG9u">Python <span class="quarto-category-count">(13)</span></div><div class="category" data-category="UXVhcnRv">Quarto <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Ug==">R <span class="quarto-category-count">(21)</span></div><div class="category" data-category="UmVjb21tZW5kZXJz">Recommenders <span class="quarto-category-count">(1)</span></div><div class="category" data-category="U2hpbnk=">Shiny <span class="quarto-category-count">(2)</span></div><div class="category" data-category="VGV4dC10by1TcGVlY2glMjBBSQ==">Text-to-Speech AI <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VW5zdXBlcnZpc2VkJTIwTGVhcm5pbmc=">Unsupervised Learning <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VmlzdWFsaXphdGlvbg==">Visualization <span class="quarto-category-count">(7)</span></div></div></div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
@@ -225,7 +225,23 @@ window.Quarto = {
 
 <div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
 <div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="UiUyQ1NoaW55JTJDUXVhcnRv" data-listing-date-sort="1742338800000" data-listing-file-modified-sort="1742371901980" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="656">
+<div class="g-col-1" data-index="0" data-categories="UiUyQ1B5dGhvbiUyQ1NoaW55" data-listing-date-sort="1755036000000" data-listing-file-modified-sort="1755070803838" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1519">
+<a href="./posts/deploying-shiny-apps-in-the-azure-cloud/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top">
+<img loading="lazy" src="./posts/deploying-shiny-apps-in-the-azure-cloud/thumbnail.png" class="thumbnail-image card-img" style="height: 100%;" alt="Collection of various Microsoft Azure service icons, including App Service, Azure Pipelines, Container Registry, Storage Account, Azure Container Apps, Microsoft Entra ID, Azure Functions, Virtual Machine, Key Vault, and other Azure-related services, arranged around the central Azure logo.">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Deploying Shiny Apps in the Azure Cloud
+</h5>
+<div class="card-text listing-description delink">
+<p>A practical guide to deploying Shiny Apps in the Azure Cloud</p>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="1" data-categories="UiUyQ1NoaW55JTJDUXVhcnRv" data-listing-date-sort="1742338800000" data-listing-file-modified-sort="1742371901980" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="656">
 <a href="./posts/quarto-dashboard-shiny-docker/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -241,7 +257,7 @@ Quarto Dashboard with Shiny Server and Docker
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="1" data-categories="UHl0aG9uJTJDVGV4dC10by1TcGVlY2glMjBBSQ==" data-listing-date-sort="1740351600000" data-listing-file-modified-sort="1746539658406" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1952">
+<div class="g-col-1" data-index="2" data-categories="UHl0aG9uJTJDVGV4dC10by1TcGVlY2glMjBBSQ==" data-listing-date-sort="1740351600000" data-listing-file-modified-sort="1746539658406" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1952">
 <a href="./posts/text-to-speech-with-google-ai/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -257,7 +273,7 @@ Text-to-Speech with Google AI
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="2" data-categories="UiUyQ0dlbmVyYXRpdmUlMjBBSQ==" data-listing-date-sort="1740178800000" data-listing-file-modified-sort="1752730078724" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1909">
+<div class="g-col-1" data-index="3" data-categories="UiUyQ0dlbmVyYXRpdmUlMjBBSQ==" data-listing-date-sort="1740178800000" data-listing-file-modified-sort="1752730078724" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1909">
 <a href="./posts/rapid-rag-prototyping/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -273,7 +289,7 @@ Rapid RAG Prototyping
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="3" data-categories="UiUyQ1Zpc3VhbGl6YXRpb24=" data-listing-date-sort="1732748400000" data-listing-file-modified-sort="1733135297918" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1167">
+<div class="g-col-1" data-index="4" data-categories="UiUyQ1Zpc3VhbGl6YXRpb24=" data-listing-date-sort="1732748400000" data-listing-file-modified-sort="1733135297918" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1167">
 <a href="./posts/international-external-debt-network/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -289,7 +305,7 @@ Global Debt Networks
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="4" data-categories="UiUyQ1B5dGhvbiUyQ1Zpc3VhbGl6YXRpb24=" data-listing-date-sort="1720130400000" data-listing-file-modified-sort="1720162795899" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2311">
+<div class="g-col-1" data-index="5" data-categories="UiUyQ1B5dGhvbiUyQ1Zpc3VhbGl6YXRpb24=" data-listing-date-sort="1720130400000" data-listing-file-modified-sort="1720162795899" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2311">
 <a href="./posts/sakura-visualizations/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -305,7 +321,7 @@ Sakura Visualizations
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="5" data-categories="UiUyQ1B5dGhvbiUyQ01hbmlwdWxhdGlvbg==" data-listing-date-sort="1715983200000" data-listing-file-modified-sort="1715946495637" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1285">
+<div class="g-col-1" data-index="6" data-categories="UiUyQ1B5dGhvbiUyQ01hbmlwdWxhdGlvbg==" data-listing-date-sort="1715983200000" data-listing-file-modified-sort="1715946495637" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1285">
 <a href="./posts/dplyr-vs-siuba/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -321,7 +337,7 @@ Tidy Data Manipulation: dplyr vs siuba
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="6" data-categories="UiUyQ01vZGVsaW5nJTJDQ2xhc3NpZmljYXRpb24=" data-listing-date-sort="1708556400000" data-listing-file-modified-sort="1709756287631" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="18" data-listing-word-count-sort="3567">
+<div class="g-col-1" data-index="7" data-categories="UiUyQ01vZGVsaW5nJTJDQ2xhc3NpZmljYXRpb24=" data-listing-date-sort="1708556400000" data-listing-file-modified-sort="1709756287631" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="18" data-listing-word-count-sort="3567">
 <a href="./posts/classification-customer-churn/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -337,7 +353,7 @@ Tidy Classification Models: Customer Churn Prediction
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="7" data-categories="UiUyQ1B5dGhvbiUyQ01vZGVsaW5n" data-listing-date-sort="1707174000000" data-listing-file-modified-sort="1708452504331" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1406">
+<div class="g-col-1" data-index="8" data-categories="UiUyQ1B5dGhvbiUyQ01vZGVsaW5n" data-listing-date-sort="1707174000000" data-listing-file-modified-sort="1708452504331" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1406">
 <a href="./posts/fixed-effects-regressions/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -353,7 +369,7 @@ Tidy Fixed Effects Regressions: fixest vs pyfixest
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="8" data-categories="UiUyQ1B5dGhvbiUyQ1Zpc3VhbGl6YXRpb24=" data-listing-date-sort="1706655600000" data-listing-file-modified-sort="1706713145147" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2323">
+<div class="g-col-1" data-index="9" data-categories="UiUyQ1B5dGhvbiUyQ1Zpc3VhbGl6YXRpb24=" data-listing-date-sort="1706655600000" data-listing-file-modified-sort="1706713145147" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2323">
 <a href="./posts/ggplot2-vs-matplotlib/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -369,7 +385,7 @@ Tidy Data Visualization: ggplot2 vs matplotlib
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="9" data-categories="UHl0aG9uJTJDVmlzdWFsaXphdGlvbg==" data-listing-date-sort="1706396400000" data-listing-file-modified-sort="1706640903509" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2845">
+<div class="g-col-1" data-index="10" data-categories="UHl0aG9uJTJDVmlzdWFsaXphdGlvbg==" data-listing-date-sort="1706396400000" data-listing-file-modified-sort="1706640903509" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2845">
 <a href="./posts/interactive-data-visualization-with-python/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -385,7 +401,7 @@ Interactive Data Visualization with Python
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="10" data-categories="UiUyQ1Zpc3VhbGl6YXRpb24=" data-listing-date-sort="1705964400000" data-listing-file-modified-sort="1706640867995" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3135">
+<div class="g-col-1" data-index="11" data-categories="UiUyQ1Zpc3VhbGl6YXRpb24=" data-listing-date-sort="1705964400000" data-listing-file-modified-sort="1706640867995" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3135">
 <a href="./posts/interactive-data-visualization-with-r/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -401,7 +417,7 @@ Interactive Data Visualization with R
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="11" data-categories="UiUyQ1B5dGhvbiUyQ0RhdGE=" data-listing-date-sort="1705705200000" data-listing-file-modified-sort="1706641038689" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13" data-listing-word-count-sort="2494">
+<div class="g-col-1" data-index="12" data-categories="UiUyQ1B5dGhvbiUyQ0RhdGE=" data-listing-date-sort="1705705200000" data-listing-file-modified-sort="1706641038689" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13" data-listing-word-count-sort="2494">
 <a href="./posts/data-storage-comparison/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -417,7 +433,7 @@ Tidy Data: Tabular Data Storage Comparison
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="12" data-categories="UiUyQ1B5dGhvbiUyQ1Zpc3VhbGl6YXRpb24=" data-listing-date-sort="1705359600000" data-listing-file-modified-sort="1706640913074" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1534">
+<div class="g-col-1" data-index="13" data-categories="UiUyQ1B5dGhvbiUyQ1Zpc3VhbGl6YXRpb24=" data-listing-date-sort="1705359600000" data-listing-file-modified-sort="1706640913074" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1534">
 <a href="./posts/ggplot2-vs-seaborn/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -433,7 +449,7 @@ Tidy Data Visualization: ggplot2 vs seaborn
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="13" data-categories="UiUyQ1B5dGhvbiUyQ1Zpc3VhbGl6YXRpb24=" data-listing-date-sort="1705186800000" data-listing-file-modified-sort="1716827530337" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1464">
+<div class="g-col-1" data-index="14" data-categories="UiUyQ1B5dGhvbiUyQ1Zpc3VhbGl6YXRpb24=" data-listing-date-sort="1705186800000" data-listing-file-modified-sort="1716827530337" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1464">
 <a href="./posts/ggplot2-vs-plotnine/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -449,7 +465,7 @@ Tidy Data Visualization: ggplot2 vs plotnine
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="14" data-categories="UiUyQ0p1bGlhJTJDTWFuaXB1bGF0aW9u" data-listing-date-sort="1704754800000" data-listing-file-modified-sort="1706553117721" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1375">
+<div class="g-col-1" data-index="15" data-categories="UiUyQ0p1bGlhJTJDTWFuaXB1bGF0aW9u" data-listing-date-sort="1704754800000" data-listing-file-modified-sort="1706553117721" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1375">
 <a href="./posts/dplyr-vs-tidierdata/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -465,7 +481,7 @@ Tidy Data Manipulation: dplyr vs TidierData
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="15" data-categories="UiUyQ1B5dGhvbiUyQ01hbmlwdWxhdGlvbg==" data-listing-date-sort="1704582000000" data-listing-file-modified-sort="1715946622477" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1406">
+<div class="g-col-1" data-index="16" data-categories="UiUyQ1B5dGhvbiUyQ01hbmlwdWxhdGlvbg==" data-listing-date-sort="1704582000000" data-listing-file-modified-sort="1715946622477" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1406">
 <a href="./posts/dplyr-vs-pandas/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -481,7 +497,7 @@ Tidy Data Manipulation: dplyr vs pandas
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="16" data-categories="UiUyQ1B5dGhvbiUyQ01hbmlwdWxhdGlvbg==" data-listing-date-sort="1704322800000" data-listing-file-modified-sort="1707082825143" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1436">
+<div class="g-col-1" data-index="17" data-categories="UiUyQ1B5dGhvbiUyQ01hbmlwdWxhdGlvbg==" data-listing-date-sort="1704322800000" data-listing-file-modified-sort="1707082825143" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1436">
 <a href="./posts/dplyr-vs-ibis/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -497,11 +513,11 @@ Tidy Data Manipulation: dplyr vs ibis
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="17" data-categories="UiUyQ1B5dGhvbiUyQ01hbmlwdWxhdGlvbg==" data-listing-date-sort="1704150000000" data-listing-file-modified-sort="1706553164457" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1390">
+<div class="g-col-1" data-index="18" data-categories="UiUyQ1B5dGhvbiUyQ01hbmlwdWxhdGlvbg==" data-listing-date-sort="1704150000000" data-listing-file-modified-sort="1706553164457" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1390">
 <a href="./posts/dplyr-vs-polars/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
-<img loading="lazy" src="./posts/dplyr-vs-polars/thumbnail.png" class="thumbnail-image card-img" style="height: 100%;" alt="A realistic polar bear sitting on a snowy landscape, looking curiously at a pair of pliers lying on the ground. The polar bear should have a thick, white coat and appear both majestic and inquisitive. The pliers are standard steel with red rubber grips, contrasting against the white snow. The scene is set in the Arctic with a clear blue sky and a few distant icebergs in the background. Created with DALL-E 3.">
+<img loading="lazy" data-src="./posts/dplyr-vs-polars/thumbnail.png" class="thumbnail-image card-img" style="height: 100%;" alt="A realistic polar bear sitting on a snowy landscape, looking curiously at a pair of pliers lying on the ground. The polar bear should have a thick, white coat and appear both majestic and inquisitive. The pliers are standard steel with red rubber grips, contrasting against the white snow. The scene is set in the Arctic with a clear blue sky and a few distant icebergs in the background. Created with DALL-E 3.">
 </p>
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
@@ -513,7 +529,7 @@ Tidy Data Manipulation: dplyr vs polars
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="18" data-categories="Ug==" data-listing-date-sort="1701126000000" data-listing-file-modified-sort="1706390530732" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1868">
+<div class="g-col-1" data-index="19" data-categories="Ug==" data-listing-date-sort="1701126000000" data-listing-file-modified-sort="1706390530732" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1868">
 <a href="./posts/dax-seasonality/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -529,7 +545,7 @@ Analyzing Seasonality in DAX Returns
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="19" data-categories="UiUyQ0RhdGE=" data-listing-date-sort="1701039600000" data-listing-file-modified-sort="1706390530734" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2082">
+<div class="g-col-1" data-index="20" data-categories="UiUyQ0RhdGE=" data-listing-date-sort="1701039600000" data-listing-file-modified-sort="1706390530734" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2082">
 <a href="./posts/scraping-esg-data-from-yahoo-finance/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -545,7 +561,7 @@ Scraping ESG Data from Yahoo Finance
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="20" data-categories="UiUyQ1Vuc3VwZXJ2aXNlZCUyMExlYXJuaW5n" data-listing-date-sort="1700866800000" data-listing-file-modified-sort="1706390530729" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="3000">
+<div class="g-col-1" data-index="21" data-categories="UiUyQ1Vuc3VwZXJ2aXNlZCUyMExlYXJuaW5n" data-listing-date-sort="1700866800000" data-listing-file-modified-sort="1706390530729" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="3000">
 <a href="./posts/clustering-binary-data/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -561,7 +577,7 @@ Clustering Binary Data
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="21" data-categories="RGF0YQ==" data-listing-date-sort="1700780400000" data-listing-file-modified-sort="1707119236516" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2216">
+<div class="g-col-1" data-index="22" data-categories="RGF0YQ==" data-listing-date-sort="1700780400000" data-listing-file-modified-sort="1707119236516" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2216">
 <a href="./posts/tidy-data-a-recipe-for-efficient-data-analysis/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
@@ -577,7 +593,7 @@ Tidy Data: A Recipe for Efficient Data Analysis
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="22" data-categories="UiUyQ1JlY29tbWVuZGVycw==" data-listing-date-sort="1684706400000" data-listing-file-modified-sort="1716827547269" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2380">
+<div class="g-col-1" data-index="23" data-categories="UiUyQ1JlY29tbWVuZGVycw==" data-listing-date-sort="1684706400000" data-listing-file-modified-sort="1716827547269" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2380">
 <a href="./posts/tidy-collaborative-filtering/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">

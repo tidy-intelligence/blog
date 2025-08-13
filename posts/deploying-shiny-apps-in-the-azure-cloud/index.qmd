@@ -1,0 +1,200 @@
+---
+title: "Deploying Shiny Apps in the Azure Cloud"
+description: "A practical guide to deploying Shiny Apps in the Azure Cloud"
+metadata:
+  pagetitle: "Shiny Apps in the Azure Cloud"
+author: "Christoph Scheuch"
+date: "2025-08-13" 
+image: thumbnail.png
+image-alt: "Collection of various Microsoft Azure service icons, including App Service, Azure Pipelines, Container Registry, Storage Account, Azure Container Apps, Microsoft Entra ID, Azure Functions, Virtual Machine, Key Vault, and other Azure-related services, arranged around the central Azure logo."
+categories: 
+  - R
+  - Python
+  - Shiny
+---
+
+If you're working with [R Shiny](https://shiny.posit.co/r/getstarted/shiny-basics/lesson1/) or [Shiny for Python](https://shiny.posit.co/py/) and want to move beyond local development, Microsoft Azure provides a robust cloud platform that can scale with your needs. In this comprehensive guide, I'll walk you through the entire deployment process—from version control fundamentals to containerization and automated deployments - helping you transform your Shiny apps into production-ready cloud applications.
+
+## Azure for Shiny Apps
+
+When it comes to cloud deployment, you have several options. Here's why Azure could be your best choice for your Shiny applications:
+
+Advantages 👍
+
+- **Full-featured cloud platform**: Azure isn't just for hosting—it's a complete ecosystem with databases, storage, authentication, and analytics services that can enhance your Shiny apps.
+- **Language agnostic**: Whether you're using R Shiny, Shiny for Python, or planning to integrate with other technologies, Azure supports them all.
+- **Enterprise-ready integrations**: Seamless connectivity with both Azure-native services (like Azure Active Directory for authentication) and third-party tools.
+- **Flexible pricing model**: Pay-as-you-go pricing means you only pay for the resources you actually use—perfect for apps with variable traffic.
+
+Considerations 👎
+
+- **Learning curve:** Azure's extensive service catalog can be overwhelming initially, especially if you're coming from a pure data science background.
+- **Not R/Python-specific**: Unlike platforms like [shinyapps.io](https://www.shinyapps.io/) or [Posit Connect](https://posit.co/products/enterprise/connect/), Azure isn't optimized specifically for R/Python workflows, requiring more configuration.
+
+This post will introduce you to the core concepts behind this example architecture for Shiny Apps in the Azure Cloud:
+
+![](architecture-azure.png){fig-alt="Azure deployment pipeline diagram. Local projects (R, Python, Shiny, Quarto) are pushed via Git to remote repositories, triggering build pipelines. The pipelines publish container images to a container registry, which can deploy containers to virtual machines or container apps. The build process can also deploy to app services. App services, container apps, and virtual machines connect to Microsoft Entra ID for authentication, which grants access to an internal dashboard. Dashed arrows indicate authentication and service connections."}
+
+## Building a Solid Foundation with Version Control
+
+Before diving into deployment, let’s establish a baseline: **abandon file versioning like `app_final_v2_FINAL.R`**. It’s messy, risky, and impossible to scale.  
+
+Version control with Git is non-negotiable for production-ready apps. It enables:
+
+- **Collaborative development**: Multiple team members can work on the same app without conflicts.
+- **Change tracking**: Every modification is recorded with who, what, when, and why.
+- **Rollback capability**: Easily revert to previous versions if something breaks.
+- **Branching strategies**: Test new features without affecting the production version.
+
+Follow the one project = one repository principle. For instance:
+
+- **Single dashboard**: One repo per dashboard application.
+- **Report collections**: Group related reports in a single repository.
+- **Research projects**: Large analytical projects deserve their own dedicated repo with data, scripts, slides, and a paper in the same project directory.
+
+While several platforms host Git repositories in the cloud, for Azure deployments, consider:
+
+- **Azure DevOps** (recommended for this workflow): Native Azure integration, private repos only, built-in CI/CD
+- **GitHub**: Excellent for open-source projects, GitHub Actions for CI/CD
+- **GitLab**: Self-hosting options, comprehensive DevOps features
+- **Bitbucket**: Good Atlassian ecosystem integration
+
+To get the terminology straight, memorize these fundamental terminal commands to navigate Git effectively:
+
+```{.bash}
+# Clone: Download a repository to your local machine
+git clone https://dev.azure.com/yourorg/yourproject/_git/yourrepo
+
+# Commit: Save changes with a descriptive message
+git add .
+git commit -m "Add interactive plot feature"
+
+# Push: Upload local changes on main branch to remote repository
+git push origin main
+
+# Pull: Update local repository with remote changes on the main branch
+git pull origin main
+```
+
+## Automating Deployments with CI/CD Pipelines
+
+Manual deployments are error-prone and time-consuming. CI/CD automation ensures consistent, reliable deployments.
+
+Continuous Integration (CI) is the notion to automatically build and test your application whenever code changes are pushed. CI helps you to catch bugs before they reach production, ensure every change meets your standards through automated tests, and increase confidence in your codebase as everyone knows the current state. 
+
+Continuous Deployment (CD) takes automation a step further by automatically deploying tested applications to production. This process allows you to deploy features as soon as they are ready, avoid manual deployment steps and hence reduce human error, and have a consistent deployment environment for you projects. 
+
+## Solving "Works on My Machine" with Containers 
+
+We've all been there - your Shiny app works perfectly locally but crashes in production. Docker containers eliminate this problem by packaging your application with its entire runtime environment in a single `Dockerfile`.
+
+The core idea behind Docker is illustrated in the figure below: the `Dockerfile` contains instructions how to build a *Docker Image* starting from the foundations such as operating system and system libraries. This image is transformed into a *Docker Container* when it is run on a server or platform. The container then actually runs your app. 
+
+![](docker-process.png){fig-alt="Diagram showing the Docker workflow: a Dockerfile is built into a Docker image, which is then run to create a Docker container. Each step is represented by an icon with the Docker logo and labeled accordingly"}
+
+Docker containers thus provide:
+
+- **Environment consistency**: Your app runs identically on any system.
+- **Dependency management**: All required packages are bundled together.
+- **Scalability**: Easy to deploy multiple instances for high traffic.
+- **Version control for infrastructure**: Your `Dockerfile` is code that can be tracked.
+
+For instance, here's a simple, yet production-ready `Dockerfile` for an R Shiny application:
+
+```{.Dockerfile}
+# Base image with Shiny, Shiny Server & R 4.5
+FROM rocker/shiny:4.5
+
+# Install R dependencies
+RUN R -e "install.packages(c('dplyr', 'ggplot2', 'gapminder'))"
+
+# Copy app code
+WORKDIR /srv/shiny-server/
+COPY app.R .
+
+# Expose app port
+EXPOSE 3838
+```
+
+In most applications, you start with a base image, where somebody else has already taken care of core system dependencies. The [Rocker Project](https://rocker-project.org/) contains different images focusing on R environments. Conveniently, the `rocker/shiny` base image handles the complexity of running [Shiny Server](https://posit.co/products/open-source/shiny-server/), automatically serving your app when the container starts.  
+
+::: {.callout-tip}
+I'll provide more details about Shiny Server and ShinyProxy in a follow-up blog post, so make sure to follow me on [LinkedIn](https://www.linkedin.com/in/christophscheuch/) to stay up to date. 
+:::
+
+## Orchestrating Deployments with Azure Pipelines
+
+While the `Dockerfile` defines *how* to build your container, Azure Pipelines defines *when* and *where* to build and deploy it.
+
+For instance, this `.azure-pipelines.yml` defines when and where it’s built and deployed.
+
+```{.yaml}
+# Build on every push to main
+trigger:
+  - main
+
+# Define which agent pool should execute the pipelikne 
+pool:
+  name: 'Azure Pipelines'
+
+# Define the individual steps
+steps:
+- checkout: self # Clone the code from the repo
+
+- task: Docker@2 # Execute a pre-defined Docker task
+  inputs:
+    command: 'buildAndPush'
+    repository: 'shiny-app'
+    Dockerfile: 'Dockerfile'
+    containerRegistry: 'ACRServiceConnection' 
+    tags: latest
+```
+
+The pipeline typically finishes in a few minutes with negligible build costs—though this depends on the number of dashboards and how frequently your triggers fire.
+
+Notice that the pipeline references `ACRServiceConnection` as its container registry, which I've pre-configured. But what exactly is a container registry? Let me explain...
+
+## Azure Container Registry
+
+The Azure Container Registry (ACR) serves as your private Docker registry: 
+
+- **Private storage**: Keep your container images secure.
+- **Geo-replication**: Distribute images globally for faster pulls.
+- **Vulnerability scanning**: Automatic security scanning of images.
+- **Integration**: Seamless connection with Azure services.
+
+You'll pay for storage over time, but container registry costs typically remain minimal for Shiny deployments.
+
+## Hosting Options in Azure
+
+Azure offers multiple options for hosting containerized Shiny apps, each with distinct advantages and of course varying cost structures. 
+
+[Azure App Service](https://azure.microsoft.com/en-us/products/app-service/containers) is best for simple, single-container applications with predictable traffic. The advantages include easy setup and management, auto-scaling capabilitie, and integrated monitoring.
+
+[Azure Container Apps](https://azure.microsoft.com/en-us/products/container-apps) is best for microservices architectures and apps with variable demand. The key advantage is flexible even-driven scaling including scale-to-zero on a serverless compute platform. 
+
+[Azure Virtual Machines](https://azure.microsoft.com/en-us/products/virtual-machines) (VMs) are best for complete control requirements or legacy system compatibility. The advantages include full flexibility with respect to configurations and no platform limitations, though at cost of higher maintenance burden, manual scaling and patching, as well as more complex security management.
+
+## Authenticating Users
+
+For most enterprise use cases, you’ll want to restrict access to authenticated users—often within your organization. [Microsoft Entra ID](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-id) (formerly known as Azure Active Directory) provides identity management and integrates seamlessly with Azure-hosted Shiny apps.
+
+However, authentication setup can be complex and highly dependent on your specific use case. Factors such as whether your app is public or internal, your organization’s security policies, and your hosting environment will all influence the configuration.
+
+In practice, you’ll need to decide:
+
+- Which authentication flow fits your needs (e.g., OAuth 2.0, OpenID Connect).
+- How to enforce access control (roles, groups, conditional access).
+- Where authentication is handled (directly in the app, via a reverse proxy, or through platform features).
+
+Given this complexity, plan authentication early. Work closely with your IT or security team to ensure both compliance and a smooth user experience.
+
+## Final Thoughts
+
+Deploying Shiny apps to Azure might seem daunting initially, but the investment in learning these tools pays dividends. The journey from local development to cloud deployment transforms your Shiny apps from personal tools into enterprise-ready applications. Start with a simple app, follow this blog post, and gradually add complexity as you become comfortable with each component.
+
+Remember: every production deployment started as someone's first attempt. Don't let the complexity discourage you—take it step by step, and you'll have your Shiny apps running in the cloud before you know it.
+
+::: {.callout-tip}
+Need help deploying your Shiny applications to Azure, or looking for training to upskill your team? [Get in touch](https://www.tidy-intelligence.com/) to discuss how we can accelerate your cloud journey.
+:::

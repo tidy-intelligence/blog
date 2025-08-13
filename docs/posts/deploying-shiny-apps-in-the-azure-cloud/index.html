@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Christoph Scheuch">
+<meta name="dcterms.date" content="2025-08-13">
+<meta name="description" content="A practical guide to deploying Shiny Apps in the Azure Cloud">
+
+<title>Shiny Apps in the Azure Cloud – Tidy Intelligence</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<link href="../../assets/img/favicon.ico" rel="icon">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-YQF6MZY01S"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-YQF6MZY01S', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"interstitial",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+<style>html{ scroll-behavior: smooth; }</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="https://use.typekit.net/lmu3opx.css">
+
+
+<link rel="stylesheet" href="../../assets/css/styles-global.css">
+<link rel="stylesheet" href="../../assets/css/styles-blog.css">
+<meta property="og:title" content="Shiny Apps in the Azure Cloud">
+<meta property="og:description" content="A practical guide to deploying Shiny Apps in the Azure Cloud">
+<meta property="og:image" content="https://blog.tidy-intelligence.com/posts/deploying-shiny-apps-in-the-azure-cloud/thumbnail.png">
+<meta property="og:site_name" content="Tidy Intelligence">
+<meta property="og:image:height" content="2624">
+<meta property="og:image:width" content="2650">
+<meta property="og:image:alt" content="Collection of various Microsoft Azure service icons, including App Service, Azure Pipelines, Container Registry, Storage Account, Azure Container Apps, Microsoft Entra ID, Azure Functions, Virtual Machine, Key Vault, and other Azure-related services, arranged around the central Azure logo.">
+<meta name="twitter:title" content="Shiny Apps in the Azure Cloud">
+<meta name="twitter:description" content="A practical guide to deploying Shiny Apps in the Azure Cloud">
+<meta name="twitter:image" content="https://blog.tidy-intelligence.com/posts/deploying-shiny-apps-in-the-azure-cloud/thumbnail.png">
+<meta name="twitter:image-height" content="2624">
+<meta name="twitter:image-width" content="2650">
+<meta name="twitter:image:alt" content="Collection of various Microsoft Azure service icons, including App Service, Azure Pipelines, Container Registry, Storage Account, Azure Container Apps, Microsoft Entra ID, Azure Functions, Virtual Machine, Key Vault, and other Azure-related services, arranged around the central Azure logo.">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="https://www.tidy-intelligence.com">
+    <span class="navbar-title">Tidy Intelligence</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.tidy-intelligence.com/"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.tidy-intelligence.com/projects"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://apps.tidy-intelligence.com/"> 
+<span class="menu-text">Apps</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.tidy-intelligence.com/about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#azure-for-shiny-apps" id="toc-azure-for-shiny-apps" class="nav-link active" data-scroll-target="#azure-for-shiny-apps">Azure for Shiny Apps</a></li>
+  <li><a href="#building-a-solid-foundation-with-version-control" id="toc-building-a-solid-foundation-with-version-control" class="nav-link" data-scroll-target="#building-a-solid-foundation-with-version-control">Building a Solid Foundation with Version Control</a></li>
+  <li><a href="#automating-deployments-with-cicd-pipelines" id="toc-automating-deployments-with-cicd-pipelines" class="nav-link" data-scroll-target="#automating-deployments-with-cicd-pipelines">Automating Deployments with CI/CD Pipelines</a></li>
+  <li><a href="#solving-works-on-my-machine-with-containers" id="toc-solving-works-on-my-machine-with-containers" class="nav-link" data-scroll-target="#solving-works-on-my-machine-with-containers">Solving “Works on My Machine” with Containers</a></li>
+  <li><a href="#orchestrating-deployments-with-azure-pipelines" id="toc-orchestrating-deployments-with-azure-pipelines" class="nav-link" data-scroll-target="#orchestrating-deployments-with-azure-pipelines">Orchestrating Deployments with Azure Pipelines</a></li>
+  <li><a href="#azure-container-registry" id="toc-azure-container-registry" class="nav-link" data-scroll-target="#azure-container-registry">Azure Container Registry</a></li>
+  <li><a href="#hosting-options-in-azure" id="toc-hosting-options-in-azure" class="nav-link" data-scroll-target="#hosting-options-in-azure">Hosting Options in Azure</a></li>
+  <li><a href="#authenticating-users" id="toc-authenticating-users" class="nav-link" data-scroll-target="#authenticating-users">Authenticating Users</a></li>
+  <li><a href="#final-thoughts" id="toc-final-thoughts" class="nav-link" data-scroll-target="#final-thoughts">Final Thoughts</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Deploying Shiny Apps in the Azure Cloud</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">R</div>
+    <div class="quarto-category">Python</div>
+    <div class="quarto-category">Shiny</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    A practical guide to deploying Shiny Apps in the Azure Cloud
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Christoph Scheuch </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 13, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>If you’re working with <a href="https://shiny.posit.co/r/getstarted/shiny-basics/lesson1/">R Shiny</a> or <a href="https://shiny.posit.co/py/">Shiny for Python</a> and want to move beyond local development, Microsoft Azure provides a robust cloud platform that can scale with your needs. In this comprehensive guide, I’ll walk you through the entire deployment process—from version control fundamentals to containerization and automated deployments - helping you transform your Shiny apps into production-ready cloud applications.</p>
+<section id="azure-for-shiny-apps" class="level2">
+<h2 class="anchored" data-anchor-id="azure-for-shiny-apps">Azure for Shiny Apps</h2>
+<p>When it comes to cloud deployment, you have several options. Here’s why Azure could be your best choice for your Shiny applications:</p>
+<p>Advantages 👍</p>
+<ul>
+<li><strong>Full-featured cloud platform</strong>: Azure isn’t just for hosting—it’s a complete ecosystem with databases, storage, authentication, and analytics services that can enhance your Shiny apps.</li>
+<li><strong>Language agnostic</strong>: Whether you’re using R Shiny, Shiny for Python, or planning to integrate with other technologies, Azure supports them all.</li>
+<li><strong>Enterprise-ready integrations</strong>: Seamless connectivity with both Azure-native services (like Azure Active Directory for authentication) and third-party tools.</li>
+<li><strong>Flexible pricing model</strong>: Pay-as-you-go pricing means you only pay for the resources you actually use—perfect for apps with variable traffic.</li>
+</ul>
+<p>Considerations 👎</p>
+<ul>
+<li><strong>Learning curve:</strong> Azure’s extensive service catalog can be overwhelming initially, especially if you’re coming from a pure data science background.</li>
+<li><strong>Not R/Python-specific</strong>: Unlike platforms like <a href="https://www.shinyapps.io/">shinyapps.io</a> or <a href="https://posit.co/products/enterprise/connect/">Posit Connect</a>, Azure isn’t optimized specifically for R/Python workflows, requiring more configuration.</li>
+</ul>
+<p>This post will introduce you to the core concepts behind this example architecture for Shiny Apps in the Azure Cloud:</p>
+<p><a href="architecture-azure.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="architecture-azure.png" class="img-fluid" alt="Azure deployment pipeline diagram. Local projects (R, Python, Shiny, Quarto) are pushed via Git to remote repositories, triggering build pipelines. The pipelines publish container images to a container registry, which can deploy containers to virtual machines or container apps. The build process can also deploy to app services. App services, container apps, and virtual machines connect to Microsoft Entra ID for authentication, which grants access to an internal dashboard. Dashed arrows indicate authentication and service connections."></a></p>
+</section>
+<section id="building-a-solid-foundation-with-version-control" class="level2">
+<h2 class="anchored" data-anchor-id="building-a-solid-foundation-with-version-control">Building a Solid Foundation with Version Control</h2>
+<p>Before diving into deployment, let’s establish a baseline: <strong>abandon file versioning like <code>app_final_v2_FINAL.R</code></strong>. It’s messy, risky, and impossible to scale.</p>
+<p>Version control with Git is non-negotiable for production-ready apps. It enables:</p>
+<ul>
+<li><strong>Collaborative development</strong>: Multiple team members can work on the same app without conflicts.</li>
+<li><strong>Change tracking</strong>: Every modification is recorded with who, what, when, and why.</li>
+<li><strong>Rollback capability</strong>: Easily revert to previous versions if something breaks.</li>
+<li><strong>Branching strategies</strong>: Test new features without affecting the production version.</li>
+</ul>
+<p>Follow the one project = one repository principle. For instance:</p>
+<ul>
+<li><strong>Single dashboard</strong>: One repo per dashboard application.</li>
+<li><strong>Report collections</strong>: Group related reports in a single repository.</li>
+<li><strong>Research projects</strong>: Large analytical projects deserve their own dedicated repo with data, scripts, slides, and a paper in the same project directory.</li>
+</ul>
+<p>While several platforms host Git repositories in the cloud, for Azure deployments, consider:</p>
+<ul>
+<li><strong>Azure DevOps</strong> (recommended for this workflow): Native Azure integration, private repos only, built-in CI/CD</li>
+<li><strong>GitHub</strong>: Excellent for open-source projects, GitHub Actions for CI/CD</li>
+<li><strong>GitLab</strong>: Self-hosting options, comprehensive DevOps features</li>
+<li><strong>Bitbucket</strong>: Good Atlassian ecosystem integration</li>
+</ul>
+<p>To get the terminology straight, memorize these fundamental terminal commands to navigate Git effectively:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clone: Download a repository to your local machine</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://dev.azure.com/yourorg/yourproject/_git/yourrepo</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Commit: Save changes with a descriptive message</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Add interactive plot feature"</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Push: Upload local changes on main branch to remote repository</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push origin main</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull: Update local repository with remote changes on the main branch</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull origin main</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="automating-deployments-with-cicd-pipelines" class="level2">
+<h2 class="anchored" data-anchor-id="automating-deployments-with-cicd-pipelines">Automating Deployments with CI/CD Pipelines</h2>
+<p>Manual deployments are error-prone and time-consuming. CI/CD automation ensures consistent, reliable deployments.</p>
+<p>Continuous Integration (CI) is the notion to automatically build and test your application whenever code changes are pushed. CI helps you to catch bugs before they reach production, ensure every change meets your standards through automated tests, and increase confidence in your codebase as everyone knows the current state.</p>
+<p>Continuous Deployment (CD) takes automation a step further by automatically deploying tested applications to production. This process allows you to deploy features as soon as they are ready, avoid manual deployment steps and hence reduce human error, and have a consistent deployment environment for you projects.</p>
+</section>
+<section id="solving-works-on-my-machine-with-containers" class="level2">
+<h2 class="anchored" data-anchor-id="solving-works-on-my-machine-with-containers">Solving “Works on My Machine” with Containers</h2>
+<p>We’ve all been there - your Shiny app works perfectly locally but crashes in production. Docker containers eliminate this problem by packaging your application with its entire runtime environment in a single <code>Dockerfile</code>.</p>
+<p>The core idea behind Docker is illustrated in the figure below: the <code>Dockerfile</code> contains instructions how to build a <em>Docker Image</em> starting from the foundations such as operating system and system libraries. This image is transformed into a <em>Docker Container</em> when it is run on a server or platform. The container then actually runs your app.</p>
+<p><a href="docker-process.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="docker-process.png" class="img-fluid" alt="Diagram showing the Docker workflow: a Dockerfile is built into a Docker image, which is then run to create a Docker container. Each step is represented by an icon with the Docker logo and labeled accordingly"></a></p>
+<p>Docker containers thus provide:</p>
+<ul>
+<li><strong>Environment consistency</strong>: Your app runs identically on any system.</li>
+<li><strong>Dependency management</strong>: All required packages are bundled together.</li>
+<li><strong>Scalability</strong>: Easy to deploy multiple instances for high traffic.</li>
+<li><strong>Version control for infrastructure</strong>: Your <code>Dockerfile</code> is code that can be tracked.</li>
+</ul>
+<p>For instance, here’s a simple, yet production-ready <code>Dockerfile</code> for an R Shiny application:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode Dockerfile code-with-copy"><code class="sourceCode dockerfile"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Base image with Shiny, Shiny Server &amp; R 4.5</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> rocker/shiny:4.5</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Install R dependencies</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">R</span> <span class="at">-e</span> <span class="st">"install.packages(c('dplyr', 'ggplot2', 'gapminder'))"</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Copy app code</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">WORKDIR</span> /srv/shiny-server/</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> app.R .</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Expose app port</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="kw">EXPOSE</span> 3838</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In most applications, you start with a base image, where somebody else has already taken care of core system dependencies. The <a href="https://rocker-project.org/">Rocker Project</a> contains different images focusing on R environments. Conveniently, the <code>rocker/shiny</code> base image handles the complexity of running <a href="https://posit.co/products/open-source/shiny-server/">Shiny Server</a>, automatically serving your app when the container starts.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I’ll provide more details about Shiny Server and ShinyProxy in a follow-up blog post, so make sure to follow me on <a href="https://www.linkedin.com/in/christophscheuch/">LinkedIn</a> to stay up to date.</p>
+</div>
+</div>
+</section>
+<section id="orchestrating-deployments-with-azure-pipelines" class="level2">
+<h2 class="anchored" data-anchor-id="orchestrating-deployments-with-azure-pipelines">Orchestrating Deployments with Azure Pipelines</h2>
+<p>While the <code>Dockerfile</code> defines <em>how</em> to build your container, Azure Pipelines defines <em>when</em> and <em>where</em> to build and deploy it.</p>
+<p>For instance, this <code>.azure-pipelines.yml</code> defines when and where it’s built and deployed.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build on every push to main</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">trigger</span><span class="kw">:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> main</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Define which agent pool should execute the pipelikne </span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">pool</span><span class="kw">:</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> </span><span class="st">'Azure Pipelines'</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the individual steps</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">checkout</span><span class="kw">:</span><span class="at"> self</span><span class="co"> # Clone the code from the repo</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">task</span><span class="kw">:</span><span class="at"> Docker@2</span><span class="co"> # Execute a pre-defined Docker task</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">command</span><span class="kw">:</span><span class="at"> </span><span class="st">'buildAndPush'</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">repository</span><span class="kw">:</span><span class="at"> </span><span class="st">'shiny-app'</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">Dockerfile</span><span class="kw">:</span><span class="at"> </span><span class="st">'Dockerfile'</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">containerRegistry</span><span class="kw">:</span><span class="at"> </span><span class="st">'ACRServiceConnection'</span><span class="at"> </span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">tags</span><span class="kw">:</span><span class="at"> latest</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The pipeline typically finishes in a few minutes with negligible build costs—though this depends on the number of dashboards and how frequently your triggers fire.</p>
+<p>Notice that the pipeline references <code>ACRServiceConnection</code> as its container registry, which I’ve pre-configured. But what exactly is a container registry? Let me explain…</p>
+</section>
+<section id="azure-container-registry" class="level2">
+<h2 class="anchored" data-anchor-id="azure-container-registry">Azure Container Registry</h2>
+<p>The Azure Container Registry (ACR) serves as your private Docker registry:</p>
+<ul>
+<li><strong>Private storage</strong>: Keep your container images secure.</li>
+<li><strong>Geo-replication</strong>: Distribute images globally for faster pulls.</li>
+<li><strong>Vulnerability scanning</strong>: Automatic security scanning of images.</li>
+<li><strong>Integration</strong>: Seamless connection with Azure services.</li>
+</ul>
+<p>You’ll pay for storage over time, but container registry costs typically remain minimal for Shiny deployments.</p>
+</section>
+<section id="hosting-options-in-azure" class="level2">
+<h2 class="anchored" data-anchor-id="hosting-options-in-azure">Hosting Options in Azure</h2>
+<p>Azure offers multiple options for hosting containerized Shiny apps, each with distinct advantages and of course varying cost structures.</p>
+<p><a href="https://azure.microsoft.com/en-us/products/app-service/containers">Azure App Service</a> is best for simple, single-container applications with predictable traffic. The advantages include easy setup and management, auto-scaling capabilitie, and integrated monitoring.</p>
+<p><a href="https://azure.microsoft.com/en-us/products/container-apps">Azure Container Apps</a> is best for microservices architectures and apps with variable demand. The key advantage is flexible even-driven scaling including scale-to-zero on a serverless compute platform.</p>
+<p><a href="https://azure.microsoft.com/en-us/products/virtual-machines">Azure Virtual Machines</a> (VMs) are best for complete control requirements or legacy system compatibility. The advantages include full flexibility with respect to configurations and no platform limitations, though at cost of higher maintenance burden, manual scaling and patching, as well as more complex security management.</p>
+</section>
+<section id="authenticating-users" class="level2">
+<h2 class="anchored" data-anchor-id="authenticating-users">Authenticating Users</h2>
+<p>For most enterprise use cases, you’ll want to restrict access to authenticated users—often within your organization. <a href="https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-id">Microsoft Entra ID</a> (formerly known as Azure Active Directory) provides identity management and integrates seamlessly with Azure-hosted Shiny apps.</p>
+<p>However, authentication setup can be complex and highly dependent on your specific use case. Factors such as whether your app is public or internal, your organization’s security policies, and your hosting environment will all influence the configuration.</p>
+<p>In practice, you’ll need to decide:</p>
+<ul>
+<li>Which authentication flow fits your needs (e.g., OAuth 2.0, OpenID Connect).</li>
+<li>How to enforce access control (roles, groups, conditional access).</li>
+<li>Where authentication is handled (directly in the app, via a reverse proxy, or through platform features).</li>
+</ul>
+<p>Given this complexity, plan authentication early. Work closely with your IT or security team to ensure both compliance and a smooth user experience.</p>
+</section>
+<section id="final-thoughts" class="level2">
+<h2 class="anchored" data-anchor-id="final-thoughts">Final Thoughts</h2>
+<p>Deploying Shiny apps to Azure might seem daunting initially, but the investment in learning these tools pays dividends. The journey from local development to cloud deployment transforms your Shiny apps from personal tools into enterprise-ready applications. Start with a simple app, follow this blog post, and gradually add complexity as you become comfortable with each component.</p>
+<p>Remember: every production deployment started as someone’s first attempt. Don’t let the complexity discourage you—take it step by step, and you’ll have your Shiny apps running in the cloud before you know it.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Need help deploying your Shiny applications to Azure, or looking for training to upskill your team? <a href="https://www.tidy-intelligence.com/">Get in touch</a> to discuss how we can accelerate your cloud journey.</p>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<footer class="footer-custom">
+<div class="custom-footer">
+  <div class="copyright">© Christoph Scheuch 2024. All rights reserved.</div>
+  <a href="https://www.tidy-intelligence.com/impressum.html">Impressum</a>
+  <a href="#" id="open_preferences_center">Cookie Preferences</a>
+</div>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var giscusDiv = document.querySelector('.giscus');
+    var footer = document.querySelector('.footer-custom');
+
+    if (giscusDiv && footer) {
+        giscusDiv.parentNode.insertBefore(footer, giscusDiv.nextSibling);
+    }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Create the new link element
+    var followButton = document.createElement('a');
+    followButton.href = 'https://www.linkedin.com/in/christophscheuch';
+    followButton.target = '_blank';
+    followButton.role = 'button';
+    followButton.className = 'linkedin-follow-button';
+    followButton.innerHTML = '<i class="fa-brands fa-linkedin-in"></i> Follow';
+
+    // Find the element that contains the name
+    var nameElement = document.querySelector('.quarto-title-meta-contents p');
+
+    // Insert the follow button after the name element
+    nameElement.parentNode.insertBefore(followButton, nameElement.nextSibling);
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/blog\.tidy-intelligence\.com");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="light">
+<script>
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.async = true;
+    script.dataset.repo = "tidy-intelligence/blog";
+    script.dataset.repoId = "R_kgDOKH1yOg";
+    script.dataset.category = "Announcements";
+    script.dataset.categoryId = "DIC_kwDOKH1yOs4CcPjh";
+    script.dataset.mapping = "url";
+    script.dataset.reactionsEnabled = "0";
+    script.dataset.emitMetadata = "0";
+    script.dataset.inputPosition = "bottom";
+    script.dataset.theme = getTheme();
+    script.dataset.lang = "en";
+    script.crossOrigin = "anonymous";
+    // Append the script to the desired div instead of at the end of the body
+    document.getElementById("quarto-content").appendChild(script);
+  }
+  loadGiscus();
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
