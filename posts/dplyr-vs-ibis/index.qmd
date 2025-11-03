@@ -39,7 +39,9 @@ library(palmerpenguins)
 
 penguins <- palmerpenguins::penguins
 ```
+
 ### ibis
+
 ```{python}
 #| message: false
 import ibis
@@ -49,8 +51,9 @@ from palmerpenguins import load_penguins
 
 ibis.options.interactive = True
 
-penguins = ibis.memtable(load_penguins(), name = "penguins")
+penguins = ibis.memtable(load_penguins(), name="penguins")
 ```
+
 :::
 
 ## Work with rows
@@ -60,13 +63,19 @@ penguins = ibis.memtable(load_penguins(), name = "penguins")
 Filtering rows works very similarly for both packages, they even have the same function names: `dplyr::filter()` and `ibis.filter()`. To select columns in `ibis`, you need the `ibis._` selector. Note that you have to provide a dictionary to `ibis.filter()` in case you want to have multiple conditions. 
 
 ::: {.panel-tabset}
+
 #### dplyr
+
 ```{r}
-penguins |> 
-  filter(species == "Adelie" & 
-           island %in% c("Biscoe", "Dream"))
+penguins |>
+  filter(
+    species == "Adelie" &
+      island %in% c("Biscoe", "Dream")
+  )
 ```
+
 #### ibis
+
 ```{python}
 (penguins
   .filter([
@@ -75,6 +84,7 @@ penguins |>
   ]) 
 )
 ```
+
 :::
 
 ### Slice rows
@@ -82,17 +92,22 @@ penguins |>
 `dplyr::slice()` takes integers with row numbers as inputs, so you can use ranges and arbitrary vectors of integers. `ibis.limit()` only takes the number of rows to slice and the number of rows to skip as inputs. For instance, to the the same result of slicing rows 10 to 20, the code looks as follows (note that indexing starts at 0 in Python, while it starts at 1 in R):
 
 ::: {.panel-tabset}
+
 #### dplyr
+
 ```{r}
-penguins |> 
+penguins |>
   slice(10:20)
 ```
+
 #### ibis
+
 ```{python}
 (penguins
   .limit(11, offset = 9) 
 )
 ```
+
 :::
 
 ### Arrange rows
@@ -100,17 +115,22 @@ penguins |>
 To orders the rows of a data frame by the values of selected columns, we have `dplyr::arrange()` and `ibis.order_by()`. Both approaches arrange rows in an an ascending order and puts missing values last. Again, you need to provide a dictionary to `ibis.order_by()`.
 
 ::: {.panel-tabset}
+
 #### dplyr
+
 ```{r}
-penguins |> 
+penguins |>
   arrange(island, desc(bill_length_mm))
 ```
+
 #### ibis
+
 ```{python}
 (penguins
   .order_by([_.island, _.bill_length_mm.desc()])
 )
 ```
+
 :::
 
 ## Work with columns
@@ -120,17 +140,22 @@ penguins |>
 Selecting a subset of columns works essentially the same for both and `dplyr::select()` and `ibis.select()` even have the same name. Note that you don't have to use `ibis._` but can also just pass strings in the `ibis.select()` method. 
 
 ::: {.panel-tabset}
+
 #### dplyr
+
 ```{r}
-penguins |> 
+penguins |>
   select(bill_length_mm, sex)
 ```
+
 #### ibis
+
 ```{python}
 (penguins
   .select(_.bill_length_mm, _.sex)
 )
 ```
+
 :::
 
 ### Rename columns
@@ -138,19 +163,23 @@ penguins |>
 Renaming columns also works very similarly with the major difference that `ibis.rename()` does not accept the column selector `ibis._` on the right-hand side, while `dplyr::rename()` takes variable names via the usual NSE.
 
 ::: {.panel-tabset}
+
 #### dplyr
+
 ```{r}
-penguins |> 
-  rename(bill_length = bill_length_mm,
-         bill_depth = bill_depth_mm)
+penguins |>
+  rename(bill_length = bill_length_mm, bill_depth = bill_depth_mm)
 ```
+
 #### ibis
+
 ```{python}
 (penguins
   .rename(bill_length = "bill_length_mm", 
           bill_depth = "bill_depth_mm")
 )
 ```
+
 :::
 
 ### Mutate columns
@@ -159,14 +188,19 @@ Transforming existing columns or creating new ones is an essential part of data 
 
 ::: {.panel-tabset}
 #### dplyr
+
 ```{r}
-penguins |> 
-  mutate(ones = 1,
-         bill_length = bill_length_mm / 10,
-         bill_length_squared = bill_length^2) |> 
+penguins |>
+  mutate(
+    ones = 1,
+    bill_length = bill_length_mm / 10,
+    bill_length_squared = bill_length^2
+  ) |>
   select(ones, bill_length_mm, bill_length, bill_length_squared)
 ```
+
 #### ibis
+
 ```{python}
 (penguins 
   .mutate(ones = 1, 
@@ -175,6 +209,7 @@ penguins |>
   .select(_.ones, _.bill_length_mm, _.bill_length, _.bill_length_squared)
 )
 ```
+
 :::
 
 ### Relocate columns
@@ -186,16 +221,19 @@ The recommended way to relocate columns in `ibis` is to use the `ibis.select()` 
 ::: {.panel-tabset}
 #### dplyr
 ```{r}
-penguins |> 
+penguins |>
   relocate(c(species, bill_length_mm), .before = sex)
 ```
+
 #### ibis
+
 ```{python}
 (penguins
   .select(_.island, _.bill_depth_mm, _.flipper_length_mm, _.body_mass_g, 
           _.species, _.bill_length_mm, _.sex)
 )
 ```
+
 :::
 
 ## Work with groups of rows
@@ -207,13 +245,17 @@ Let's suppose we want to compute summaries by groups such as means or medians. B
 Note that `dplyr::group_by()` also automatically arranges the results by the group, so the reproduce the results of `dplyr`, we need to add `ibis.order_by()` to the chain. 
 
 ::: {.panel-tabset}
+
 #### dplyr
+
 ```{r}
-penguins |> 
-  group_by(island) |> 
+penguins |>
+  group_by(island) |>
   summarize(bill_depth_mean = mean(bill_depth_mm, na.rm = TRUE))
 ```
+
 #### ibis
+
 ```{python}
 (penguins
   .group_by("island")
@@ -221,6 +263,7 @@ penguins |>
   .order_by("island")
 )
 ```
+
 :::
 
 ### More complicated summaries by group
@@ -229,9 +272,10 @@ Typically, you want to create multiple different summaries by groups. `dplyr` pr
 
 ::: {.panel-tabset}
 #### dplyr
+
 ```{r}
-penguins |> 
-  group_by(island) |> 
+penguins |>
+  group_by(island) |>
   summarize(
     count = n(),
     bill_depth_mean = mean(bill_depth_mm, na.rm = TRUE),
@@ -240,6 +284,7 @@ penguins |>
     share_female = mean(sex == "female", na.rm = TRUE)
   )
 ```
+
 #### ibis
 ```{python}
 (penguins
@@ -254,10 +299,11 @@ penguins |>
   .order_by("island")
 )
 ```
+
 :::
 
 ## Conclusion
 
-This post highlights syntactic similarities and differences across R's `dplyr` and Python's `ibis` packages. Two key points emerge: (i) `dplyr` heavily relies on NSE to enable a syntax that refrains from using strings and column selectors, something that is not possible in Python; (ii) the syntax is remarkably similar across both packages. I want to close this post by emphasizing that both languages and packages have their own merits and I won't strictly recommend one over the other. However, I definitely prefer the print output of `dplyr` to `ibis` because the latter is silent about additional columns of the underlying data. I'm a big fan of the concise data printing capabilities that are part of `dplyr`.
+This post highlights syntactic similarities and differences across R's `dplyr` and Python's `ibis` packages. Two key points emerge: (i) `dplyr` makes extensive use of tidy-evaluation, another form of NSE, that allows valid arbitrary expressions, and avoids string-literal column references (though it also supports column selection by strings and the $ operator for transformations) - this style of NSE-based functions is not possible in Python; (ii) the syntax is remarkably similar across both packages. I want to close this post by emphasizing that both languages and packages have their own merits and I won't strictly recommend one over the other. However, I definitely prefer the print output of `dplyr` to `ibis` because the latter is silent about additional columns of the underlying data. I'm a big fan of the concise data printing capabilities that are part of `dplyr`.
 
 [^1]: See the unifying principles of the tidyverse: [https://design.tidyverse.org/unifying.html](https://design.tidyverse.org/unifying.html).

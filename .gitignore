@@ -19,3 +19,5 @@ windy-hangar-446112-t6-621781c4c0dd.json
 /out
 metamorphosis_chapter1.txt
 .env
+
+**/*.quarto_ipynb
