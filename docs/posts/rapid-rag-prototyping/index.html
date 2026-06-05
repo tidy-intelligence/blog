@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -12,6 +12,9 @@
 
 <title>Rapid RAG Prototyping – Tidy Intelligence</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -72,10 +75,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "language": {
     "search-no-results-text": "No results",
@@ -160,14 +163,6 @@ cookieconsent.run({
   <li class="nav-item">
     <a class="nav-link" href="https://www.tidy-intelligence.com/"> 
 <span class="menu-text">Home</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="https://www.tidy-intelligence.com/projects"> 
-<span class="menu-text">Projects</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="https://apps.tidy-intelligence.com/"> 
-<span class="menu-text">Apps</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../index.html"> 
@@ -263,15 +258,15 @@ Note
 <section id="response-without-augmentation" class="level2">
 <h2 class="anchored" data-anchor-id="response-without-augmentation">Response without Augmentation</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(httr2)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(httr2)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ellmer)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Throughout this post, I’m using OpenAI’s API. The integration is handled seamlessly through <code>ellmer</code>, which provides a clean interface for interacting with various LLM providers. As an example, we start by asking Chat what it knows about me:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>chat <span class="ot">&lt;-</span> <span class="fu">chat_openai</span>(<span class="at">model =</span> <span class="st">"gpt-4o-mini"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>chat<span class="sc">$</span><span class="fu">chat</span>(<span class="st">"Who is Christoph Scheuch?"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>chat <span class="ot">&lt;-</span> <span class="fu">chat_openai</span>(<span class="at">model =</span> <span class="st">"gpt-4o-mini"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>chat<span class="sc">$</span><span class="fu">chat</span>(<span class="st">"Who is Christoph Scheuch?"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>As of my last knowledge update in October 2021, there is limited publicly 
 available information about a person named Christoph Scheuch. It's possible 
@@ -289,7 +284,7 @@ check online sources or news articles.</code></pre>
 <p>Embeddings are numerical representations of text that capture semantic meaning in a way that computers can process. They convert words and sentences into high-dimensional vectors where similar meanings result in similar vectors. This mathematical representation is crucial for implementing efficient information retrieval in RAG systems.</p>
 <p>I’m using the <code>text-embedding-3-small</code> model that is optimized for latency and costs. This model returns a vector of length 1536, striking a balance between computational efficiency and semantic representation quality. While larger models might offer marginally better performance, they often come with increased latency and cost. Feel free to experiment with other models based on your specific needs.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>get_embedding <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>get_embedding <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  text,</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">"text-embedding-3-small"</span>,</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">api_key =</span> <span class="fu">Sys.getenv</span>(<span class="st">"OPENAI_API_KEY"</span>)</span>
@@ -310,12 +305,12 @@ check online sources or news articles.</code></pre>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  embedding <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(<span class="fu">unlist</span>(json<span class="sc">$</span>data[[<span class="dv">1</span>]]<span class="sc">$</span>embedding))</span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  embedding</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Here is an example that demonstrates how a simple question gets transformed into its vector representation. For brevity, I just print the first 5 numbers:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>embedding <span class="ot">&lt;-</span> <span class="fu">get_embedding</span>(<span class="st">"Who is Christoph Scheuch?"</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>embedding[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>embedding <span class="ot">&lt;-</span> <span class="fu">get_embedding</span>(<span class="st">"Who is Christoph Scheuch?"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>embedding[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.015654668 -0.026617875 -0.008339691  0.025778350 -0.036223024</code></pre>
 </div>
@@ -324,52 +319,52 @@ check online sources or news articles.</code></pre>
 <p>While there are many specialized vector databases available, DuckDB offers a lightweight yet powerful solution for implementing vector similarity search through its extensions system. The <a href="https://duckdb.org/docs/extensions/vss.html"><code>vss</code> extension</a> enables efficient similarity searches directly within DuckDB, making it an excellent choice for prototyping and smaller-scale applications.</p>
 <p>You can create a local database and install and load the extension as follows:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(), <span class="st">"database.duckdb"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(), <span class="st">"database.duckdb"</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dbSendQuery</span>(con, <span class="st">"INSTALL vss;"</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dbSendQuery</span>(con, <span class="st">"LOAD vss;"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dbSendQuery</span>(con, <span class="st">"LOAD vss;"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Next, we’ll create the foundation of our knowledge base - a table called docs that will store both the original text and its vector representation. The table schema reflects hence the two components of our RAG system.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbSendQuery</span>(con, <span class="st">"DROP TABLE IF EXISTS docs;"</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dbSendQuery</span>(con, <span class="st">"CREATE TABLE docs (text TEXT, embedding FLOAT[1536]);"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbSendQuery</span>(con, <span class="st">"DROP TABLE IF EXISTS docs;"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dbSendQuery</span>(con, <span class="st">"CREATE TABLE docs (text TEXT, embedding FLOAT[1536]);"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The array size of 1536 matches the dimensionality of our chosen embedding model, ensuring compatibility between the embeddings we generate and our storage solution.</p>
 <p>Next, we’ll create a set of documents with varying degrees of relevance to our original question. Let’s start with a comprehensive document about me:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>doc_1 <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>doc_1 <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Who is Christoph Scheuch? Christoph Scheuch is an independent BI &amp; Data Science consultant specializing in financial topics. He provides services and trainings related to data infrastructure, data analysis, machine learning, and general data science topics. Previously, he was the Head of AI, Director of Product, and Head of BI &amp; Data Science at the social trading platform wikifolio.com. He is also the co-creator and maintainer of the open-source project Tidy Finance. In his free time, he occasionally designs shirts and mugs, available under the Tidy Swag brand."</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now we need a way to store these documents and their embeddings in our DuckDB database. Due to current limitations in the <code>duckdb</code> R package (see the issue <a href="https://github.com/duckdb/duckdb-r/issues/102">here</a>), we need to construct our SQL query manually. While this approach isn’t ideal for production systems, it serves our prototyping purposes well:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>store_embedding <span class="ot">&lt;-</span> <span class="cf">function</span>(text) {</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>store_embedding <span class="ot">&lt;-</span> <span class="cf">function</span>(text) {</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  embedding <span class="ot">&lt;-</span> <span class="fu">get_embedding</span>(text)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  embedding_sql <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"array_value("</span>, <span class="fu">paste</span>(embedding, <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">")"</span>)</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  query <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"INSERT INTO docs VALUES ('%s', %s);"</span>, text, embedding_sql)</span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">dbExecute</span>(con, query)</span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">store_embedding</span>(doc_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">store_embedding</span>(doc_1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>To better understand the retrieval mechanism, let’s add documents with varying levels of relevance. First, a shorter, more focused document that contains only key information:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>doc_2 <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>doc_2 <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Christoph Scheuch is an independent BI &amp; Data Science consultant specializing in financial topics"</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">store_embedding</span>(doc_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">store_embedding</span>(doc_2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Finally, we’ll add a control document that should be semantically distant from our query despite some surface-level similarities. I asked ChatGPT to come up with a complete nonesen about a person called “Christian Schuch”. Hopefully, this document is not relevant to the question about who I am.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>doc_3 <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>doc_3 <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Christian Schuch is a renowned intergalactic cartographer, best known for mapping the uncharted regions of the Andromeda galaxy using only a compass, a kazoo, and an uncanny sense of direction. In 2017, he won the prestigious “Golden Platypus Award” for his groundbreaking research on the migratory patterns of space jellyfish. When he’s not busy decoding ancient alien snack recipes, Christian enjoys competitive yodeling in zero gravity and has a side hustle crafting bespoke hats for sentient cacti. His latest project involves teaching quantum physics to squirrels, aiming to bridge the gap between rodent intelligence and parallel universes."</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">store_embedding</span>(doc_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">store_embedding</span>(doc_3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now that we have added some documents to the database, it is time to create an index. The index helps us to quickly retrieve relevant documents using the vector search feature of DuckDB. Without an index, finding similar vectors would require comparing our query vector against every single document vector - a process that becomes prohibitively slow as your document collection grows.</p>
 <p>If you want to reuse the database in an app or share it with others, you need to persist the index. You can do so by enabling the currently experimental persistence feature (learn more <a href="https://duckdb.org/docs/extensions/vss.html#persistence">here</a>). Also, I’m creating an index using cosine similarity distance because it’s particularly well-suited for comparing semantic similarity between text embeddings. Cosine similarity measures the angle between vectors while ignoring their magnitude, making it effective for comparing texts of different lengths.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbSendQuery</span>(con, <span class="st">"SET hnsw_enable_experimental_persistence = true;"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbSendQuery</span>(con, <span class="st">"SET hnsw_enable_experimental_persistence = true;"</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dbSendQuery</span>(con, <span class="st">"DROP INDEX IF EXISTS hnsw_index;"</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dbSendQuery</span>(con, <span class="st">"CREATE INDEX hnsw_index ON docs USING HNSW (embedding) WITH (metric = 'cosine');"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dbSendQuery</span>(con, <span class="st">"CREATE INDEX hnsw_index ON docs USING HNSW (embedding) WITH (metric = 'cosine');"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The index type we’re using here is HNSW (Hierarchical Navigable Small World), which is a sophisticated algorithm for approximate nearest neighbor search. It creates a layered graph structure that allows for efficient navigation through the high-dimensional space of our embeddings. While it doesn’t guarantee finding the absolute nearest neighbors, it provides an excellent trade-off between search speed and accuracy, making it ideal for RAG applications.</p>
 </section>
@@ -377,17 +372,17 @@ check online sources or news articles.</code></pre>
 <h2 class="anchored" data-anchor-id="retrieve-relevant-text">Retrieve Relevant Text</h2>
 <p>Now comes the crucial part of our RAG system - retrieving the most semantically relevant information based on user input. Let’s start by getting an embedding for our question:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>user_input <span class="ot">&lt;-</span> <span class="st">"Who is Christoph Scheuch?"</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>embedding <span class="ot">&lt;-</span> <span class="fu">get_embedding</span>(user_input)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>user_input <span class="ot">&lt;-</span> <span class="st">"Who is Christoph Scheuch?"</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>embedding <span class="ot">&lt;-</span> <span class="fu">get_embedding</span>(user_input)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>To retrieve the relevant documents from the database, we use the similarity search feature. The query is designed to demonstrate how vector similarity works in practice. We set relatively permissive parameters - a minimum cosine-similarity of 0.1 and a limit of 3 documents - to see how our different test documents compare:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>embedding_sql <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, <span class="fu">paste</span>(embedding, <span class="at">collapse =</span> <span class="st">","</span>), <span class="st">"]::FLOAT[1536]"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>embedding_sql <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, <span class="fu">paste</span>(embedding, <span class="at">collapse =</span> <span class="st">","</span>), <span class="st">"]::FLOAT[1536]"</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"SELECT array_cosine_similarity(embedding, %s) AS similarity, text FROM docs WHERE array_cosine_similarity(embedding, %s) &gt;= 0.1 ORDER BY array_cosine_similarity(embedding, %s) DESC LIMIT 3;"</span>, embedding_sql, embedding_sql, embedding_sql</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dbGetQuery</span>(con, query) <span class="sc">|&gt;</span> </span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 2
   similarity text                                                               
@@ -406,7 +401,7 @@ check online sources or news articles.</code></pre>
 <p>This demonstrates that our embeddings are capturing semantic meaning rather than just matching keywords. For a production RAG system, we would want to be more selective. A typical approach is to both increase the similarity threshold (0.7 is typically a sensible value to start with) and limit the number of retrieved items (here I’m using only the most relevant document, so limit 1). These restrictions help ensure that only highly relevant information is used to augment the LLM’s response.</p>
 <p>Let’s encapsulate the retrieval logic in a dedicated function. This abstraction will make it easier to experiment with different parameters and integrate the retrieval mechanism into larger applications.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>get_relevant_text <span class="ot">&lt;-</span> <span class="cf">function</span>(text, <span class="at">min_similarity =</span> <span class="fl">0.7</span>, <span class="at">max_n =</span> <span class="dv">1</span>) {</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>get_relevant_text <span class="ot">&lt;-</span> <span class="cf">function</span>(text, <span class="at">min_similarity =</span> <span class="fl">0.7</span>, <span class="at">max_n =</span> <span class="dv">1</span>) {</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  embedding <span class="ot">&lt;-</span> <span class="fu">get_embedding</span>(text)</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  embedding_sql <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, <span class="fu">paste</span>(embedding, <span class="at">collapse =</span> <span class="st">","</span>), <span class="st">"]::FLOAT[1536]"</span>)</span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  query <span class="ot">&lt;-</span> <span class="fu">paste</span>(</span>
@@ -419,7 +414,7 @@ check online sources or news articles.</code></pre>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, query) </span>
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  result<span class="sc">$</span>text</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The function takes three parameters:</p>
 <ul>
@@ -432,18 +427,18 @@ check online sources or news articles.</code></pre>
 <h2 class="anchored" data-anchor-id="augment-response-generation">Augment Response Generation</h2>
 <p>Putting things together, we now can augment the original input by including relevant content. The augmentation process involves combining our retrieved context with clear instructions for the LLM:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>user_input <span class="ot">&lt;-</span> <span class="st">"Who is Christoph Scheuch?"</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>user_input <span class="ot">&lt;-</span> <span class="st">"Who is Christoph Scheuch?"</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>relevant_text <span class="ot">&lt;-</span> <span class="fu">get_relevant_text</span>(user_input)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>user_input_augmented <span class="ot">&lt;-</span> <span class="fu">paste</span>(</span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Use the information below to answer the subsequent question."</span>,</span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"If the answer cannot be found, write 'I don't know.'"</span>,</span>
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Info: "</span>, relevant_text,</span>
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Question: "</span>, user_input</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now let’s pass the augmented query to Chat and see whether it now gets the information about me right:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>chat<span class="sc">$</span><span class="fu">chat</span>(user_input_augmented)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>chat<span class="sc">$</span><span class="fu">chat</span>(user_input_augmented)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Christoph Scheuch is an independent BI &amp; Data Science consultant specializing 
 in financial topics. He provides services and training related to data 
@@ -548,13 +543,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
